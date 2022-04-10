@@ -5,6 +5,8 @@ import { Route, Switch, useLocation } from 'react-router-dom';
 import MainLayout from './../layout/MainLayout';
 import Loadable from '../ui-component/Loadable';
 import AuthGuard from './../utils/route-guard/AuthGuard';
+import Trip from '../views/trip/add-trip';
+import AllTrips from '../views/trip/all-trips';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
@@ -28,7 +30,8 @@ const MainRoutes = () => {
         <Route
             path={[
                 '/dashboard/default',
-
+                '/trip/add-trip',
+                '/trip/all-trips',
                 '/utils/util-typography',
                 '/utils/util-color',
                 '/utils/util-shadow',
@@ -42,13 +45,13 @@ const MainRoutes = () => {
                 <Switch location={location} key={location.pathname}>
                     <AuthGuard>
                         <Route path="/dashboard/default" component={DashboardDefault} />
-
+                        <Route path="/trip/add-trip" component={Trip} />
+                        <Route path="/trip/all-trips" component={AllTrips} />
                         <Route path="/utils/util-typography" component={UtilsTypography} />
                         <Route path="/utils/util-color" component={UtilsColor} />
                         <Route path="/utils/util-shadow" component={UtilsShadow} />
                         <Route path="/icons/tabler-icons" component={UtilsTablerIcons} />
                         <Route path="/icons/material-icons" component={UtilsMaterialIcons} />
-
                         <Route path="/sample-page" component={SamplePage} />
                     </AuthGuard>
                 </Switch>

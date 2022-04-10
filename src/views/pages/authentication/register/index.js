@@ -2,13 +2,13 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 // material-ui
-import { useTheme } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { Divider, Grid, Stack, Typography, useMediaQuery } from '@material-ui/core';
 
 // project imports
 import AuthWrapper1 from './../AuthWrapper1';
 import AuthCardWrapper from './../AuthCardWrapper';
-import Logo from './../../../../ui-component/Logo';
+import Logo from './../../../../images/logo.png';
 import RestRegister from './RestRegister';
 import AuthFooter from './../../../../ui-component/cards/AuthFooter';
 
@@ -30,7 +30,9 @@ const Register = () => {
                                 <Grid container spacing={2} alignItems="center" justifyContent="center">
                                     <Grid item sx={{ mb: 3 }}>
                                         <RouterLink to="#">
-                                            <Logo />
+                                            <Box>
+                                                <img src={Logo} width="92" height="52" />
+                                            </Box>
                                         </RouterLink>
                                     </Grid>
                                     <Grid item xs={12}>
