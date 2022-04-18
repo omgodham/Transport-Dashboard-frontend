@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from '../../axios';
-import axiosInstance from '../../axios';
+import Axios from '../../axios';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -42,8 +42,7 @@ function Trip() {
     const [errorSnack, setErrorSnack] = useState();
 
     useEffect(() => {
-        axiosInstance
-            .get('/customers/get-all-customers')
+        Axios.get('/customers/get-all-customers')
             .then((res) => {
                 setCustomers(res.data);
             })
@@ -52,8 +51,7 @@ function Trip() {
                 setErrorSnack(true);
             });
 
-        axiosInstance
-            .get('/vehicles/get-all-vehicles')
+        Axios.get('/vehicles/get-all-vehicles')
             .then((res) => {
                 setVehicles(res.data);
             })
@@ -62,8 +60,7 @@ function Trip() {
                 setErrorSnack(true);
             });
 
-        axiosInstance
-            .get('/vehicles/get-all-drivers')
+        Axios.get('/vehicles/get-all-drivers')
             .then((res) => {
                 setDrivers(res.data);
             })

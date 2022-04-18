@@ -7,6 +7,8 @@ import Loadable from '../ui-component/Loadable';
 import AuthGuard from './../utils/route-guard/AuthGuard';
 import Trip from '../views/trip/add-trip';
 import AllTrips from '../views/trip/all-trips';
+import customer from '../views/customer/customer';
+import Customer from '../views/customer/customer';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
@@ -37,6 +39,8 @@ const MainRoutes = () => {
                 '/utils/util-shadow',
                 '/icons/tabler-icons',
                 '/icons/material-icons',
+                '/customers',
+                '/vehicles',
 
                 '/sample-page'
             ]}
@@ -53,6 +57,7 @@ const MainRoutes = () => {
                         <Route path="/icons/tabler-icons" component={UtilsTablerIcons} />
                         <Route path="/icons/material-icons" component={UtilsMaterialIcons} />
                         <Route path="/sample-page" component={SamplePage} />
+                        <Route path="/customers" component={Customer} />
                     </AuthGuard>
                 </Switch>
             </MainLayout>
