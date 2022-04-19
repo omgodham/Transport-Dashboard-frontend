@@ -1,4 +1,17 @@
-import { Alert, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from '@material-ui/core';
+import {
+    Alert,
+    Box,
+    Button,
+    FormControl,
+    Grid,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    Snackbar,
+    TextField,
+    Typography
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
@@ -29,7 +42,8 @@ const validationSchema = yup.object({
     vehicle: yup.string('Select Vehicle').required('vehicle is required'),
     driver: yup.string('Select Driver').required('Driver is required'),
     dropup: yup.string('Select DropUp Locaiton').required('Dropup location is required'),
-    pickup: yup.string('Select Pickup Location').required('Pickup location is required')
+    pickup: yup.string('Select Pickup Location').required('Pickup location is required'),
+    load: yup.string('Enter load in KG').required('Load is required')
 });
 
 function Trip() {
@@ -42,7 +56,7 @@ function Trip() {
     const [errorSnack, setErrorSnack] = useState();
 
     useEffect(() => {
-        Axios.get('/customers/get-all-customers')
+        Axios.get('/customer/get-all-customers')
             .then((res) => {
                 setCustomers(res.data);
             })
@@ -51,7 +65,7 @@ function Trip() {
                 setErrorSnack(true);
             });
 
-        Axios.get('/vehicles/get-all-vehicles')
+        Axios.get('/vehicle/get-all-vehicles')
             .then((res) => {
                 setVehicles(res.data);
             })
@@ -60,7 +74,7 @@ function Trip() {
                 setErrorSnack(true);
             });
 
-        Axios.get('/vehicles/get-all-drivers')
+        Axios.get('/driver/get-all-drivers')
             .then((res) => {
                 setDrivers(res.data);
             })
@@ -72,7 +86,7 @@ function Trip() {
 
     const addTrip = (data) => {
         axios
-            .post('/trip/add-new-trip', { data })
+            .post('/trip/create-trip', { data })
             .then((res) => {
                 setAlertMessage('Trip Added Successfully');
                 setSuccessSnack(true);
@@ -89,7 +103,8 @@ function Trip() {
             vehicle: '',
             pickup: '',
             dropup: '',
-            driver: ''
+            driver: '',
+            load: ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -120,8 +135,7 @@ function Trip() {
                                 >
                                     {customers.length ? (
                                         customers.map((customer) => {
-                                            return;
-                                            <MenuItem value={customer.name}>{customer.name}</MenuItem>;
+                                            return <MenuItem value={customer._id}>{customer.name}</MenuItem>;
                                         })
                                     ) : (
                                         <MenuItem value="none">None</MenuItem>
@@ -143,8 +157,7 @@ function Trip() {
                                 >
                                     {vehicles.length ? (
                                         vehicles.map((vehicle) => {
-                                            return;
-                                            <MenuItem value={vehicle.name}>{vehicle.name}</MenuItem>;
+                                            return <MenuItem value={vehicle._id}>{vehicle.name}</MenuItem>;
                                         })
                                     ) : (
                                         <MenuItem value="none">None</MenuItem>
@@ -190,13 +203,27 @@ function Trip() {
                                 >
                                     {drivers.length ? (
                                         drivers.map((driver) => {
-                                            return;
-                                            <MenuItem value={driver.name}>{driver.name}</MenuItem>;
+                                            return <MenuItem value={driver._id}>{driver.name}</MenuItem>;
                                         })
                                     ) : (
                                         <MenuItem value="none">None</MenuItem>
                                     )}
                                 </TextField>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="load"
+                                    name="load"
+                                    label="Load in vehicle"
+                                    value={formik.values.load}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.load && Boolean(formik.errors.load)}
+                                    helperText={formik.touched.load && formik.errors.load}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end">Kg</InputAdornment>
+                                    }}
+                                />
                             </Grid>
                         </Grid>
                         <Button className={classes.submitBtn} variant="contained" fullWidth type="submit" style={{ marginTop: '20px' }}>

@@ -15,7 +15,7 @@ const icons = {
 
 export const utilities = {
     id: 'utilities',
-    title: 'Utilities',
+    title: 'Other',
     type: 'group',
     children: [
         {
@@ -31,6 +31,14 @@ export const utilities = {
             title: 'Vehicles',
             type: 'item',
             url: '/vehicles',
+            icon: icons['IconPalette'],
+            breadcrumbs: false
+        },
+        {
+            id: 'drivers',
+            title: 'Drivers',
+            type: 'item',
+            url: '/drivers',
             icon: icons['IconPalette'],
             breadcrumbs: false
         }

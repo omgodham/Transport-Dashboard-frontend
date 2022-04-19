@@ -8,6 +8,7 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
+    InputAdornment,
     Snackbar,
     TextField,
     Typography
@@ -84,61 +85,48 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Customer() {
+function Driver() {
     const classes = useStyles();
     const [open, setOpen] = useState();
-    const [customers, setCustomers] = useState([]);
+    const [vehicles, setVehicles] = useState([]);
     const [successSnack, setSuccessSnack] = useState();
     const [errorSnack, setErrorSnack] = useState();
     const [alertMsg, setAlertMsg] = useState('');
 
-    const getAllCustomers = () => {
-        Axios.get('/customer/get-all-customers')
-            .then((response) => setCustomers(response.data))
+    const getAllDrivers = () => {
+        Axios.get('/driver/get-all-drivers')
+            .then((response) => setVehicles(response.data))
             .catch((error) => console.log(error));
     };
 
     useEffect(() => {
-        getAllCustomers();
+        getAllDrivers();
     }, []);
 
     const validationSchema = yup.object({
-        email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
-        name: yup.string('Please enter customer name.').required('Password is required'),
-        gstNo: yup.string('Please enter GST number.').required('GST number is required'),
-        phone: yup.string('Please enter phone number.').required('Phone number is required'),
-        state: yup.string('Please enter state.').required('State is required'),
-        address: yup.string('Please enter address.').required('Address is required')
+        name: yup.string('Please enter driver name.').required('Name is required'),
+        phoneNo: yup.string('Enter phone number').required('Phone number is required'),
+        salary: yup.string("Enter driver's salary").required('Salary is required')
     });
 
     const formik = useFormik({
         initialValues: {
             name: '',
-            gstNo: '',
-            phone: '',
-            email: '',
-            address: '',
-            state: ''
+            phoneNo: '',
+            salary: ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
             let data = {
                 name: values.name,
-                gstNo: values.gstNo,
-                contactInfo: {
-                    phoneNo: values.phone,
-                    email: values.email
-                },
-                address: {
-                    addressLine1: values.address,
-                    state: values.state
-                }
+                number: values.phoneNO,
+                salary: values.salary
             };
-            Axios.post('/customer/create-customer', { data })
+            Axios.post('/driver/create-driver', { data })
                 .then((response) => {
-                    getAllCustomers();
+                    getAllDrivers();
                     setOpen(false);
-                    setAlertMsg('New customer saved successfully');
+                    setAlertMsg('New driver saved successfully');
                     setSuccessSnack(true);
                 })
                 .catch((error) => {
@@ -149,10 +137,10 @@ function Customer() {
     });
 
     const handleDelete = (id) => {
-        Axios.post('customer/delete-customer', { custId: id })
+        Axios.post('driver/delete-driver', { driverId: id })
             .then((response) => {
-                getAllCustomers();
-                setAlertMsg('Customer deleted successfully');
+                getAllDrivers();
+                setAlertMsg('Driver deleted successfully');
                 setSuccessSnack(true);
             })
             .catch((error) => {
@@ -160,40 +148,42 @@ function Customer() {
                 setErrorSnack(true);
             });
     };
-
     return (
         <div className={classes.root}>
             <Box>
-                <Typography variant="h2">CUSOTMERS</Typography>
+                <Typography variant="h2">DRIVERS</Typography>
                 <Box className={classes.btnCont}>
                     <Button
-                        className={classes.addBtn}
                         onClick={() => setOpen(true)}
+                        className={classes.addBtn}
                         variant="contained"
                         startIcon={<AddCircleOutlineIcon />}
                     >
-                        CUSTOMER
+                        DRIVER
                     </Button>
                 </Box>
                 <Box sx={{ p: 2 }}>
-                    {customers?.length ? (
-                        customers.map((customer) => (
-                            <Box className={classes.customerCont}>
-                                <Grid container>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Typography variant="h3">{customer.name}</Typography>
+                    {vehicles?.length ? (
+                        vehicles.map((driver) => {
+                            console.log(driver);
+                            return (
+                                <Box className={classes.customerCont}>
+                                    <Grid container>
+                                        <Grid className={classes.customerItems} item xs={4}>
+                                            <Typography variant="h3">{driver.name}</Typography>
+                                        </Grid>
+                                        <Grid className={classes.customerItems} item xs={4}>
+                                            <Typography variant="h6">Driver NO. - {driver.number}</Typography>
+                                        </Grid>
+                                        <Grid className={classes.customerItems} item xs={4}>
+                                            <Box sx={{ pr: 2, ml: 'auto' }}>
+                                                <DeleteIcon className={classes.icons} onClick={() => handleDelete(driver._id)} />
+                                            </Box>
+                                        </Grid>
                                     </Grid>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
-                                    </Grid>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Box sx={{ pr: 2, ml: 'auto' }}>
-                                            <DeleteIcon className={classes.icons} onClick={() => handleDelete(customer._id)} />
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        ))
+                                </Box>
+                            );
+                        })
                     ) : (
                         <>
                             <Box className={classes.customerSkeleton}></Box>
@@ -209,7 +199,7 @@ function Customer() {
             <Dialog open={open} onClose={() => setOpen(false)}>
                 <div className={classes.formCont}>
                     <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
-                        CUTOMER DETAILS
+                        DRIVER DETAILS
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <Grid container spacing={2}>
@@ -229,61 +219,30 @@ function Customer() {
                             <Grid item xs={6} className={classes.formItems}>
                                 <TextField
                                     fullWidth
-                                    id="phone"
-                                    name="phone"
+                                    id="phoneNo"
+                                    type="number"
+                                    name="phoneNo"
                                     label="Phone Number"
-                                    value={formik.values.phone}
+                                    value={formik.values.phoneNo}
                                     onChange={formik.handleChange}
-                                    error={formik.touched.phone && Boolean(formik.errors.phone)}
-                                    helperText={formik.touched.phone && formik.errors.phone}
+                                    error={formik.touched.phoneNo && Boolean(formik.errors.phoneNo)}
+                                    helperText={formik.touched.phoneNo && formik.errors.phoneNo}
                                 />
                             </Grid>
                             <Grid item xs={6} className={classes.formItems}>
                                 <TextField
                                     fullWidth
-                                    id="email"
-                                    name="email"
-                                    label="Email"
-                                    value={formik.values.email}
+                                    id="salary"
+                                    type="number"
+                                    name="salary"
+                                    label="Driver's Salary"
+                                    value={formik.values.salary}
                                     onChange={formik.handleChange}
-                                    error={formik.touched.email && Boolean(formik.errors.email)}
-                                    helperText={formik.touched.email && formik.errors.email}
-                                />
-                            </Grid>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="gstNo"
-                                    name="gstNo"
-                                    label="GST Number"
-                                    value={formik.values.gstNo}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.gstNo && Boolean(formik.errors.gstNo)}
-                                    helperText={formik.touched.gstNo && formik.errors.gstNo}
-                                />
-                            </Grid>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="address"
-                                    name="address"
-                                    label="Address"
-                                    value={formik.values.address}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.address && Boolean(formik.errors.address)}
-                                    helperText={formik.touched.address && formik.errors.address}
-                                />
-                            </Grid>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="state"
-                                    name="state"
-                                    label="STATE"
-                                    value={formik.values.state}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.state && Boolean(formik.errors.state)}
-                                    helperText={formik.touched.state && formik.errors.state}
+                                    error={formik.touched.salary && Boolean(formik.errors.salary)}
+                                    helperText={formik.touched.salary && formik.errors.salary}
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">Rs.</InputAdornment>
+                                    }}
                                 />
                             </Grid>
                             <Box className={classes.subBtnCont}>
@@ -309,4 +268,4 @@ function Customer() {
     );
 }
 
-export default Customer;
+export default Driver;
