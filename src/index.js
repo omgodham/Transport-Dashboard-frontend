@@ -8,7 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 // project imports
 import { store, persister } from './store';
-import * as serviceWorker from './serviceWorker';
+// import * as serviceWorker from './serviceWorker';
 import App from './App';
 import config from './config';
 
@@ -16,7 +16,7 @@ import config from './config';
 import './assets/scss/style.scss';
 
 //-----------------------|| REACT DOM RENDER  ||-----------------------//
-
+//this isthe comment
 ReactDOM.render(
     <Provider store={store}>
         <PersistGate loading={null} persistor={persister}>
@@ -31,4 +31,4 @@ ReactDOM.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+// serviceWorker.unregister();

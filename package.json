@@ -36,10 +36,7 @@
         "yup": "^0.32.9"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "start": "react-scripts start"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -58,6 +55,7 @@
     },
     "devDependencies": {
         "@material-ui/codemod": "^5.0.0-alpha.35",
+        "react-error-overlay": "^6.0.9",
         "sass": "^1.32.11"
     }
 }
