@@ -104,7 +104,8 @@ function Customer() {
 
     const validationSchema = yup.object({
         email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
-        name: yup.string('Please enter customer name.').required('Password is required'),
+        name: yup.string('Please enter customer name.').required('Name is required'),
+        ownerName: yup.string('Please enter owner name.').required('Owner name is required'),
         gstNo: yup.string('Please enter GST number.').required('GST number is required'),
         phone: yup.string('Please enter phone number.').required('Phone number is required'),
         state: yup.string('Please enter state.').required('State is required'),
@@ -118,12 +119,14 @@ function Customer() {
             phone: '',
             email: '',
             address: '',
-            state: ''
+            state: '',
+            ownerName: ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
             let data = {
                 name: values.name,
+                ownerName: values.ownerName,
                 gstNo: values.gstNo,
                 contactInfo: {
                     phoneNo: values.phone,
@@ -149,7 +152,7 @@ function Customer() {
     });
 
     const handleDelete = (id) => {
-        Axios.post('customer/delete-customer', { custId: id })
+        Axios.delete(`customer/delete-customer/${id}`)
             .then((response) => {
                 getAllCustomers();
                 setAlertMsg('Customer deleted successfully');
@@ -224,6 +227,19 @@ function Customer() {
                                     onChange={formik.handleChange}
                                     error={formik.touched.name && Boolean(formik.errors.name)}
                                     helperText={formik.touched.name && formik.errors.name}
+                                />
+                            </Grid>
+                            <Grid item xs={6} className={classes.formItems}>
+                                <TextField
+                                    fullWidth
+                                    id="ownerName"
+                                    name="ownerName"
+                                    label="Owner Name"
+                                    type="name"
+                                    value={formik.values.ownerName}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.ownerName && Boolean(formik.errors.ownerName)}
+                                    helperText={formik.touched.ownerName && formik.errors.ownerName}
                                 />
                             </Grid>
                             <Grid item xs={6} className={classes.formItems}>
