@@ -15,54 +15,32 @@ const icons = {
 
 export const utilities = {
     id: 'utilities',
-    title: 'Utilities',
+    title: 'Other',
     type: 'group',
     children: [
         {
-            id: 'util-typography',
-            title: 'Typography',
+            id: 'customers',
+            title: 'Customers',
             type: 'item',
-            url: '/utils/util-typography',
+            url: '/customers',
             icon: icons['IconTypography'],
             breadcrumbs: false
         },
         {
-            id: 'util-color',
-            title: 'Color',
+            id: 'vehicles',
+            title: 'Vehicles',
             type: 'item',
-            url: '/utils/util-color',
+            url: '/vehicles',
             icon: icons['IconPalette'],
             breadcrumbs: false
         },
         {
-            id: 'util-shadow',
-            title: 'Shadow',
+            id: 'drivers',
+            title: 'Drivers',
             type: 'item',
-            url: '/utils/util-shadow',
-            icon: icons['IconShadow'],
+            url: '/drivers',
+            icon: icons['IconPalette'],
             breadcrumbs: false
-        },
-        {
-            id: 'icons',
-            title: 'Icons',
-            type: 'collapse',
-            icon: icons['IconWindmill'],
-            children: [
-                {
-                    id: 'tabler-icons',
-                    title: 'Tabler Icons',
-                    type: 'item',
-                    url: '/icons/tabler-icons',
-                    breadcrumbs: false
-                },
-                {
-                    id: 'material-icons',
-                    title: 'Material Icons',
-                    type: 'item',
-                    url: '/icons/material-icons',
-                    breadcrumbs: false
-                }
-            ]
         }
     ]
 };
