@@ -24,7 +24,7 @@ import {
 // third party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import axios from 'axios';
+import axios from '../../../../axios';
 
 // project imports
 import useScriptRef from '../../../../hooks/useScriptRef';
@@ -107,16 +107,15 @@ const RestLogin = (props, { ...others }) => {
                 onSubmit={(values, { setErrors, setStatus, setSubmitting }) => {
                     try {
                         axios
-                            .post( configData.API_SERVER + 'users/login', {
+                            .post('/auth/sign-in', {
                                 password: values.password,
                                 email: values.email
                             })
                             .then(function (response) {
                                 if (response.data.success) {
-                                    console.log(response.data);
                                     dispatcher({
                                         type: ACCOUNT_INITIALIZE,
-                                        payload: { isLoggedIn: true, user: response.data.user, token: response.data.token }
+                                        payload: { isLoggedIn: true, user: response.data.user, token: 'token' }
                                     });
                                     if (scriptedRef.current) {
                                         setStatus({ success: true });
@@ -124,17 +123,16 @@ const RestLogin = (props, { ...others }) => {
                                     }
                                 } else {
                                     setStatus({ success: false });
-                                    setErrors({ submit: response.data.msg });
+                                    setErrors({ submit: response.data.message });
                                     setSubmitting(false);
                                 }
                             })
                             .catch(function (error) {
                                 setStatus({ success: false });
-                                setErrors({ submit: error.response.data.msg });
+                                setErrors({ submit: error.response.data.message });
                                 setSubmitting(false);
                             });
                     } catch (err) {
-                        console.error(err);
                         if (scriptedRef.current) {
                             setStatus({ success: false });
                             setErrors({ submit: err.message });
