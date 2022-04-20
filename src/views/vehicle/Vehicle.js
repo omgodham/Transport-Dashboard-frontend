@@ -133,7 +133,7 @@ function Vehicle() {
     });
 
     const handleDelete = (id) => {
-        Axios.post('vehicle/delete-vehicle', { vehicleId: id })
+        Axios.post(`vehicle/delete-vehicle/${id}`)
             .then((response) => {
                 getAllVehicles();
                 setAlertMsg('Vehicle deleted successfully');

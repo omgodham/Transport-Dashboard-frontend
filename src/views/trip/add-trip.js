@@ -18,6 +18,8 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from '../../axios';
 import Axios from '../../axios';
+// import DateFnsUtils from '@date-io/date-fns';
+// import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,7 +45,10 @@ const validationSchema = yup.object({
     driver: yup.string('Select Driver').required('Driver is required'),
     dropup: yup.string('Select DropUp Locaiton').required('Dropup location is required'),
     pickup: yup.string('Select Pickup Location').required('Pickup location is required'),
-    load: yup.string('Enter load in KG').required('Load is required')
+    tripDate: yup.string('Select Date').required('Date is required'),
+    materialWeight: yup.string('Enter load in KG').required('Load is required'),
+    fuelCharge: yup.string('Enter disel charge').required('Disel charge is required'),
+    truckModel: yup.string('Enter truck model').required('Truck model is required')
 });
 
 function Trip() {
@@ -51,6 +56,7 @@ function Trip() {
     const [vehicles, setVehicles] = useState([]);
     const [drivers, setDrivers] = useState([]);
     const [customers, setCustomers] = useState([]);
+    const [extraCharges, setExtraCharges] = useState([]);
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
     const [errorSnack, setErrorSnack] = useState();
@@ -71,6 +77,15 @@ function Trip() {
             })
             .catch((error) => {
                 setAlertMessage('Could not get vehicles');
+                setErrorSnack(true);
+            });
+
+        Axios.get('/extracharge/get-all-extra-charges')
+            .then((res) => {
+                setExtraCharges(res.data);
+            })
+            .catch((error) => {
+                setAlertMessage('Could not get extra charges');
                 setErrorSnack(true);
             });
 
@@ -104,7 +119,19 @@ function Trip() {
             pickup: '',
             dropup: '',
             driver: '',
-            load: ''
+            lrNo: '',
+            challanNo: '',
+            billNo: '',
+            advanceForCompany: 0,
+            advanceToDriver: 0,
+            fuelCharge: 0,
+            extraCharge: '',
+            paymentReceived: 0,
+            paymentPending: 0,
+            paymentVoucherNumber: '',
+            materialWeight: 0,
+            truckModel: '',
+            tripDate: new Date()
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -116,7 +143,6 @@ function Trip() {
         <div className={classes.root}>
             <Typography variant="h2">ADD NEW TRIP</Typography>
             <Box className={classes.detailsBox}>
-                <Typography variant="h4">Trip Details</Typography>
                 <Box sx={{ p: 1, mt: 1 }}>
                     <form onSubmit={formik.handleSubmit}>
                         <Grid container spacing={4}>
@@ -141,6 +167,46 @@ function Trip() {
                                         <MenuItem value="none">None</MenuItem>
                                     )}
                                 </TextField>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    id="tripDate"
+                                    label="Date of trip (DD-MM-YYYY)"
+                                    name="tripDate"
+                                    type="date"
+                                    fullWidth
+                                    defaultValue="00-00-0000"
+                                    required
+                                    onChange={formik.handleChange}
+                                    variant="outlined"
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="lrNo"
+                                    name="lrNo"
+                                    label="Lr Number"
+                                    value={formik.values.lrNo}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.lrNo && Boolean(formik.errors.lrNo)}
+                                    helperText={formik.touched.lrNo && formik.errors.lrNo}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="paymentVoucherNumber"
+                                    name="paymentVoucherNumber"
+                                    label="Payment Voucher Number"
+                                    value={formik.values.paymentVoucherNumber}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.paymentVoucherNumber && Boolean(formik.errors.paymentVoucherNumber)}
+                                    helperText={formik.touched.paymentVoucherNumber && formik.errors.paymentVoucherNumber}
+                                />
                             </Grid>
                             <Grid item xs={6}>
                                 <TextField
@@ -191,6 +257,121 @@ function Trip() {
                             <Grid item xs={6}>
                                 <TextField
                                     fullWidth
+                                    id="advanceToDriver"
+                                    name="advanceToDriver"
+                                    label="Advance to driver"
+                                    value={formik.values.advanceToDriver}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.advanceToDriver && Boolean(formik.errors.advanceToDriver)}
+                                    helperText={formik.touched.advanceToDriver && formik.errors.advanceToDriver}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="fuelCharge"
+                                    name="fuelCharge"
+                                    label="Disel Charge"
+                                    value={formik.values.fuelCharge}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.fuelCharge && Boolean(formik.errors.fuelCharge)}
+                                    helperText={formik.touched.fuelCharge && formik.errors.fuelCharge}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="extraCharge"
+                                    name="extraCharge"
+                                    label="Select extra charge"
+                                    labelId="demo-simple-select-filled-label"
+                                    select
+                                    value={formik.values.extraCharge}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.extraCharge && Boolean(formik.errors.extraCharge)}
+                                    helperText={formik.touched.extraCharge && formik.errors.extraCharge}
+                                >
+                                    {extraCharges.length ? (
+                                        extraCharges.map((extraCharge) => {
+                                            return (
+                                                <MenuItem value={extraCharge.amount}>
+                                                    {extraCharge.type}( ₹{extraCharge.amount})
+                                                </MenuItem>
+                                            );
+                                        })
+                                    ) : (
+                                        <MenuItem value="none">None</MenuItem>
+                                    )}
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="challanNo"
+                                    name="challanNo"
+                                    label="Challan Number"
+                                    value={formik.values.challanNo}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.challanNo && Boolean(formik.errors.challanNo)}
+                                    helperText={formik.touched.challanNo && formik.errors.challanNo}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="billNo"
+                                    name="billNo"
+                                    label="Bill Number"
+                                    value={formik.values.billNo}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.billNo && Boolean(formik.errors.billNo)}
+                                    helperText={formik.touched.billNo && formik.errors.billNo}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="advanceForCompany"
+                                    name="advanceForCompany"
+                                    label="Advance for company"
+                                    value={formik.values.advanceForCompany}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.advanceForCompany && Boolean(formik.errors.advanceForCompany)}
+                                    helperText={formik.touched.advanceForCompany && formik.errors.advanceForCompany}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="paymentReceived"
+                                    name="paymentReceived"
+                                    label="Payment Received"
+                                    value={formik.values.paymentReceived}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.paymentReceived && Boolean(formik.errors.paymentReceived)}
+                                    helperText={formik.touched.paymentReceived && formik.errors.paymentReceived}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="paymentPending"
+                                    name="paymentPending"
+                                    label="Payment Pending"
+                                    value={formik.values.paymentPending}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.paymentPending && Boolean(formik.errors.paymentPending)}
+                                    helperText={formik.touched.paymentPending && formik.errors.paymentPending}
+                                />
+                            </Grid>
+
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
                                     id="driver"
                                     name="driver"
                                     label="Select Driver"
@@ -213,16 +394,28 @@ function Trip() {
                             <Grid item xs={6}>
                                 <TextField
                                     fullWidth
-                                    id="load"
-                                    name="load"
-                                    label="Load in vehicle"
-                                    value={formik.values.load}
+                                    id="materialWeight"
+                                    name="materialWeight"
+                                    label="Material weight"
+                                    value={formik.values.materialWeight}
                                     onChange={formik.handleChange}
-                                    error={formik.touched.load && Boolean(formik.errors.load)}
-                                    helperText={formik.touched.load && formik.errors.load}
+                                    error={formik.touched.materialWeight && Boolean(formik.errors.materialWeight)}
+                                    helperText={formik.touched.materialWeight && formik.errors.materialWeight}
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end">Kg</InputAdornment>
                                     }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="truckModel"
+                                    name="truckModel"
+                                    label="Truck Model"
+                                    value={formik.values.truckModel}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.truckModel && Boolean(formik.errors.truckModel)}
+                                    helperText={formik.touched.truckModel && formik.errors.truckModel}
                                 />
                             </Grid>
                         </Grid>

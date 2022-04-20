@@ -137,7 +137,7 @@ function Driver() {
     });
 
     const handleDelete = (id) => {
-        Axios.post('driver/delete-driver', { driverId: id })
+        Axios.delete(`driver/delete-driver/${id}`)
             .then((response) => {
                 getAllDrivers();
                 setAlertMsg('Driver deleted successfully');
