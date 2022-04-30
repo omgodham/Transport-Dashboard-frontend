@@ -17,9 +17,8 @@ import { makeStyles } from '@material-ui/styles';
 import React, { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Axios from '../../axios';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DriverForm from './DriverForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -92,6 +91,7 @@ function Driver() {
     const [successSnack, setSuccessSnack] = useState();
     const [errorSnack, setErrorSnack] = useState();
     const [alertMsg, setAlertMsg] = useState('');
+    const [activeDriver, setActiveDriver] = useState();
 
     const getAllDrivers = () => {
         Axios.get('/driver/get-all-drivers')
@@ -103,38 +103,10 @@ function Driver() {
         getAllDrivers();
     }, []);
 
-    const validationSchema = yup.object({
-        name: yup.string('Please enter driver name.').required('Name is required'),
-        phoneNo: yup.string('Enter phone number').required('Phone number is required'),
-        salary: yup.string("Enter driver's salary").required('Salary is required')
-    });
-
-    const formik = useFormik({
-        initialValues: {
-            name: '',
-            phoneNo: '',
-            salary: ''
-        },
-        validationSchema: validationSchema,
-        onSubmit: (values) => {
-            let data = {
-                name: values.name,
-                number: values.phoneNO,
-                salary: values.salary
-            };
-            Axios.post('/driver/create-driver', { data })
-                .then((response) => {
-                    getAllDrivers();
-                    setOpen(false);
-                    setAlertMsg('New driver saved successfully');
-                    setSuccessSnack(true);
-                })
-                .catch((error) => {
-                    setAlertMsg('Something went wrong');
-                    setErrorSnack(true);
-                });
-        }
-    });
+    const handleClose = () => {
+        setOpen(false);
+        setActiveDriver();
+    };
 
     const handleDelete = (id) => {
         Axios.delete(`driver/delete-driver/${id}`)
@@ -167,13 +139,19 @@ function Driver() {
                         vehicles.map((driver) => {
                             console.log(driver);
                             return (
-                                <Box className={classes.customerCont}>
+                                <Box
+                                    className={classes.customerCont}
+                                    onClick={() => {
+                                        setOpen(true);
+                                        setActiveDriver(driver);
+                                    }}
+                                >
                                     <Grid container>
                                         <Grid className={classes.customerItems} item xs={4}>
                                             <Typography variant="h3">{driver.name}</Typography>
                                         </Grid>
                                         <Grid className={classes.customerItems} item xs={4}>
-                                            <Typography variant="h6">Driver NO. - {driver.number}</Typography>
+                                            <Typography variant="h6">Driver NO. - {driver.phoneNo}</Typography>
                                         </Grid>
                                         <Grid className={classes.customerItems} item xs={4}>
                                             <Box sx={{ pr: 2, ml: 'auto' }}>
@@ -196,63 +174,16 @@ function Driver() {
                 </Box>
             </Box>
 
-            <Dialog open={open} onClose={() => setOpen(false)}>
-                <div className={classes.formCont}>
-                    <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
-                        DRIVER DETAILS
-                    </Typography>
-                    <form onSubmit={formik.handleSubmit}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="name"
-                                    name="name"
-                                    label="Name"
-                                    type="name"
-                                    value={formik.values.name}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.name && Boolean(formik.errors.name)}
-                                    helperText={formik.touched.name && formik.errors.name}
-                                />
-                            </Grid>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="phoneNo"
-                                    type="number"
-                                    name="phoneNo"
-                                    label="Phone Number"
-                                    value={formik.values.phoneNo}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.phoneNo && Boolean(formik.errors.phoneNo)}
-                                    helperText={formik.touched.phoneNo && formik.errors.phoneNo}
-                                />
-                            </Grid>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="salary"
-                                    type="number"
-                                    name="salary"
-                                    label="Driver's Salary"
-                                    value={formik.values.salary}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.salary && Boolean(formik.errors.salary)}
-                                    helperText={formik.touched.salary && formik.errors.salary}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start">Rs.</InputAdornment>
-                                    }}
-                                />
-                            </Grid>
-                            <Box className={classes.subBtnCont}>
-                                <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
-                                    Submit
-                                </Button>
-                            </Box>
-                        </Grid>
-                    </form>
-                </div>
+            <Dialog open={open} onClose={() => handleClose()}>
+                <DriverForm
+                    getAllDrivers={getAllDrivers}
+                    setOpen={setOpen}
+                    setErrorSnack={setErrorSnack}
+                    setSuccessSnack={setSuccessSnack}
+                    setAlertMsg={setAlertMsg}
+                    handleClose={handleClose}
+                    activeDriver={activeDriver}
+                />
             </Dialog>
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
                 <Alert onClose={() => setAlertMsg('')} severity="success" variant="filled">

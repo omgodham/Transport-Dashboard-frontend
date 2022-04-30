@@ -1,21 +1,42 @@
-import { Alert, Dialog, Divider, Grid, Snackbar, Typography } from '@material-ui/core';
+import {
+    Alert,
+    Button,
+    Dialog,
+    Divider,
+    FormControl,
+    Grid,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Snackbar,
+    TextField,
+    Typography
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Box } from '@material-ui/system';
 import React, { useEffect, useState } from 'react';
 import Axios from '../../axios';
 import theme from '../../themes';
 import CloseIcon from '@material-ui/icons/Close';
+import TripForm from './TripForm';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import SearchIcon from '@material-ui/icons/Search';
+// import { KeyboardDatePicker } from '@material-ui/pickers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
         padding: '10px',
-        borderRadius: '10px'
+        borderRadius: '10px',
+        position: 'relative'
     },
     tripSkeleton: {
         width: '100%',
         height: '50px',
-        marginTop: '40px',
+        padding: '10px 20px',
+        margin: '20px auto',
         borderRadius: '5px',
         backgroundColor: theme.palette.grey[300],
         animation: `$myEffect 1000ms ease infinite alternate`
@@ -26,10 +47,14 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     tripCont: {
-        padding: '10px 20px',
+        height: '50px',
         margin: '20px auto',
-        border: '1px solid grey',
-        borderRadius: '10px'
+        padding: '10px 20px',
+        // border: '1px solid grey',
+        display: 'flex',
+        alignItems: 'center',
+        borderRadius: '10px',
+        boxShadow: ' rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;'
     },
     tripItems: {
         display: 'flex',
@@ -55,6 +80,17 @@ const useStyles = makeStyles((theme) => ({
         top: '10px',
         right: '20px',
         cursor: 'pointer'
+    },
+    addBtn: {
+        backgroundColor: theme.palette.secondary.dark,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary[800]
+        }
+    },
+    btnCont: {
+        // position: 'absolute',
+        // top: '10px',
+        // right: '20px'
     }
 }));
 
@@ -69,6 +105,16 @@ function AllTrips() {
     const [drivers, setDrivers] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [showDetails, setShowDetails] = useState();
+    const [showDialog, setShowDialog] = useState();
+    const [updatingTrip, setUpdatingTrip] = useState();
+    const [searchInput, setSearchInput] = useState();
+    const d = new Date();
+    const [endDate, setEndDate] = useState(new Date());
+    const [tempEndDate, setTempEndDate] = useState(new Date());
+    d.setMonth(d.getMonth() - 1);
+    const [tempStartDate, setTempStartDate] = useState(d);
+    const [startDate, setStartDate] = useState(d);
+    const [showDateSelect, setShowDateSelect] = useState(true);
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -100,10 +146,12 @@ function AllTrips() {
     }, []);
 
     const getAllTrips = () => {
-        Axios.get('/trip/get-all-trips')
+        Axios.post('/trip/get-all-trips', { startDate, endDate })
             .then((data) => {
                 setTrips(data.data);
                 setTripsLoading(false);
+                setUpdatingTrip();
+                console.log(data.data);
             })
             .catch((error) => {
                 setAlertMessage('Something went wrong');
@@ -114,123 +162,218 @@ function AllTrips() {
 
     useEffect(() => {
         getAllTrips();
-    }, []);
+        // var d = new Date();
+        // console.log(d.setMonth(d.getMonth() - 1), 'ago');
+        // console.log(d);
+        console.log(startDate.toLocaleString(), endDate);
+    }, [startDate, endDate]);
 
-    console.log(trips);
+    const handleClose = () => {
+        setShowDialog(false);
+        setShowDetails();
+    };
+
+    const addTrip = (data) => {
+        Axios.post('/trip/create-trip', { data })
+            .then((res) => {
+                getAllTrips();
+                setAlertMessage('Trip Added Successfully');
+                setSuccessSnack(true);
+            })
+            .catch((error) => {
+                setAlertMessage('Something went wrong');
+                setErrorSnack(true);
+            });
+    };
+
+    const updateTrip = (data, id) => {
+        console.log(data, 'update');
+        handleClose();
+        setUpdatingTrip(id);
+        Axios.patch(`trip/update-trip/${id}`, { data })
+            .then((response) => {
+                getAllTrips();
+                setAlertMessage('Trip Updated successfully');
+                setSuccessSnack(true);
+            })
+            .catch((error) => {
+                setAlertMessage('Something went wrong');
+                setErrorSnack(true);
+            });
+    };
+
+    const handleSearch = () => {
+        if (searchInput)
+            Axios.get(`/trip/get-trip-by-lr/${searchInput}`)
+                .then((response) => {
+                    setTrips(response.data);
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        else getAllTrips();
+    };
+
+    const setDates = (days, month, number) => {
+        var date = new Date();
+        var today = new Date();
+        if (days) {
+            date.setDate(date.getDate() - number);
+            setStartDate(date);
+            if (number == 1) setEndDate(date);
+            else setEndDate(today);
+        } else if (month) {
+            //for previous month last date
+            var date = new Date();
+            date.setDate(0);
+            console.log(date);
+            setEndDate(date);
+
+            //for perivous Month First date
+            var date = new Date();
+            date.setDate(0);
+            date.setDate(1);
+            console.log(date);
+            setStartDate(date);
+        }
+    };
 
     return (
         <div className={classes.root}>
-            <Typography variant="h2"> ALL TRIPS</Typography>
-            <Box sx={{ m: 2 }}>
+            <Box sx={{ mb: 1 }}>
+                <Typography textAlign={'center'} variant="h1">
+                    ALL TRIPS
+                </Typography>
+            </Box>
+            <Divider sx={{ mb: 2 }}></Divider>
+            <Grid container alignItems={'center'} className={classes.GridCont}>
+                <Grid xs={3}>
+                    <Box>
+                        <TextField label="Select Date Range" select fullWidth>
+                            <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
+                                Today
+                            </MenuItem>
+                            <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
+                                Yesterday
+                            </MenuItem>
+                            <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
+                                Last 7 days
+                            </MenuItem>
+                            <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
+                                Last 30 days
+                            </MenuItem>
+                            <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
+                                Last month
+                            </MenuItem>
+                            {showDateSelect && (
+                                <Box sx={{ m: 2 }} alignItems="center" justifyContent={'center'} display="flex">
+                                    <TextField
+                                        id="date"
+                                        label="Start Date"
+                                        type="date"
+                                        defaultValue={startDate.toISOString().split('T')[0]}
+                                        value={startDate.toISOString().split('T')[0]}
+                                        onChange={(e) => setStartDate(new Date(e.target.value))}
+                                        className={classes.textField}
+                                        InputLabelProps={{
+                                            shrink: true
+                                        }}
+                                        size="small"
+                                        style={{ marginRight: ' 10px' }}
+                                    />
+                                    <TextField
+                                        id="date"
+                                        label="End Date"
+                                        type="date"
+                                        value={endDate.toISOString().split('T')[0]}
+                                        defaultValue={endDate.toISOString().split('T')[0]}
+                                        onChange={(e) => setEndDate(new Date(e.target.value))}
+                                        className={classes.textField}
+                                        InputLabelProps={{
+                                            shrink: true
+                                        }}
+                                        size="small"
+                                        style={{ marginRight: ' 10px' }}
+                                    />
+                                    <Button className={classes.addBtn} size="small" variant="contained" onClick={() => getAllTrips()}>
+                                        Apply
+                                    </Button>
+                                </Box>
+                            )}
+                        </TextField>
+                    </Box>
+                </Grid>
+                <Grid item xs={6} container justifyContent={'center'}>
+                    <FormControl variant="outlined">
+                        <InputLabel htmlFor="outlined-adornment-password">Search by LR No.</InputLabel>
+                        <OutlinedInput
+                            id="outlined-adornment-password"
+                            label="Search by LR No."
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        //   onClick={handleClickShowPassword}
+                                        //   onMouseDown={handleMouseDownPassword}
+                                        onClick={() => handleSearch()}
+                                        edge="end"
+                                    >
+                                        {<SearchIcon />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            labelWidth={70}
+                        />
+                    </FormControl>
+                </Grid>
+                <Grid item container xs={3} justifyContent={'right'}>
+                    <Box className={classes.btnCont}>
+                        <Button
+                            className={classes.addBtn}
+                            onClick={() => setShowDialog(true)}
+                            variant="contained"
+                            startIcon={<AddCircleOutlineIcon />}
+                        >
+                            TRIP
+                        </Button>
+                    </Box>
+                </Grid>
+            </Grid>
+            <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
+            <Box sx={{ m: 2, height: '500px', overflowY: 'scroll', p: 1 }}>
                 {trips.length ? (
-                    trips.map((trip) => (
-                        <Box className={classes.tripCont} onClick={() => setShowDetails(trip._id)}>
-                            <Grid container>
-                                <Grid item className={classes.tripItems} xs={4}>
-                                    <Typography variant="h5">
-                                        {trip.pickup} - to - {trip.dropup}
-                                    </Typography>
-                                </Grid>
-                                <Grid item className={classes.tripItems} xs={4}>
-                                    <Typography variant="h5">Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}</Typography>
-                                </Grid>
-                                <Grid item className={classes.tripItems} xs={4}>
-                                    <Typography variant="h5">Customer - {customers.find((o) => o._id == trip.customer)?.name}</Typography>
-                                </Grid>
-                                <Dialog open={showDetails == trip._id} onClose={() => setShowDetails('')}>
-                                    <Box sx={{ p: 2 }}>
-                                        <Typography variant="h3" textAlign={'center'}>
-                                            TRIP DETAILS
+                    trips.map((trip) =>
+                        trip._id != updatingTrip ? (
+                            <Box
+                                className={classes.tripCont}
+                                onClick={() => {
+                                    setShowDetails(trip);
+                                    setShowDialog(true);
+                                }}
+                            >
+                                <Grid container>
+                                    <Grid item className={classes.tripItems} xs={4}>
+                                        <Typography variant="h5">
+                                            {trip.pickup} - to - {trip.dropup}
                                         </Typography>
-                                        <CloseIcon className={classes.closeIcon} color="red" onClick={() => setShowDetails('')} />
-                                        <Divider style={{ marginTop: '10px' }} />
-                                        <Grid container spacing={2} className={classes.tripDetailItemCont}>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        From
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {trip.pickup}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        To
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {trip.dropup}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        Customer
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {customers.find((o) => o._id == trip.customer)?.name}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        Driver
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {drivers.find((o) => o._id == trip.driver)?.name}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        Total Payment
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {trip.paymentLeft + trip.paymentReceived}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        Fuel
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {trip.fuelCharge}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        LR Number
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {trip.lrNo}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={6}>
-                                                <Box className={classes.tripDetailItem}>
-                                                    <Typography color={'#495057'} variant="h6" fontSize={'18px'}>
-                                                        Chalan Number
-                                                    </Typography>
-                                                    <Typography color={'gray'} variant="h6" fontSize={'18px'}>
-                                                        {trip.challanNo}
-                                                    </Typography>
-                                                </Box>
-                                            </Grid>
-                                        </Grid>
-                                    </Box>
-                                </Dialog>
-                            </Grid>
-                        </Box>
-                    ))
+                                    </Grid>
+                                    <Grid item className={classes.tripItems} xs={4}>
+                                        <Typography variant="h5">Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}</Typography>
+                                    </Grid>
+                                    <Grid item className={classes.tripItems} xs={4}>
+                                        <Typography variant="h5">
+                                            Customer - {customers.find((o) => o._id == trip.customer)?.name}
+                                        </Typography>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                        ) : (
+                            <Box className={classes.tripSkeleton}></Box>
+                        )
+                    )
                 ) : tripsLoading ? (
                     <>
                         <Box className={classes.tripSkeleton}></Box>
@@ -241,18 +384,28 @@ function AllTrips() {
                         <Box className={classes.tripSkeleton}></Box>
                     </>
                 ) : (
-                    <Box>
-                        <Typography>No Data Available</Typography>
+                    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                        <Typography textAlign={'center'}>No Data Available</Typography>
                     </Box>
                 )}
             </Box>
-            <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
-                <Alert onClose={() => setSuccessSnack(false)} severity="success" variant="contained">
+            <Dialog open={showDialog} onClose={() => handleClose()}>
+                <Box sx={{ p: 2 }}>
+                    <Typography variant="h3" textAlign={'center'}>
+                        TRIP DETAILS
+                    </Typography>
+                    <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => handleClose()} />
+                    <Divider style={{ marginTop: '10px' }} />
+                    <TripForm addTrip={addTrip} updateTrip={updateTrip} trip={showDetails} />
+                </Box>
+            </Dialog>
+            <Snackbar open={successSnack} autoHideDuration={3000} onClose={() => setSuccessSnack(false)}>
+                <Alert onClose={() => setSuccessSnack(false)} severity="success" variant="filled">
                     {alertMessage}
                 </Alert>
             </Snackbar>
-            <Snackbar open={errorSnack} autoHideDuration={4000} onClose={() => setErrorSnack(false)}>
-                <Alert onClose={() => setErrorSnack(false)} severity="error" variant="contained">
+            <Snackbar open={errorSnack} autoHideDuration={3000} onClose={() => setErrorSnack(false)}>
+                <Alert onClose={() => setErrorSnack(false)} severity="error" variant="filled">
                     {alertMessage}
                 </Alert>
             </Snackbar>
