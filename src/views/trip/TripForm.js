@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function TripForm({ trip, updateTrip, addTrip }) {
+function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
     const classes = useStyles();
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
@@ -407,6 +407,17 @@ function TripForm({ trip, updateTrip, addTrip }) {
             <Button className={classes.submitBtn} variant="contained" fullWidth type="submit" style={{ marginTop: '20px' }}>
                 {trip ? 'Update' : 'Save'}
             </Button>
+            {trip && (
+                <Button
+                    className={classes.submitBtn}
+                    variant="contained"
+                    fullWidth
+                    style={{ marginTop: '20px', backgroundColor: 'green' }}
+                    onClick={() => setChallanDialog(true)}
+                >
+                    Generate Challan
+                </Button>
+            )}
         </form>
     );
 }
