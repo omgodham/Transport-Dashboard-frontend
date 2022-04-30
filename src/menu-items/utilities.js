@@ -1,5 +1,8 @@
 // assets
 import { IconBrandFramer, IconTypography, IconPalette, IconShadow, IconWindmill, IconLayoutGridAdd } from '@tabler/icons';
+import LocalShippingIcon from '@material-ui/icons/LocalShipping';
+import ContactsIcon from '@material-ui/icons/Contacts';
+import BusinessIcon from '@material-ui/icons/Business';
 
 // constant
 const icons = {
@@ -8,7 +11,10 @@ const icons = {
     IconShadow: IconShadow,
     IconWindmill: IconWindmill,
     IconBrandFramer: IconBrandFramer,
-    IconLayoutGridAdd: IconLayoutGridAdd
+    IconLayoutGridAdd: IconLayoutGridAdd,
+    LocalShippingIcon,
+    ContactsIcon,
+    BusinessIcon
 };
 
 //-----------------------|| UTILITIES MENU ITEMS ||-----------------------//
@@ -23,7 +29,7 @@ export const utilities = {
             title: 'Customers',
             type: 'item',
             url: '/customers',
-            icon: icons['IconTypography'],
+            icon: icons['BusinessIcon'],
             breadcrumbs: false
         },
         {
@@ -31,7 +37,7 @@ export const utilities = {
             title: 'Vehicles',
             type: 'item',
             url: '/vehicles',
-            icon: icons['IconPalette'],
+            icon: icons['LocalShippingIcon'],
             breadcrumbs: false
         },
         {
@@ -39,7 +45,7 @@ export const utilities = {
             title: 'Drivers',
             type: 'item',
             url: '/drivers',
-            icon: icons['IconPalette'],
+            icon: icons['ContactsIcon'],
             breadcrumbs: false
         }
     ]

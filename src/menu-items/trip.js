@@ -1,10 +1,12 @@
 // assets
 import { IconDashboard, IconDeviceAnalytics } from '@tabler/icons';
+import StorageIcon from '@material-ui/icons/Storage';
 
 // constant
 const icons = {
     IconDashboard: IconDashboard,
-    IconDeviceAnalytics
+    IconDeviceAnalytics,
+    StorageIcon
 };
 
 //-----------------------|| DASHBOARD MENU ITEMS ||-----------------------//
@@ -14,20 +16,20 @@ export const trip = {
     title: 'trip',
     type: 'group',
     children: [
-        {
-            id: 'add-trip',
-            title: 'Add Trip',
-            type: 'item',
-            url: '/trip/add-trip',
-            icon: icons['IconDashboard'],
-            breadcrumbs: false
-        },
+        // {
+        //     id: 'add-trip',
+        //     title: 'Add Trip',
+        //     type: 'item',
+        //     url: '/trip/add-trip',
+        //     icon: icons['IconDashboard'],
+        //     breadcrumbs: false
+        // },
         {
             id: 'all-trips',
             title: 'All Trips',
             type: 'item',
             url: '/trip/all-trips',
-            icon: icons['IconDashboard'],
+            icon: icons['StorageIcon'],
             breadcrumbs: false
         }
     ]
