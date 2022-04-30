@@ -1,30 +1,16 @@
-import {
-    Alert,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Grid,
-    Snackbar,
-    TextField,
-    Typography
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useState } from 'react';
+import { Alert, Avatar, Box, Button, Dialog, Grid, Snackbar, TextField, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Axios from '../../axios';
+import { makeStyles } from '@material-ui/styles';
 import { useFormik } from 'formik';
+import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
-import DeleteIcon from '@material-ui/icons/Delete';
+import Axios from '../../axios';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
-        backgroundColor: '#fff',
-        padding: '20px 10px'
+        padding: '20px 10px',
+        height: '100%'
     },
     customerSkeleton: {
         width: '100%',
@@ -67,8 +53,6 @@ const useStyles = makeStyles((theme) => ({
     customerItems: {
         display: 'flex',
         alignItems: 'center'
-        // padding: '10px'
-        // justifyContent: 'center'
     },
     icons: {
         width: '24px',
@@ -81,6 +65,33 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
         }
+    },
+    vehicleBox: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '20px',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '15px',
+        border: `2px solid ${theme.palette.secondary.dark}`,
+        backgroundColor: '#fff',
+        '&:hover': {
+            transform: `scale(1.03)`,
+            cursor: 'pointer',
+            transition: 'all 450ms ease-in-out'
+        }
+    },
+    modalStyle: {
+        display: 'flex',
+        alignItems: 'center',
+        // width: '50%',
+        margin: 'auto'
+    },
+    paper: {
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3)
     }
 }));
 
@@ -91,7 +102,13 @@ function Vehicle() {
     const [successSnack, setSuccessSnack] = useState();
     const [errorSnack, setErrorSnack] = useState();
     const [alertMsg, setAlertMsg] = useState('');
-
+    const [currentVehicle, setCurrentVehicle] = useState(null);
+    const [isVehicleMaintainceAdd, setIsVehicleMaintainceAdd] = useState(false);
+    const [isPreviousMaintenance, setIsPreviousMaintenance] = useState(false);
+    const [vehicleMaintenance, setVehicleMaintenance] = useState({
+        amount: 0,
+        description: ''
+    });
     const getAllVehicles = () => {
         Axios.get('/vehicle/get-all-vehicles')
             .then((response) => setVehicles(response.data))
@@ -121,7 +138,8 @@ function Vehicle() {
             Axios.post('/vehicle/create-vehicle', { data })
                 .then((response) => {
                     getAllVehicles();
-                    setOpen(false);
+                    // setOpen(false);
+                    handleClose();
                     setAlertMsg('New vehicle saved successfully');
                     setSuccessSnack(true);
                 })
@@ -132,11 +150,31 @@ function Vehicle() {
         }
     });
 
-    const handleDelete = (id) => {
-        Axios.post(`vehicle/delete-vehicle/${id}`)
+    const handleClose = () => {
+        setOpenDialog(false);
+        setOpen(false);
+        setCurrentVehicle(null);
+        setVehicleMaintenance({
+            maintenance: '',
+            amount: 0
+        });
+        setIsVehicleMaintainceAdd(false);
+        setIsPreviousMaintenance(false);
+    };
+    const handleUpdateVehicle = (e) => {
+        e.preventDefault();
+        let temp = currentVehicle;
+        if (vehicleMaintenance.description) {
+            temp.maintenance = [
+                ...currentVehicle.maintenance,
+                { amount: vehicleMaintenance.amount, description: vehicleMaintenance.description }
+            ];
+        }
+        Axios.patch(`/vehicle/update-vehicle/${currentVehicle._id}`, temp)
             .then((response) => {
                 getAllVehicles();
-                setAlertMsg('Vehicle deleted successfully');
+                handleClose();
+                setAlertMsg('Vehicle updated successfully');
                 setSuccessSnack(true);
             })
             .catch((error) => {
@@ -144,10 +182,41 @@ function Vehicle() {
                 setErrorSnack(true);
             });
     };
+    console.log('AAA', currentVehicle);
+    const handleDelete = (id) => {
+        Axios.delete(`vehicle/delete-vehicle/${id}`)
+            .then((response) => {
+                getAllVehicles();
+                handleClose();
+                setAlertMsg('Vehicle deleted successfully');
+                setSuccessSnack(true);
+            })
+            .catch((error) => {
+                handleClose();
+                setAlertMsg('Something went wrong');
+                setErrorSnack(true);
+            });
+    };
+    const [openDialog, setOpenDialog] = React.useState(false);
+
+    const VehicleBox = ({ vehicleData, index }) => {
+        return (
+            <>
+                <Box className={classes.vehicleBox}>
+                    <Avatar alt="Remy Sharp" src="truck1.png" style={{ height: '80px', width: '80px' }} />
+                    <Typography style={{ fontSize: '28px' }} variant="h6">
+                        {vehicleData.name}
+                    </Typography>
+                    <Typography style={{ fontSize: '24px', color: 'gray' }}>{vehicleData.number}</Typography>
+                </Box>
+            </>
+        );
+    };
+
     return (
         <div className={classes.root}>
             <Box>
-                <Typography variant="h2">VEHICLES</Typography>
+                <Typography variant="h2">Vehicles</Typography>
                 <Box className={classes.btnCont}>
                     <Button
                         onClick={() => setOpen(true)}
@@ -158,26 +227,24 @@ function Vehicle() {
                         VEHICLE
                     </Button>
                 </Box>
-                <Box sx={{ p: 2 }}>
-                    {vehicles?.length ? (
-                        vehicles.map((vehicle) => {
-                            console.log(vehicle);
+                <Grid container justifyContent="center" spacing={2}>
+                    {vehicles.length ? (
+                        vehicles.map((vehicle, index) => {
                             return (
-                                <Box className={classes.customerCont}>
-                                    <Grid container>
-                                        <Grid className={classes.customerItems} item xs={4}>
-                                            <Typography variant="h3">{vehicle.name}</Typography>
-                                        </Grid>
-                                        <Grid className={classes.customerItems} item xs={4}>
-                                            <Typography variant="h6">Vehicle NO. - {vehicle.number}</Typography>
-                                        </Grid>
-                                        <Grid className={classes.customerItems} item xs={4}>
-                                            <Box sx={{ pr: 2, ml: 'auto' }}>
-                                                <DeleteIcon className={classes.icons} onClick={() => handleDelete(vehicle._id)} />
-                                            </Box>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    md={3}
+                                    lg={3}
+                                    onClick={() => {
+                                        setCurrentVehicle(vehicle);
+                                        setOpenDialog(true);
+                                    }}
+                                >
+                                    {' '}
+                                    <VehicleBox vehicleData={vehicle} index={index} />
+                                </Grid>
                             );
                         })
                     ) : (
@@ -189,13 +256,13 @@ function Vehicle() {
                             <Box className={classes.customerSkeleton}></Box>
                         </>
                     )}
-                </Box>
+                </Grid>
             </Box>
 
-            <Dialog open={open} onClose={() => setOpen(false)}>
+            <Dialog open={open} onClose={handleClose}>
                 <div className={classes.formCont}>
                     <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
-                        CUTOMER DETAILS
+                        Vehicle Details
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
                         <Grid container spacing={2}>
@@ -233,6 +300,151 @@ function Vehicle() {
                     </form>
                 </div>
             </Dialog>
+
+            {currentVehicle && (
+                <Dialog onClose={handleClose} open={openDialog} style={{ maxHeight: '90vh', overflowY: 'scroll' }}>
+                    <Box className={classes.paper}>
+                        {' '}
+                        <div className={classes.formCont}>
+                            <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
+                                Vehicle Details Update
+                            </Typography>
+                            <form onSubmit={handleUpdateVehicle}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} className={classes.formItems}>
+                                        <TextField
+                                            fullWidth
+                                            id="name"
+                                            name="name"
+                                            label="Name"
+                                            type="name"
+                                            value={currentVehicle.name}
+                                            onChange={(e) => setCurrentVehicle({ ...currentVehicle, name: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.formItems}>
+                                        <TextField
+                                            fullWidth
+                                            id="number"
+                                            name="number"
+                                            label="Vehicle Number"
+                                            value={currentVehicle.number}
+                                            onChange={(e) => setCurrentVehicle({ ...currentVehicle, number: e.target.value })}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} className={classes.formItems}>
+                                        <label for="maintenanceCheck">Add maintenance to the vehicle</label>
+                                        <input
+                                            type="checkbox"
+                                            id="maintenanceCheck"
+                                            checked={isVehicleMaintainceAdd}
+                                            onChange={(e) => setIsVehicleMaintainceAdd(e.target.checked)}
+                                        />
+                                    </Grid>
+                                    {isVehicleMaintainceAdd && (
+                                        <>
+                                            {' '}
+                                            <Grid item xs={12} className={classes.formItems}>
+                                                <TextField
+                                                    fullWidth
+                                                    id="maintenanceAmount"
+                                                    name="maintenanceAmount"
+                                                    label="Maintenance Amount"
+                                                    value={vehicleMaintenance.amount}
+                                                    onChange={(e) =>
+                                                        setVehicleMaintenance({ ...vehicleMaintenance, amount: e.target.value })
+                                                    }
+                                                    // error={formik.touched.number && Boolean(formik.errors.number)}
+                                                    // helperText={formik.touched.number && formik.errors.number}
+                                                    style={{ marginTop: '20px' }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} className={classes.formItems}>
+                                                <TextField
+                                                    fullWidth
+                                                    multiline
+                                                    rows={2}
+                                                    maxRows={4}
+                                                    id="mintanceDescription"
+                                                    name="mintanceDescription"
+                                                    label="Maintenance Vehicle"
+                                                    value={vehicleMaintenance.description}
+                                                    onChange={(e) =>
+                                                        setVehicleMaintenance({ ...vehicleMaintenance, description: e.target.value })
+                                                    }
+                                                />
+                                            </Grid>
+                                        </>
+                                    )}
+
+                                    <Grid item xs={12} className={classes.formItems}>
+                                        <label for="previousMaintenance">Show previous maintanances</label>
+                                        <input
+                                            type="checkbox"
+                                            id="previousMaintenance"
+                                            checked={isPreviousMaintenance}
+                                            onChange={(e) => setIsPreviousMaintenance(e.target.checked)}
+                                        />
+                                    </Grid>
+                                    {isPreviousMaintenance && (
+                                        <>
+                                            {currentVehicle.maintenance.length ? (
+                                                currentVehicle.maintenance.map((item) => (
+                                                    <>
+                                                        <Grid item xs={12} className={classes.formItems}>
+                                                            <TextField
+                                                                fullWidth
+                                                                id="maintenanceAmount"
+                                                                name="maintenanceAmount"
+                                                                label="Maintenance Amount"
+                                                                value={item.amount}
+                                                                disabled
+                                                                style={{ marginTop: '20px' }}
+                                                            />
+                                                        </Grid>
+                                                        <Grid item xs={12} className={classes.formItems}>
+                                                            <TextField
+                                                                fullWidth
+                                                                multiline
+                                                                rows={2}
+                                                                maxRows={4}
+                                                                id="mintanceDescription"
+                                                                name="mintanceDescription"
+                                                                label="Maintenance Vehicle"
+                                                                value={item.description}
+                                                                disabled
+                                                            />
+                                                        </Grid>
+                                                    </>
+                                                ))
+                                            ) : (
+                                                <Grid item xs={12} className={classes.formItems}>
+                                                    <Typography variant="text">No previous data available</Typography>
+                                                </Grid>
+                                            )}
+                                        </>
+                                    )}
+
+                                    <Box className={classes.subBtnCont}>
+                                        <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
+                                            Update
+                                        </Button>
+                                        <Button
+                                            className={classes.subBtn}
+                                            variant="contained"
+                                            fullWidth
+                                            onClick={() => handleDelete(currentVehicle._id)}
+                                            style={{ margin: '0 20px', backgroundColor: 'red' }}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Box>
+                                </Grid>
+                            </form>
+                        </div>
+                    </Box>
+                </Dialog>
+            )}
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
                 <Alert onClose={() => setAlertMsg('')} severity="success" variant="filled">
                     {alertMsg}
