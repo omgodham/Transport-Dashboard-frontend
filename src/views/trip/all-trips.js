@@ -12,7 +12,9 @@ import {
     OutlinedInput,
     Snackbar,
     TextField,
-    Typography
+    Typography,
+    Paper,
+    Modal
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Box } from '@material-ui/system';
@@ -24,11 +26,12 @@ import TripForm from './TripForm';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SearchIcon from '@material-ui/icons/Search';
 // import { KeyboardDatePicker } from '@material-ui/pickers';
-
+import { format } from 'date-fns';
+import Challan from './Challan';
 const useStyles = makeStyles((theme) => ({
     root: {
-        backgroundColor: '#fff',
-        padding: '10px',
+        // backgroundColor: '#fff',
+        // padding: '10px',
         borderRadius: '10px',
         position: 'relative'
     },
@@ -91,6 +94,22 @@ const useStyles = makeStyles((theme) => ({
         // position: 'absolute',
         // top: '10px',
         // right: '20px'
+    },
+    tripBlock: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '10px',
+        margin: '5px',
+        // alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '15px',
+        border: `2px solid ${theme.palette.secondary.dark}`,
+        backgroundColor: '#fff',
+        '&:hover': {
+            transform: `scale(1.03)`,
+            cursor: 'pointer',
+            transition: 'all 450ms ease-in-out'
+        }
     }
 }));
 
@@ -115,7 +134,7 @@ function AllTrips() {
     const [tempStartDate, setTempStartDate] = useState(d);
     const [startDate, setStartDate] = useState(d);
     const [showDateSelect, setShowDateSelect] = useState(true);
-
+    const [challanDialog, setChallanDialog] = useState(false);
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
             .then((res) => {
@@ -242,8 +261,8 @@ function AllTrips() {
     return (
         <div className={classes.root}>
             <Box sx={{ mb: 1 }}>
-                <Typography textAlign={'center'} variant="h1">
-                    ALL TRIPS
+                <Typography textAlign={'left'} variant="h2">
+                    All Trips
                 </Typography>
             </Box>
             <Divider sx={{ mb: 2 }}></Divider>
@@ -343,33 +362,64 @@ function AllTrips() {
                 </Grid>
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
-            <Box sx={{ m: 2, height: '500px', overflowY: 'scroll', p: 1 }}>
+            <Grid container justifyContent="center" spacing={1}>
                 {trips.length ? (
                     trips.map((trip) =>
                         trip._id != updatingTrip ? (
-                            <Box
-                                className={classes.tripCont}
-                                onClick={() => {
-                                    setShowDetails(trip);
-                                    setShowDialog(true);
-                                }}
-                            >
-                                <Grid container>
-                                    <Grid item className={classes.tripItems} xs={4}>
-                                        <Typography variant="h5">
-                                            {trip.pickup} - to - {trip.dropup}
+                            <>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={3}
+                                    md={3}
+                                    lg={3}
+                                    className={classes.tripBlock}
+                                    onClick={() => {
+                                        setShowDetails(trip);
+                                        setShowDialog(true);
+                                    }}
+                                >
+                                    <Box display="flex" justifyContent="space-between" style={{ width: '100%' }}>
+                                        <Typography style={{ fontSize: '14px', fontWeight: 'bold', color: 'black' }}>
+                                            Customer: {customers.find((o) => o._id == trip.customer)?.name}
                                         </Typography>
-                                    </Grid>
-                                    <Grid item className={classes.tripItems} xs={4}>
-                                        <Typography variant="h5">Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}</Typography>
-                                    </Grid>
-                                    <Grid item className={classes.tripItems} xs={4}>
-                                        <Typography variant="h5">
-                                            Customer - {customers.find((o) => o._id == trip.customer)?.name}
+                                        <Typography style={{ fontSize: '14px', fontWeight: 'bold', color: 'gray' }}>
+                                            {format(new Date(trip.tripDate), 'dd MMM yy')}
                                         </Typography>
-                                    </Grid>
+                                    </Box>
+                                    <Typography style={{ fontSize: '24px', fontWeight: 'bold', color: 'black' }}>
+                                        Location: {trip.pickup} to {trip.dropup}
+                                    </Typography>
+                                    <Typography style={{ fontSize: '18px', fontWeight: 'bold', color: 'gray' }}>
+                                        Vehicle: {vehicles.find((o) => o._id == trip.vehicle)?.name}
+                                    </Typography>
                                 </Grid>
-                            </Box>
+                                {/* <Box
+                                    className={classes.tripCont}
+                                    onClick={() => {
+                                        setShowDetails(trip);
+                                        setShowDialog(true);
+                                    }}
+                                >
+                                    <Grid container>
+                                        <Grid item className={classes.tripItems} xs={4}>
+                                            <Typography variant="h5">
+                                                {trip.pickup} - to - {trip.dropup}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item className={classes.tripItems} xs={4}>
+                                            <Typography variant="h5">
+                                                Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item className={classes.tripItems} xs={4}>
+                                            <Typography variant="h5">
+                                                Customer - {customers.find((o) => o._id == trip.customer)?.name}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box> */}
+                            </>
                         ) : (
                             <Box className={classes.tripSkeleton}></Box>
                         )
@@ -388,7 +438,7 @@ function AllTrips() {
                         <Typography textAlign={'center'}>No Data Available</Typography>
                     </Box>
                 )}
-            </Box>
+            </Grid>
             <Dialog open={showDialog} onClose={() => handleClose()}>
                 <Box sx={{ p: 2 }}>
                     <Typography variant="h3" textAlign={'center'}>
@@ -396,7 +446,7 @@ function AllTrips() {
                     </Typography>
                     <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => handleClose()} />
                     <Divider style={{ marginTop: '10px' }} />
-                    <TripForm addTrip={addTrip} updateTrip={updateTrip} trip={showDetails} />
+                    <TripForm addTrip={addTrip} updateTrip={updateTrip} trip={showDetails} setChallanDialog={setChallanDialog} />
                 </Box>
             </Dialog>
             <Snackbar open={successSnack} autoHideDuration={3000} onClose={() => setSuccessSnack(false)}>
@@ -409,6 +459,9 @@ function AllTrips() {
                     {alertMessage}
                 </Alert>
             </Snackbar>
+            <Modal open={challanDialog} onClose={() => setChallanDialog(false)}>
+                <Challan />
+            </Modal>
         </div>
     );
 }
