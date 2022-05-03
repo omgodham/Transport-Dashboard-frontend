@@ -95,14 +95,15 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
         driver: yup.string('Select Driver').required('Driver is required'),
         dropup: yup.string('Select DropUp Locaiton').required('Dropup location is required'),
         pickup: yup.string('Select Pickup Location').required('Pickup location is required'),
-        tripDate: yup.string('Select Date').required('Date is required'),
+        // tripDate: yup.string('Select Date').required('Date is required'),
         materialWeight: yup.string('Enter load in KG').required('Load is required'),
         fuelCharge: yup.string('Enter disel charge').required('Disel charge is required'),
         truckModel: yup.string('Enter truck model').required('Truck model is required')
     });
+
     const formik = useFormik({
         initialValues: {
-            customer: trip ? trip.cusotmer : '',
+            customer: trip ? trip.customer : '',
             vehicle: trip ? trip.vehicle : '',
             pickup: trip ? trip.pickup : '',
             dropup: trip ? trip.dropup : '',
@@ -119,7 +120,8 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
             paymentVoucherNumber: trip ? trip.paymentVoucherNumber : 0,
             materialWeight: trip ? trip.materialWeight : 0,
             truckModel: trip ? trip.truckModel : '',
-            tripDate: trip ? trip.tripDate : new Date()
+            tripDate: trip ? trip.tripDate : new Date(),
+            totalPayment: trip ? trip.totalPayment : 0
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -161,12 +163,12 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
                         type="date"
                         fullWidth
                         defaultValue="00-00-0000"
-                        required
                         onChange={formik.handleChange}
                         variant="outlined"
                         InputLabelProps={{
                             shrink: true
                         }}
+                        required={!trip}
                     />
                 </Grid>
                 <Grid item xs={6}>
@@ -316,7 +318,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
                     />
                 </Grid>
 
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                     <TextField
                         fullWidth
                         id="advanceForCompany"
@@ -327,8 +329,19 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
                         error={formik.touched.advanceForCompany && Boolean(formik.errors.advanceForCompany)}
                         helperText={formik.touched.advanceForCompany && formik.errors.advanceForCompany}
                     />
+                </Grid> */}
+                <Grid item xs={6}>
+                    <TextField
+                        fullWidth
+                        id="totalPayment"
+                        name="totalPayment"
+                        label="Total Payment"
+                        value={formik.values.totalPayment}
+                        onChange={formik.handleChange}
+                        error={formik.touched.totalPayment && Boolean(formik.errors.totalPayment)}
+                        helperText={formik.touched.totalPayment && formik.errors.totalPayment}
+                    />
                 </Grid>
-
                 <Grid item xs={6}>
                     <TextField
                         fullWidth
