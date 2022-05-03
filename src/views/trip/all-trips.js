@@ -461,7 +461,7 @@ function AllTrips() {
                 </Alert>
             </Snackbar>
             <Modal open={challanDialog} onClose={() => setChallanDialog(false)}>
-                <Challan />
+                <Challan trip={showDetails} customers={customers} />
             </Modal>
         </div>
     );
