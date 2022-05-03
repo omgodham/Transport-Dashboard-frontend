@@ -2,6 +2,7 @@ import { Box, Grid, Table, TableBody, TableCell, TableContainer, TableHead, Tabl
 import { makeStyles } from '@material-ui/styles';
 import React, { useRef } from 'react';
 import ReactToPrint from 'react-to-print';
+import { format } from 'date-fns';
 const useStyles = makeStyles((theme) => ({
     challanModal: {
         position: 'absolute',
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'transparent !important'
     }
 }));
-function Challan() {
+function Challan({ trip, customers }) {
     const classes = useStyles();
     const componentRef = useRef();
 
@@ -54,6 +55,49 @@ function Challan() {
         return { hsn, taxableValue, Crate, Camount, Srate, Samount, totalAmount };
     }
 
+    var a = [
+        '',
+        'one ',
+        'two ',
+        'three ',
+        'four ',
+        'five ',
+        'six ',
+        'seven ',
+        'eight ',
+        'nine ',
+        'ten ',
+        'eleven ',
+        'twelve ',
+        'thirteen ',
+        'fourteen ',
+        'fifteen ',
+        'sixteen ',
+        'seventeen ',
+        'eighteen ',
+        'nineteen '
+    ];
+    var b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+    function inWords(num, only, paise) {
+        if ((num = num.toString()).length > 9) return 'overflow';
+        let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+        if (!n) return;
+        var str = '';
+        str += n[1] != 0 ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
+        str += n[2] != 0 ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
+        str += n[3] != 0 ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
+        str += n[4] != 0 ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+        str +=
+            n[5] != 0
+                ? (str != '' ? 'and ' : '') +
+                  (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) +
+                  (paise ? ' paise ' : '') +
+                  (only ? 'only' : '')
+                : '';
+        return str;
+    }
+
     return (
         <>
             {' '}
@@ -68,10 +112,12 @@ function Challan() {
                     <Grid xs={6} item>
                         <Grid item pb={2} className={classes.internalGrids}>
                             <Box className={classes.customerDetails}>
-                                <Typography style={{ fontWeight: 'bold' }}>Customer Name</Typography>
-                                <Typography>S-164, MIDCD BHOSARI</Typography>
-                                <Typography>GSTIN/UIN: 27A3FGGG452W</Typography>
-                                <Typography>State Name: Maharashtra, Code 27</Typography>
+                                <Typography style={{ fontWeight: 'bold' }}>
+                                    {customers.find((o) => o._id == trip.customer)?.name}
+                                </Typography>
+                                <Typography>{customers.find((o) => o._id == trip.customer)?.address?.addressLine1}</Typography>
+                                <Typography>GSTIN/UIN:{customers.find((o) => o._id == trip.customer)?.gstNo}</Typography>
+                                <Typography>State Name:{customers.find((o) => o._id == trip.customer)?.address?.state}</Typography>
                                 <Typography>CIN:U34201PN990</Typography>
                                 <Typography>E-mail:mega@gmail.com</Typography>
                             </Box>
@@ -80,7 +126,7 @@ function Challan() {
                         <Grid item pb={2} className={classes.internalGrids}>
                             <Box className={classes.customerDetails}>
                                 <Typography style={{ fontWeight: 'bold' }}>Shipped To</Typography>
-                                <Typography>Sandhar Technologies</Typography>
+                                <Typography>{trip.dropup}</Typography>
                                 <Typography>GSTIN/UIN: 27A3FGG2222</Typography>
                                 <Typography>State Name: Maharashtra, Code 27</Typography>
                             </Box>
@@ -89,7 +135,7 @@ function Challan() {
                         <Grid item pb={2} className={classes.internalGrids}>
                             <Box className={classes.customerDetails}>
                                 <Typography style={{ fontWeight: 'bold' }}>Billed To</Typography>
-                                <Typography>Sandhar Technologies</Typography>
+                                <Typography>{trip.dropup}</Typography>
                                 <Typography>GSTIN/UIN: 27A3FGG2222</Typography>
                                 <Typography>State Name: Maharashtra, Code 27</Typography>
                             </Box>
@@ -100,7 +146,7 @@ function Challan() {
                             <Box display="flex" flexDirection="column" flex="1">
                                 <Box style={{ borderBottom: '1px solid black', paddingLeft: '10px' }}>
                                     <Typography>Invoice No</Typography>
-                                    <Typography style={{ fontWeight: 'bold' }}>4144</Typography>
+                                    <Typography style={{ fontWeight: 'bold' }}>{trip.challanNo}</Typography>
                                 </Box>
                                 <Box style={{ borderBottom: '1px solid black', paddingLeft: '10px' }}>
                                     <Typography>Vendor Code</Typography>
@@ -126,7 +172,7 @@ function Challan() {
                             <Box display="flex" flexDirection="column" flex="1" style={{ borderLeft: '1px solid black' }}>
                                 <Box style={{ borderBottom: '1px solid black', paddingLeft: '10px' }}>
                                     <Typography>Dated</Typography>
-                                    <Typography style={{ fontWeight: 'bold' }}>21-Mar-22</Typography>
+                                    <Typography style={{ fontWeight: 'bold' }}>{format(new Date(trip.tripDate), 'dd-MMM-yy')}</Typography>
                                 </Box>
                                 <Box style={{ borderBottom: '1px solid black', paddingLeft: '10px' }}>
                                     <Typography>Mode/Terms of Payment</Typography>
@@ -138,7 +184,7 @@ function Challan() {
                                 </Box>
                                 <Box style={{ borderBottom: '1px solid black', paddingLeft: '10px' }}>
                                     <Typography>Dated</Typography>
-                                    <Typography style={{ fontWeight: 'bold' }}>14-Mar-22</Typography>
+                                    <Typography style={{ fontWeight: 'bold' }}>{format(new Date(trip.tripDate), 'dd-MMM-yy')}</Typography>
                                 </Box>
                                 <Box style={{ borderBottom: '1px solid black', paddingLeft: '10px' }}>
                                     <Typography>Delivery Note Date</Typography>
@@ -221,7 +267,16 @@ function Challan() {
                     </Grid>
                     <Grid xs={12} item style={{ textAlign: 'left', paddingLeft: '10px' }}>
                         <Typography>Amount in words: </Typography>
-                        <Typography style={{ fontWeight: 'bold' }}>Twenty thousands and three hundred and thirty three</Typography>
+                        <Typography style={{ fontWeight: 'bold' }}>
+                            {inWords(
+                                trip.totalPayment.toString().split('.')[0],
+                                !trip.totalPayment.toString().split('.')[1],
+                                !trip.totalPayment.toString().split('.')[1]
+                            )}{' '}
+                            {trip.totalPayment.toString().split('.')[1]
+                                ? ' and ' + inWords(parseInt(trip.totalPayment.toString().split('.')[1]), true, true)
+                                : ''}
+                        </Typography>
                     </Grid>
                     <Grid xs={12} item style={{ borderTop: '1px solid black' }}>
                         <TableContainer>
@@ -294,7 +349,17 @@ function Challan() {
                     </Grid>
                     <Grid xs={12} item style={{ textAlign: 'left', paddingLeft: '10px' }}>
                         <Typography>Tax amount in words: </Typography>
-                        <Typography style={{ fontWeight: 'bold' }}>Twenty thousands and three hundred and thirty three</Typography>
+                        <Typography style={{ fontWeight: 'bold' }}>
+                            {' '}
+                            {inWords(
+                                trip.totalPayment.toString().split('.')[0],
+                                !trip.totalPayment.toString().split('.')[1],
+                                !trip.totalPayment.toString().split('.')[1]
+                            )}{' '}
+                            {trip.totalPayment.toString().split('.')[1]
+                                ? ' and ' + inWords(parseInt(trip.totalPayment.toString().split('.')[1]), true, true)
+                                : ''}
+                        </Typography>
                     </Grid>
                 </Grid>
                 <Grid xs={12} item align="center" style={{ padding: '20px', backgroundColor: '#fff' }}>
