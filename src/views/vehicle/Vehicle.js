@@ -183,7 +183,6 @@ function Vehicle() {
                 setErrorSnack(true);
             });
     };
-    console.log('AAA', currentVehicle);
     const handleDelete = (id) => {
         Axios.delete(`vehicle/delete-vehicle/${id}`)
             .then((response) => {

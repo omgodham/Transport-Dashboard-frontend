@@ -198,15 +198,16 @@ function AllTrips() {
                 getAllTrips();
                 setAlertMessage('Trip Added Successfully');
                 setSuccessSnack(true);
+                handleClose();
             })
             .catch((error) => {
                 setAlertMessage('Something went wrong');
                 setErrorSnack(true);
+                handleClose();
             });
     };
 
     const updateTrip = (data, id) => {
-        console.log(data, 'update');
         handleClose();
         setUpdatingTrip(id);
         Axios.patch(`trip/update-trip/${id}`, { data })
@@ -460,7 +461,7 @@ function AllTrips() {
                 </Alert>
             </Snackbar>
             <Modal open={challanDialog} onClose={() => setChallanDialog(false)}>
-                <Challan />
+                <Challan trip={showDetails} customers={customers} />
             </Modal>
         </div>
     );

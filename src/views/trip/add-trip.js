@@ -131,7 +131,8 @@ function Trip() {
             paymentVoucherNumber: '',
             materialWeight: 0,
             truckModel: '',
-            tripDate: new Date()
+            tripDate: new Date(),
+            totalPayment: 0
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -331,7 +332,7 @@ function Trip() {
                                 />
                             </Grid>
 
-                            <Grid item xs={6}>
+                            {/* <Grid item xs={6}>
                                 <TextField
                                     fullWidth
                                     id="advanceForCompany"
@@ -342,8 +343,19 @@ function Trip() {
                                     error={formik.touched.advanceForCompany && Boolean(formik.errors.advanceForCompany)}
                                     helperText={formik.touched.advanceForCompany && formik.errors.advanceForCompany}
                                 />
+                            </Grid> */}
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    id="totalPayment"
+                                    name="totalPayment"
+                                    label="Total Payment"
+                                    value={formik.values.totalPayment}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.totalPayment && Boolean(formik.errors.totalPayment)}
+                                    helperText={formik.touched.totalPayment && formik.errors.totalPayment}
+                                />
                             </Grid>
-
                             <Grid item xs={6}>
                                 <TextField
                                     fullWidth
