@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // material-ui
 import { makeStyles } from '@material-ui/styles';
@@ -97,13 +97,34 @@ const useStyles = makeStyles((theme) => ({
 
 //-----------------------|| DASHBOARD - TOTAL ORDER LINE CHART CARD ||-----------------------//
 
-const TotalOrderLineChartCard = ({ isLoading }) => {
+const TotalOrderLineChartCard = ({ isLoading, trips }) => {
     const classes = useStyles();
 
     const [timeValue, setTimeValue] = React.useState(false);
+    const [expense, setExpense] = useState();
+
     const handleChangeTime = (event, newValue) => {
         setTimeValue(newValue);
     };
+
+    useEffect(() => {
+        if (trips?.length) {
+            let tempEarning = 0;
+            trips.map((trip) => {
+                tempEarning += trip.advanceToDriver ? trip.advanceToDriver : 0 + trip.fuelCharge ? trip.fuelCharge : 0;
+                console.log(tempEarning, 'earning');
+                console.log(tempEarning, 'tempearning');
+            });
+
+            tempEarning = tempEarning.toString();
+            var lastThree = tempEarning.substring(tempEarning.length - 3);
+            var otherNumbers = tempEarning.substring(0, tempEarning.length - 3);
+            if (otherNumbers != '') lastThree = ',' + lastThree;
+            tempEarning = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+            setExpense(tempEarning);
+        }
+    }, [trips]);
 
     return (
         <React.Fragment>
@@ -144,11 +165,7 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
                                 <Grid item xs={6}>
                                     <Grid container alignItems="center">
                                         <Grid item>
-                                            {timeValue ? (
-                                                <Typography className={classes.cardHeading}>$108</Typography>
-                                            ) : (
-                                                <Typography className={classes.cardHeading}>$961</Typography>
-                                            )}
+                                            <Typography className={classes.cardHeading}>₹ {expense}</Typography>
                                         </Grid>
                                         <Grid item>
                                             <Avatar className={classes.avatarCircle}>
@@ -156,7 +173,7 @@ const TotalOrderLineChartCard = ({ isLoading }) => {
                                             </Avatar>
                                         </Grid>
                                         <Grid item xs={12}>
-                                            <Typography className={classes.subHeading}>Total Order</Typography>
+                                            <Typography className={classes.subHeading}>Total Expense</Typography>
                                         </Grid>
                                     </Grid>
                                 </Grid>

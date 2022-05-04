@@ -8,6 +8,7 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
+    InputAdornment,
     Snackbar,
     TextField,
     Typography
@@ -16,9 +17,8 @@ import { makeStyles } from '@material-ui/styles';
 import React, { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Axios from '../../axios';
-
 import DeleteIcon from '@material-ui/icons/Delete';
-import CustomerForm from './CustomerForm';
+import ExtraChargesForm from './ExtraChargesForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -85,33 +85,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Customer() {
+function ExtraCharges() {
     const classes = useStyles();
     const [open, setOpen] = useState();
-    const [customers, setCustomers] = useState([]);
+    const [extraCharges, setExtraCharges] = useState([]);
     const [successSnack, setSuccessSnack] = useState();
     const [errorSnack, setErrorSnack] = useState();
     const [alertMsg, setAlertMsg] = useState('');
-    const [activeCust, setActiveCust] = useState();
+    const [activeCharge, setActiveCharge] = useState();
 
-    const getAllCustomers = () => {
-        Axios.get('/customer/get-all-customers')
-            .then((response) => {
-                setCustomers(response.data);
-                console.log(response.data);
-            })
+    const getAllExtraCharges = () => {
+        Axios.get('/extracharge/get-all-extra-charges')
+            .then((response) => setExtraCharges(response.data))
             .catch((error) => console.log(error));
     };
 
     useEffect(() => {
-        getAllCustomers();
+        getAllExtraCharges();
     }, []);
 
+    const handleClose = () => {
+        setOpen(false);
+        setActiveCharge();
+    };
+
     const handleDelete = (id) => {
-        Axios.delete(`customer/delete-customer/${id}`)
+        Axios.delete(`/extracharge/delete-extra-charge/${id}`)
             .then((response) => {
-                getAllCustomers();
-                setAlertMsg('Customer deleted successfully');
+                getAllExtraCharges();
+                setAlertMsg('Driver deleted successfully');
                 setSuccessSnack(true);
             })
             .catch((error) => {
@@ -119,55 +121,48 @@ function Customer() {
                 setErrorSnack(true);
             });
     };
-
-    useEffect(() => {
-        activeCust ? console.log(activeCust) : console.log('jjk');
-    }, [activeCust]);
-
-    const handleClose = () => {
-        setOpen(false);
-        setActiveCust('');
-    };
-
     return (
         <div className={classes.root}>
             <Box>
-                <Typography variant="h2">CUSOTMERS</Typography>
+                <Typography variant="h2">EXTRA CHARGES</Typography>
                 <Box className={classes.btnCont}>
                     <Button
-                        className={classes.addBtn}
                         onClick={() => setOpen(true)}
+                        className={classes.addBtn}
                         variant="contained"
                         startIcon={<AddCircleOutlineIcon />}
                     >
-                        CUSTOMER
+                        Extra Charges
                     </Button>
                 </Box>
                 <Box sx={{ p: 2 }}>
-                    {customers?.length ? (
-                        customers.map((customer) => (
-                            <Box
-                                className={classes.customerCont}
-                                onClick={() => {
-                                    setActiveCust(customer);
-                                    setOpen(true);
-                                }}
-                            >
-                                <Grid container>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Typography variant="h3">{customer.name}</Typography>
+                    {extraCharges?.length ? (
+                        extraCharges.map((extraCharge) => {
+                            console.log(extraCharge);
+                            return (
+                                <Box
+                                    className={classes.customerCont}
+                                    onClick={() => {
+                                        setOpen(true);
+                                        setActiveCharge(extraCharge);
+                                    }}
+                                >
+                                    <Grid container>
+                                        <Grid className={classes.customerItems} item xs={4}>
+                                            <Typography variant="h3">{extraCharge.type}</Typography>
+                                        </Grid>
+                                        <Grid className={classes.customerItems} item xs={4}>
+                                            <Typography variant="h6"> - {extraCharge.phoneNo}</Typography>
+                                        </Grid>
+                                        <Grid className={classes.customerItems} item xs={4}>
+                                            <Box sx={{ pr: 2, ml: 'auto' }}>
+                                                <DeleteIcon className={classes.icons} onClick={() => handleDelete(extraCharge._id)} />
+                                            </Box>
+                                        </Grid>
                                     </Grid>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
-                                    </Grid>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Box sx={{ pr: 2, ml: 'auto' }}>
-                                            <DeleteIcon className={classes.icons} onClick={() => handleDelete(customer._id)} />
-                                        </Box>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                        ))
+                                </Box>
+                            );
+                        })
                     ) : (
                         <>
                             <Box className={classes.customerSkeleton}></Box>
@@ -181,13 +176,14 @@ function Customer() {
             </Box>
 
             <Dialog open={open} onClose={() => handleClose()}>
-                <CustomerForm
-                    getAllCustomers={getAllCustomers}
+                <ExtraChargesForm
+                    getAllExtraCharges={getAllExtraCharges}
                     setOpen={setOpen}
-                    setAlertMsg={setAlertMsg}
                     setErrorSnack={setErrorSnack}
                     setSuccessSnack={setSuccessSnack}
-                    activeCust={activeCust}
+                    setAlertMsg={setAlertMsg}
+                    handleClose={handleClose}
+                    activeCharge={activeCharge}
                 />
             </Dialog>
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
@@ -204,4 +200,4 @@ function Customer() {
     );
 }
 
-export default Customer;
+export default ExtraCharges;

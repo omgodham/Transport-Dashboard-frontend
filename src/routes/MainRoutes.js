@@ -11,6 +11,7 @@ import customer from '../views/customer/customer';
 import Customer from '../views/customer/customer';
 import Vehicle from '../views/vehicle/Vehicle';
 import Driver from '../views/driver/Driver';
+import ExtraCharges from '../views/extra-charges/ExtraCharges';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
@@ -44,7 +45,7 @@ const MainRoutes = () => {
                 '/customers',
                 '/vehicles',
                 '/drivers',
-
+                '/extra-charges',
                 '/sample-page'
             ]}
         >
@@ -63,6 +64,7 @@ const MainRoutes = () => {
                         <Route path="/customers" component={Customer} />
                         <Route path="/vehicles" component={Vehicle} />
                         <Route path="/drivers" component={Driver} />
+                        <Route path="/extra-charges" component={ExtraCharges} />
                     </AuthGuard>
                 </Switch>
             </MainLayout>
