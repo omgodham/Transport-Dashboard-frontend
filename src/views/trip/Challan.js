@@ -269,12 +269,12 @@ function Challan({ trip, customers }) {
                         <Typography>Amount in words: </Typography>
                         <Typography style={{ fontWeight: 'bold' }}>
                             {inWords(
-                                trip.totalPayment.toString().split('.')[0],
-                                !trip.totalPayment.toString().split('.')[1],
-                                !trip.totalPayment.toString().split('.')[1]
+                                trip.totalPayment?.toString().split('.')[0],
+                                !trip.totalPayment?.toString().split('.')[1],
+                                !trip.totalPayment?.toString().split('.')[1]
                             )}{' '}
-                            {trip.totalPayment.toString().split('.')[1]
-                                ? ' and ' + inWords(parseInt(trip.totalPayment.toString().split('.')[1]), true, true)
+                            {trip.totalPayment?.toString().split('.')[1]
+                                ? ' and ' + inWords(parseInt(trip.totalPayment?.toString().split('.')[1]), true, true)
                                 : ''}
                         </Typography>
                     </Grid>
@@ -352,12 +352,12 @@ function Challan({ trip, customers }) {
                         <Typography style={{ fontWeight: 'bold' }}>
                             {' '}
                             {inWords(
-                                trip.totalPayment.toString().split('.')[0],
-                                !trip.totalPayment.toString().split('.')[1],
-                                !trip.totalPayment.toString().split('.')[1]
+                                trip.totalPayment?.toString().split('.')[0],
+                                !trip.totalPayment?.toString().split('.')[1],
+                                !trip.totalPayment?.toString().split('.')[1]
                             )}{' '}
-                            {trip.totalPayment.toString().split('.')[1]
-                                ? ' and ' + inWords(parseInt(trip.totalPayment.toString().split('.')[1]), true, true)
+                            {trip.totalPayment?.toString().split('.')[1]
+                                ? ' and ' + inWords(parseInt(trip.totalPayment?.toString().split('.')[1]), true, true)
                                 : ''}
                         </Typography>
                     </Grid>

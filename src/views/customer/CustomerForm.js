@@ -122,7 +122,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
             };
 
             if (!activeCust) {
-                Axios.post('//create-customer', { data })
+                Axios.post('/customer/create-customer', { data })
                     .then((response) => {
                         getAllCustomers();
                         setOpen(false);

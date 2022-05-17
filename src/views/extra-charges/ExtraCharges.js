@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'red',
         marginLeft: 'auto',
         cursor: 'pointer',
-        backgroundColor: '#9d0208'
+        color: '#9d0208'
     },
     addBtn: {
         backgroundColor: theme.palette.secondary.dark,

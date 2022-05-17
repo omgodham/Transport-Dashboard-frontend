@@ -7,8 +7,10 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
     Grid,
     InputAdornment,
+    Popover,
     Snackbar,
     TextField,
     Typography
@@ -19,6 +21,8 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Axios from '../../axios';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DriverForm from './DriverForm';
+import CreateIcon from '@material-ui/icons/Create';
+import DriverTrips from './DriverTrips';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,13 +79,21 @@ const useStyles = makeStyles((theme) => ({
         color: 'red',
         marginLeft: 'auto',
         cursor: 'pointer',
-        backgroundColor: '#9d0208'
+        color: '#9d0208'
     },
     addBtn: {
         backgroundColor: theme.palette.secondary.dark,
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
         }
+    },
+    iconBox: {
+        borderRadius: '5px',
+        padding: '2px',
+        margin: 'auto 10px',
+        display: 'flex',
+        justifyContent: 'center',
+        cursor: 'pointer'
     }
 }));
 
@@ -93,6 +105,13 @@ function Driver() {
     const [errorSnack, setErrorSnack] = useState();
     const [alertMsg, setAlertMsg] = useState('');
     const [activeDriver, setActiveDriver] = useState();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const d = new Date();
+    const [endDate, setEndDate] = useState(new Date());
+    d.setMonth(d.getMonth() - 1);
+    const [startDate, setStartDate] = useState(d);
+    const [showTrips, setShowTrips] = useState();
+    const [trips, setTrips] = useState([]);
 
     const getAllDrivers = () => {
         Axios.get('/driver/get-all-drivers')
@@ -121,6 +140,24 @@ function Driver() {
                 setErrorSnack(true);
             });
     };
+
+    const showOrders = () => {
+        console.log(activeDriver, 'active');
+        Axios.post(`/trip/get-trip-by-driver/${activeDriver._id}`, { startDate, endDate })
+            .then((response) => {
+                setTrips(response.data);
+                setShowTrips(true);
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const popOver = Boolean(anchorEl);
+    const id = popOver ? 'simple-popover' : undefined;
+
     return (
         <div className={classes.root}>
             <Box>
@@ -140,13 +177,7 @@ function Driver() {
                         vehicles.map((driver) => {
                             console.log(driver);
                             return (
-                                <Box
-                                    className={classes.customerCont}
-                                    onClick={() => {
-                                        setOpen(true);
-                                        setActiveDriver(driver);
-                                    }}
-                                >
+                                <Box className={classes.customerCont}>
                                     <Grid container>
                                         <Grid className={classes.customerItems} item xs={4}>
                                             <Typography variant="h3">{driver.name}</Typography>
@@ -155,8 +186,99 @@ function Driver() {
                                             <Typography variant="h6">Driver NO. - {driver.phoneNo}</Typography>
                                         </Grid>
                                         <Grid className={classes.customerItems} item xs={4}>
-                                            <Box sx={{ pr: 2, ml: 'auto' }}>
-                                                <DeleteIcon className={classes.icons} onClick={() => handleDelete(driver._id)} />
+                                            <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'}>
+                                                <Box
+                                                    onClick={() => {
+                                                        setOpen(true);
+                                                        setActiveDriver(driver);
+                                                    }}
+                                                    className={classes.iconBox}
+                                                    border="1px solid orange"
+                                                >
+                                                    <CreateIcon color="orange" />
+                                                </Box>
+                                                <Box className={classes.iconBox} border="1px solid red">
+                                                    <DeleteIcon className={classes.icons} onClick={() => handleDelete(driver._id)} />
+                                                </Box>
+                                                <Button
+                                                    aria-describedby={id}
+                                                    variant="outlined"
+                                                    color="secondary"
+                                                    className={classes.outlinedBtn}
+                                                    onClick={(e) => {
+                                                        handleClick(e);
+                                                        setActiveDriver(driver);
+                                                    }}
+                                                >
+                                                    Trips
+                                                </Button>
+                                                <Popover
+                                                    id={id}
+                                                    open={popOver}
+                                                    anchorEl={anchorEl}
+                                                    anchorOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'center'
+                                                    }}
+                                                    transformOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'center'
+                                                    }}
+                                                    onClose={() => {
+                                                        setAnchorEl();
+                                                    }}
+                                                >
+                                                    <Box display={'flex'} flexDirection="column" sx={{ p: 2 }}>
+                                                        <Typography
+                                                            variant="h6"
+                                                            fontSize={'20px'}
+                                                            marginBottom={'15px'}
+                                                            className={classes.typography}
+                                                            textAlign="center"
+                                                        >
+                                                            Select Date Range
+                                                        </Typography>
+                                                        <Divider backgroundColor="black" />
+                                                        <Box sx={{ mb: 1.5 }}>
+                                                            <TextField
+                                                                type={'date'}
+                                                                label="Select Intial Date"
+                                                                value={startDate.toISOString().split('T')[0]}
+                                                                defaultValue={startDate.toISOString().split('T')[0]}
+                                                                InputLabelProps={{
+                                                                    shrink: true
+                                                                }}
+                                                                onChange={(e) => {
+                                                                    setStartDate(e.target.value);
+                                                                }}
+                                                                size="small"
+                                                                sx={{ mr: 1 }}
+                                                            />
+                                                            <TextField
+                                                                type={'date'}
+                                                                label="Select End Date"
+                                                                value={endDate.toISOString().split('T')[0]}
+                                                                defaultValue={endDate.toISOString().split('T')[0]}
+                                                                InputLabelProps={{
+                                                                    shrink: true
+                                                                }}
+                                                                onChange={(e) => {
+                                                                    setEndDate(e.target.value);
+                                                                }}
+                                                                size="small"
+                                                            />
+                                                        </Box>
+                                                        <Button
+                                                            onClick={() => showOrders()}
+                                                            margin="auto"
+                                                            size="small"
+                                                            variant="contained"
+                                                            color="secondary"
+                                                        >
+                                                            SHOW ORDERS
+                                                        </Button>
+                                                    </Box>
+                                                </Popover>
                                             </Box>
                                         </Grid>
                                     </Grid>
@@ -186,6 +308,11 @@ function Driver() {
                     activeDriver={activeDriver}
                 />
             </Dialog>
+
+            <Dialog maxWidth="lg" open={showTrips}>
+                <DriverTrips trips={trips} setAlertMsg={setAlertMsg} setShowTrips={setShowTrips} setErrorSnack={setErrorSnack} />
+            </Dialog>
+
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
                 <Alert onClose={() => setAlertMsg('')} severity="success" variant="filled">
                     {alertMsg}

@@ -28,10 +28,11 @@ import SearchIcon from '@material-ui/icons/Search';
 // import { KeyboardDatePicker } from '@material-ui/pickers';
 import { format } from 'date-fns';
 import Challan from './Challan';
+import CreateIcon from '@material-ui/icons/Create';
 const useStyles = makeStyles((theme) => ({
     root: {
-        // backgroundColor: '#fff',
-        // padding: '10px',
+        backgroundColor: '#fff',
+        padding: '10px',
         borderRadius: '10px',
         position: 'relative'
     },
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     },
     tripCont: {
         height: '50px',
-        margin: '20px auto',
+        margin: '10px auto',
         padding: '10px 20px',
         // border: '1px solid grey',
         display: 'flex',
@@ -80,9 +81,15 @@ const useStyles = makeStyles((theme) => ({
     },
     closeIcon: {
         position: 'absolute',
-        top: '10px',
-        right: '20px',
-        cursor: 'pointer'
+        top: '15px',
+        right: '15px',
+        cursor: 'pointer',
+        borderRadius: '50%',
+        border: '1px solid red',
+        fontWeight: 500,
+        marginRight: '8px',
+        color: theme.palette.grey[100],
+        borderColor: theme.palette.grey[100]
     },
     addBtn: {
         backgroundColor: theme.palette.secondary.dark,
@@ -110,6 +117,29 @@ const useStyles = makeStyles((theme) => ({
             cursor: 'pointer',
             transition: 'all 450ms ease-in-out'
         }
+    },
+    tripdetailHead: {
+        backgroundColor: theme.palette.secondary[800]
+    },
+    cardHeading: {
+        fontSize: '1.5rem',
+        fontWeight: 500,
+        marginRight: '8px',
+        color: theme.palette.grey[100]
+    },
+    mainHeading: {
+        fontSize: '2rem',
+        color: theme.palette.grey[600]
+    },
+    editIconBox: {
+        border: '1px solid #dc2f02',
+        borderRadius: '5px',
+        padding: '2px',
+        margin: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        color: '#dc2f02',
+        cursor: 'pointer'
     }
 }));
 
@@ -134,6 +164,7 @@ function AllTrips() {
     const [tempStartDate, setTempStartDate] = useState(d);
     const [startDate, setStartDate] = useState(d);
     const [showDateSelect, setShowDateSelect] = useState(true);
+    const [activeDriver, setActiveDriver] = useState();
     const [challanDialog, setChallanDialog] = useState(false);
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -165,7 +196,7 @@ function AllTrips() {
     }, []);
 
     const getAllTrips = () => {
-        Axios.post('/trip/get-all-trips', { startDate, endDate })
+        Axios.post('/trip/get-all-trips', { startDate, endDate, activeDriver })
             .then((data) => {
                 setTrips(data.data);
                 setTripsLoading(false);
@@ -259,17 +290,21 @@ function AllTrips() {
         }
     };
 
+    const setDriverFilter = (driver) => {};
+
+    console.log(drivers, 'drivers');
+
     return (
         <div className={classes.root}>
             <Box sx={{ mb: 1 }}>
-                <Typography textAlign={'left'} variant="h2">
-                    All Trips
+                <Typography className={classes.mainHeading} textAlign={'center'} variant="h2">
+                    ALL TRIPS
                 </Typography>
             </Box>
             <Divider sx={{ mb: 2 }}></Divider>
             <Grid container alignItems={'center'} className={classes.GridCont}>
-                <Grid xs={3}>
-                    <Box>
+                <Grid xs={3} display="flex">
+                    <Box sx={{ width: '250px', mr: 1 }}>
                         <TextField label="Select Date Range" select fullWidth>
                             <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
                                 Today
@@ -323,7 +358,20 @@ function AllTrips() {
                             )}
                         </TextField>
                     </Box>
+
+                    {/* <Box sx={{ width: '150px' }}>
+                        <TextField label="Select Driver" select fullWidth>
+                            {drivers.map((driver, index) => {
+                                return (
+                                    <MenuItem value={index} onClick={() => setDriverFilter(driver._id)}>
+                                        {driver.name}
+                                    </MenuItem>
+                                );
+                            })}
+                        </TextField>
+                    </Box> */}
                 </Grid>
+                {/* <Grid container item xs={3}></Grid> */}
                 <Grid item xs={6} container justifyContent={'center'}>
                     <FormControl variant="outlined">
                         <InputLabel htmlFor="outlined-adornment-password">Search by LR No.</InputLabel>
@@ -356,6 +404,7 @@ function AllTrips() {
                             onClick={() => setShowDialog(true)}
                             variant="contained"
                             startIcon={<AddCircleOutlineIcon />}
+                            size="medium"
                         >
                             TRIP
                         </Button>
@@ -363,12 +412,15 @@ function AllTrips() {
                 </Grid>
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
-            <Grid container justifyContent="center" spacing={1}>
+            <Grid container justifyContent="center">
                 {trips.length ? (
-                    trips.map((trip) =>
-                        trip._id != updatingTrip ? (
-                            <>
-                                <Grid
+                    trips
+                        .slice(0)
+                        .reverse()
+                        .map((trip) =>
+                            trip._id != updatingTrip && trip.driver != activeDriver ? (
+                                <>
+                                    {/* <Grid
                                     item
                                     xs={12}
                                     sm={3}
@@ -394,37 +446,56 @@ function AllTrips() {
                                     <Typography style={{ fontSize: '18px', fontWeight: 'bold', color: 'gray' }}>
                                         Vehicle: {vehicles.find((o) => o._id == trip.vehicle)?.name}
                                     </Typography>
-                                </Grid>
-                                {/* <Box
-                                    className={classes.tripCont}
-                                    onClick={() => {
-                                        setShowDetails(trip);
-                                        setShowDialog(true);
-                                    }}
-                                >
-                                    <Grid container>
-                                        <Grid item className={classes.tripItems} xs={4}>
-                                            <Typography variant="h5">
-                                                {trip.pickup} - to - {trip.dropup}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item className={classes.tripItems} xs={4}>
-                                            <Typography variant="h5">
-                                                Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item className={classes.tripItems} xs={4}>
-                                            <Typography variant="h5">
-                                                Customer - {customers.find((o) => o._id == trip.customer)?.name}
-                                            </Typography>
+                                </Grid> */}
+                                    <Grid item xs={12} className={classes.tripCont}>
+                                        <Grid container>
+                                            <Grid item className={classes.tripItems} xs={3}>
+                                                <Typography variant="h5">
+                                                    Customer - {customers.find((o) => o._id == trip.customer)?.name}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item className={classes.tripItems} xs={3}>
+                                                <Typography variant="h5">
+                                                    {trip.pickup} - to - {trip.dropup}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item className={classes.tripItems} xs={3}>
+                                                <Typography variant="h5">
+                                                    Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item className={classes.tripItems} xs={3}>
+                                                <Box
+                                                    onClick={() => {
+                                                        setShowDetails(trip);
+                                                        setShowDialog(true);
+                                                    }}
+                                                    className={classes.editIconBox}
+                                                >
+                                                    <CreateIcon color="black" />
+                                                </Box>
+                                            </Grid>
+                                            {/* <Grid item className={classes.tripItems} justifyContent="right" xs={3}>
+                                            <Button
+                                                className={classes.submitBtn}
+                                                variant="contained"
+                                                fullWidth
+                                                style={{ backgroundColor: 'green', width: 'fit-content' }}
+                                                onClick={() => {
+                                                    setShowDetails(trip);
+                                                    setChallanDialog(true);
+                                                }}
+                                            >
+                                                Generate Challan
+                                            </Button>
+                                        </Grid> */}
                                         </Grid>
                                     </Grid>
-                                </Box> */}
-                            </>
-                        ) : (
-                            <Box className={classes.tripSkeleton}></Box>
+                                </>
+                            ) : (
+                                <Box className={classes.tripSkeleton}></Box>
+                            )
                         )
-                    )
                 ) : tripsLoading ? (
                     <>
                         <Box className={classes.tripSkeleton}></Box>
@@ -440,13 +511,15 @@ function AllTrips() {
                     </Box>
                 )}
             </Grid>
-            <Dialog open={showDialog} onClose={() => handleClose()}>
-                <Box sx={{ p: 2 }}>
-                    <Typography variant="h3" textAlign={'center'}>
+            <Dialog open={showDialog && !challanDialog}>
+                <Box sx={{ p: 2, position: 'default' }} className={classes.tripdetailHead}>
+                    <Typography className={classes.cardHeading} textAlign={'center'}>
                         TRIP DETAILS
                     </Typography>
                     <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => handleClose()} />
-                    <Divider style={{ marginTop: '10px' }} />
+                </Box>
+                <Divider style={{ marginTop: '10px' }} />
+                <Box sx={{ overflow: 'scroll', p: 2 }}>
                     <TripForm addTrip={addTrip} updateTrip={updateTrip} trip={showDetails} setChallanDialog={setChallanDialog} />
                 </Box>
             </Dialog>

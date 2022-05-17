@@ -5,12 +5,15 @@ import { useFormik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import Axios from '../../axios';
+import VehicleForm from './VehicleForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         padding: '20px 10px',
-        height: '100%'
+        height: '100%',
+        backgroundColor: '#fff',
+        minHeight: '700px'
     },
     customerSkeleton: {
         width: '100%',
@@ -59,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'red',
         marginLeft: 'auto',
         cursor: 'pointer',
-        backgroundColor: '#9d0208'
+        color: '#9d0208'
     },
     addBtn: {
         backgroundColor: theme.palette.secondary.dark,
@@ -122,19 +125,22 @@ function Vehicle() {
 
     const validationSchema = yup.object({
         number: yup.string('Enter vehicle number').required('Vehicles number is required'),
-        name: yup.string('Please enter vehicle name.').required('Name is required')
+        name: yup.string('Please enter vehicle name.').required('Name is required'),
+        model: yup.string('Please enter vehicle model.').required('Vehicle model is required')
     });
 
     const formik = useFormik({
         initialValues: {
             name: '',
-            number: ''
+            number: '',
+            model: ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
             let data = {
                 name: values.name,
-                number: values.number
+                number: values.number,
+                model: values.model
             };
             Axios.post('/vehicle/create-vehicle', { data })
                 .then((response) => {
@@ -260,45 +266,13 @@ function Vehicle() {
             </Box>
 
             <Dialog open={open} onClose={handleClose}>
-                <div className={classes.formCont}>
-                    <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
-                        Vehicle Details
-                    </Typography>
-                    <form onSubmit={formik.handleSubmit}>
-                        <Grid container spacing={2}>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="name"
-                                    name="name"
-                                    label="Name"
-                                    type="name"
-                                    value={formik.values.name}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.name && Boolean(formik.errors.name)}
-                                    helperText={formik.touched.name && formik.errors.name}
-                                />
-                            </Grid>
-                            <Grid item xs={6} className={classes.formItems}>
-                                <TextField
-                                    fullWidth
-                                    id="number"
-                                    name="number"
-                                    label="Vehicle Number"
-                                    value={formik.values.number}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.number && Boolean(formik.errors.number)}
-                                    helperText={formik.touched.number && formik.errors.number}
-                                />
-                            </Grid>
-                            <Box className={classes.subBtnCont}>
-                                <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
-                                    Submit
-                                </Button>
-                            </Box>
-                        </Grid>
-                    </form>
-                </div>
+                <VehicleForm
+                    getAllVehicles={getAllVehicles}
+                    handleClose={handleClose}
+                    setAlertMsg={setAlertMsg}
+                    setSuccessSnack={setSuccessSnack}
+                    setErrorSnack={setErrorSnack}
+                />
             </Dialog>
 
             {currentVehicle && (
