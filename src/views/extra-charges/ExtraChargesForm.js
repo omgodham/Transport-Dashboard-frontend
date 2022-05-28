@@ -83,40 +83,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack, setOpen, handleClose, activeDriver }) {
-    console.log(activeDriver);
+function ExtraChargesForm({ activeCharge, setErrorSnack, setAlertMsg, setSuccessSnack, setOpen, handleClose, getAllExtraCharges }) {
+    console.log(activeCharge);
     const classes = useStyles();
     const validationSchema = yup.object({
-        name: yup.string('Please enter driver name.').required('Name is required'),
-        phoneNo: yup.string('Enter phone number').required('Phone number is required'),
-        salary: yup.string("Enter driver's salary").required('Salary is required'),
-        aadhar: yup.string("Enter driver's Aadhar No.").required('Aadhar No. is required')
+        type: yup.string('Please enter Charge Type.').required('Charge type is required'),
+        amount: yup.string('Enter charge amount.').required('Charge amount is required'),
+        description: yup.string('Enter charge description')
     });
 
     const formik = useFormik({
         initialValues: {
-            name: activeDriver ? activeDriver.name : '',
-            phoneNo: activeDriver ? activeDriver.phoneNo : '',
-            salary: activeDriver ? activeDriver.salary : '',
-            aadhar: activeDriver ? activeDriver.aadhar : '',
-            aadharCard: activeDriver ? activeDriver.aadharCard : ''
+            type: activeCharge ? activeCharge.type : '',
+            amount: activeCharge ? activeCharge.amount : '',
+            description: activeCharge ? activeCharge.description : ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
             let data = {
-                name: values.name,
-                phoneNo: values.phoneNo,
-                salary: values.salary,
-                aadhar: values.aadhar,
-                aadharCard: values.aadharCard
+                type: values.type,
+                amount: values.amount,
+                description: values.description
             };
 
-            if (!activeDriver)
-                Axios.post('/driver/create-driver', { data })
+            if (!activeCharge)
+                Axios.post('/extracharge/create-extra-charge', { data })
                     .then((response) => {
-                        getAllDrivers();
+                        getAllExtraCharges();
                         handleClose();
-                        setAlertMsg('New driver saved successfully');
+                        setAlertMsg('New Charge saved successfully');
                         setSuccessSnack(true);
                     })
                     .catch((error) => {
@@ -124,11 +119,11 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                         setErrorSnack(true);
                     });
             else
-                Axios.patch(`/driver/update-driver/${activeDriver._id}`, { data })
+                Axios.patch(`/extracharge/update-extra-charge/${activeCharge._id}`, { data })
                     .then((response) => {
-                        getAllDrivers();
+                        getAllExtraCharges();
                         handleClose();
-                        setAlertMsg('New driver saved successfully');
+                        setAlertMsg('New Charge saved successfully');
                         setSuccessSnack(true);
                     })
                     .catch((error) => {
@@ -141,47 +136,34 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
     return (
         <div className={classes.formCont}>
             <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
-                DRIVER DETAILS
+                Charge DETAILS
             </Typography>
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
-                            id="name"
-                            name="name"
-                            label="Name"
-                            type="name"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
-                        />
-                    </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
-                        <TextField
-                            fullWidth
-                            id="phoneNo"
+                            id="type"
                             type="string"
-                            name="phoneNo"
-                            label="Phone Number"
-                            value={formik.values.phoneNo}
+                            name="type"
+                            label="Charge Type"
+                            value={formik.values.type}
                             onChange={formik.handleChange}
-                            error={formik.touched.phoneNo && Boolean(formik.errors.phoneNo)}
-                            helperText={formik.touched.phoneNo && formik.errors.phoneNo}
+                            error={formik.touched.type && Boolean(formik.errors.type)}
+                            helperText={formik.touched.type && formik.errors.type}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
-                            id="salary"
+                            id="amount"
                             type="number"
-                            name="salary"
-                            label="Driver's Salary"
-                            value={formik.values.salary}
+                            name="amount"
+                            label="Charge Amount"
+                            value={formik.values.amount}
                             onChange={formik.handleChange}
-                            error={formik.touched.salary && Boolean(formik.errors.salary)}
-                            helperText={formik.touched.salary && formik.errors.salary}
+                            error={formik.touched.amount && Boolean(formik.errors.amount)}
+                            helperText={formik.touched.amount && formik.errors.amount}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">Rs.</InputAdornment>
                             }}
@@ -190,30 +172,17 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
-                            id="aadhar"
-                            type="string"
-                            name="aadhar"
-                            label="Driver's Aadhar No."
-                            value={formik.values.aadhar}
+                            id="description"
+                            name="description"
+                            label="Name"
+                            type="description"
+                            value={formik.values.description}
                             onChange={formik.handleChange}
-                            error={formik.touched.aadhar && Boolean(formik.errors.aadhar)}
-                            helperText={formik.touched.aadhar && formik.errors.aadhar}
+                            error={formik.touched.description && Boolean(formik.errors.description)}
+                            helperText={formik.touched.description && formik.errors.description}
                         />
                     </Grid>
-                    {/* <Grid item xs={6} className={classes.formItems}>
-                        <TextField
-                            fullWidth
-                            id="aadharCard"
-                            type="file"
-                            name="aadharCard"
-                            label="Driver's Aadhar Card"
-                            value={formik.values.aadharCard}
-                            onChange={formik.handleChange}
-                            error={formik.touched.aadharCard && Boolean(formik.errors.aadharCard)}
-                            helperText={formik.touched.aadharCard && formik.errors.aadharCard}
-                            autoFocus
-                        />
-                    </Grid> */}
+
                     <Box className={classes.subBtnCont}>
                         <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
                             Submit
@@ -225,4 +194,4 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
     );
 }
 
-export default DriverForm;
+export default ExtraChargesForm;

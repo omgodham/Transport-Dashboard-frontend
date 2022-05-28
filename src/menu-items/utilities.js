@@ -47,6 +47,14 @@ export const utilities = {
             url: '/drivers',
             icon: icons['ContactsIcon'],
             breadcrumbs: false
+        },
+        {
+            id: 'extra-charges',
+            title: 'Extra Charges',
+            type: 'item',
+            url: '/extra-charges',
+            icon: icons['ContactsIcon'],
+            breadcrumbs: false
         }
     ]
 };

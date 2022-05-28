@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // material-ui
 import { makeStyles } from '@material-ui/styles';
@@ -59,8 +59,27 @@ const useStyles = makeStyles((theme) => ({
 
 //-----------------------|| DASHBOARD - TOTAL INCOME LIGHT CARD ||-----------------------//
 
-const TotalIncomeLightCard = ({ isLoading }) => {
+const TotalIncomeLightCard = ({ isLoading, trips }) => {
     const classes = useStyles();
+
+    const [dieselCost, totalDieselCost] = useState();
+
+    useEffect(() => {
+        if (trips?.length) {
+            let tempCost = 0;
+            trips.map((trip) => {
+                tempCost += trip.fuelCharge ? trip.fuelCharge : 0;
+            });
+
+            tempCost = tempCost.toString();
+            var lastThree = tempCost.substring(tempCost.length - 3);
+            var otherNumbers = tempCost.substring(0, tempCost.length - 3);
+            if (otherNumbers != '') lastThree = ',' + lastThree;
+            tempCost = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+            totalDieselCost(tempCost);
+        }
+    }, [trips]);
 
     return (
         <React.Fragment>
@@ -81,10 +100,10 @@ const TotalIncomeLightCard = ({ isLoading }) => {
                                     mb: 0.45
                                 }}
                                 className={classes.padding}
-                                primary={<Typography variant="h4">$203k</Typography>}
+                                primary={<Typography variant="h4">₹ {dieselCost}</Typography>}
                                 secondary={
                                     <Typography variant="subtitle2" className={classes.secondary}>
-                                        Total Income
+                                        Total Diesel Expense
                                     </Typography>
                                 }
                             />

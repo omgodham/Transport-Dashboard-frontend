@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // material-ui
 import { makeStyles } from '@material-ui/styles';
@@ -100,10 +100,30 @@ const useStyles = makeStyles((theme) => ({
 
 //===========================|| DASHBOARD DEFAULT - EARNING CARD ||===========================//
 
-const EarningCard = ({ isLoading }) => {
+const EarningCard = ({ isLoading, trips }) => {
     const classes = useStyles();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [totalEarning, setTotalEarning] = useState();
+
+    useEffect(() => {
+        if (trips?.length) {
+            let tempEarning = 0;
+            trips.map((trip) => {
+                tempEarning += trip.paymentPending ? trip.paymentPending : 0 + trip.paymentReceived ? trip.paymentReceived : 0;
+                console.log(tempEarning, 'earning');
+                console.log(tempEarning, 'tempearning');
+            });
+
+            tempEarning = tempEarning.toString();
+            var lastThree = tempEarning.substring(tempEarning.length - 3);
+            var otherNumbers = tempEarning.substring(0, tempEarning.length - 3);
+            if (otherNumbers != '') lastThree = ',' + lastThree;
+            tempEarning = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+            setTotalEarning(tempEarning);
+        }
+    }, [trips]);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -113,6 +133,7 @@ const EarningCard = ({ isLoading }) => {
         setAnchorEl(null);
     };
 
+    console.log(trips, 'trips');
     return (
         <React.Fragment>
             {isLoading ? (
@@ -172,7 +193,7 @@ const EarningCard = ({ isLoading }) => {
                         <Grid item>
                             <Grid container alignItems="center">
                                 <Grid item>
-                                    <Typography className={classes.cardHeading}>$500.00</Typography>
+                                    <Typography className={classes.cardHeading}>₹ {totalEarning}</Typography>
                                 </Grid>
                                 <Grid item>
                                     <Avatar className={classes.avatarCircle}>

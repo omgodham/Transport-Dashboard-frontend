@@ -7,18 +7,23 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
     Grid,
     Snackbar,
     TextField,
-    Typography
+    Typography,
+    MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Axios from '../../axios';
-
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CustomerForm from './CustomerForm';
+import Bill from './Bill';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -59,10 +64,18 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     customerCont: {
+        // padding: '10px 20px',
+        // margin: '20px auto',
+        // border: '1px solid grey',
+        // borderRadius: '10px'
+        // height: '60px',
+        margin: '10px auto',
         padding: '10px 20px',
-        margin: '20px auto',
-        border: '1px solid grey',
-        borderRadius: '10px'
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '10px',
+        boxShadow: ' rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;'
     },
     customerItems: {
         display: 'flex',
@@ -74,13 +87,26 @@ const useStyles = makeStyles((theme) => ({
         width: '24px',
         color: 'red',
         marginLeft: 'auto',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        color: '#9d0208'
     },
     addBtn: {
         backgroundColor: theme.palette.secondary.dark,
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
         }
+    },
+    closeIcon: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        cursor: 'pointer',
+        borderRadius: '50%',
+        border: '1px solid red',
+        fontWeight: 500,
+        marginRight: '8px',
+        // color: theme.palette.grey[100],
+        borderColor: 'black'
     }
 }));
 
@@ -92,6 +118,14 @@ function Customer() {
     const [errorSnack, setErrorSnack] = useState();
     const [alertMsg, setAlertMsg] = useState('');
     const [activeCust, setActiveCust] = useState();
+    const [trips, setTrips] = useState();
+    const [showBill, setShowBill] = useState();
+    const d = new Date();
+    // const [endDate, setEndDate] = useState(new Date());
+    const [tempEndDate, setTempEndDate] = useState(new Date());
+    d.setMonth(d.getMonth() - 1);
+    // const [startDate, setStartDate] = useState(d);
+    const [askDate, setAskDate] = useState();
 
     const getAllCustomers = () => {
         Axios.get('/customer/get-all-customers')
@@ -128,6 +162,37 @@ function Customer() {
         setActiveCust('');
     };
 
+    const generateBill = (startDate, endDate, company) => {
+        Axios.post(`/trip/get-trip-by-customer/${activeCust._id}`, { startDate, endDate, company })
+            .then((response) => {
+                setTrips(response.data);
+                setShowBill(true);
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const validationSchema = yup.object({
+        startDate: yup.string('Please select Start Date').required('Start Date is required'),
+        endDate: yup.string('Please select End Date').required('End Date is required'),
+        company: yup.string('Please select company').required('Company is required')
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            startDate: d.toISOString().split('T')[0],
+            endDate: new Date().toISOString().split('T')[0],
+            company: ''
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            let startDate = new Date(values.startDate);
+            let endDate = new Date(values.endDate);
+            let company = values.company;
+
+            generateBill(startDate, endDate, company);
+        }
+    });
+
     return (
         <div className={classes.root}>
             <Box>
@@ -145,25 +210,44 @@ function Customer() {
                 <Box sx={{ p: 2 }}>
                     {customers?.length ? (
                         customers.map((customer) => (
-                            <Box
-                                className={classes.customerCont}
-                                onClick={() => {
-                                    setActiveCust(customer);
-                                    setOpen(true);
-                                }}
-                            >
-                                <Grid container>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Typography variant="h3">{customer.name}</Typography>
+                            <Box>
+                                <Grid container className={classes.customerCont}>
+                                    <Grid
+                                        item
+                                        xs={9}
+                                        onClick={() => {
+                                            setActiveCust(customer);
+                                            setOpen(true);
+                                        }}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <Grid container>
+                                            <Grid className={classes.customerItems} item xs={4}>
+                                                <Typography variant="h3">{customer.name}</Typography>
+                                            </Grid>
+                                            <Grid className={classes.customerItems} item xs={4}>
+                                                <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
-                                    </Grid>
-                                    <Grid className={classes.customerItems} item xs={4}>
-                                        <Box sx={{ pr: 2, ml: 'auto' }}>
+                                    <Grid className={classes.customerItems} item xs={3}>
+                                        <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
                                             <DeleteIcon className={classes.icons} onClick={() => handleDelete(customer._id)} />
+                                            <Button
+                                                onClick={() => {
+                                                    setActiveCust(customer);
+                                                    setAskDate(true);
+                                                }}
+                                                className={classes.addBtn}
+                                                variant="contained"
+                                            >
+                                                GENERATE BILL
+                                            </Button>
                                         </Box>
                                     </Grid>
+                                    {/* <Grid className={classes.customerItems} item xs={4}>
+                                        <Button onClick={() => generateBill(customer._id)}>GENERATE BILL</Button>
+                                    </Grid> */}
                                 </Grid>
                             </Box>
                         ))
@@ -189,6 +273,74 @@ function Customer() {
                     activeCust={activeCust}
                 />
             </Dialog>
+
+            <Dialog maxWidth="lg" open={askDate}>
+                <Box sx={{ m: 2 }} justifyContent={'center'} display="flex" flexDirection={'column'}>
+                    <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => setAskDate(false)} />
+                    <form onSubmit={formik.handleSubmit}>
+                        <Typography variant="h5" fontSize={'20px'} textAlign={'center'} marginTop="20px">
+                            SELECT COMPANY & DATE RANGE
+                        </Typography>
+                        <Divider sx={{ mt: 1, mb: 3, height: '2px', backgroundColor: 'black' }} />
+                        <Box display="flex" alignItems={'center'} flexDirection="column">
+                            <Grid container spacing={3} sx={{ mb: 4 }}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        id="company"
+                                        name="company"
+                                        label="Select Company"
+                                        labelId="demo-simple-select-filled-label"
+                                        select
+                                        value={formik.values.company}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.company && Boolean(formik.errors.company)}
+                                        helperText={formik.touched.company && formik.errors.company}
+                                    >
+                                        <MenuItem value="swapnil">Swapnil Transport</MenuItem>
+                                        <MenuItem value="atlas">Atlas Cargo</MenuItem>
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        fullWidth
+                                        type="date"
+                                        id="startDate"
+                                        name="startDate"
+                                        label="Start Date"
+                                        value={formik.values.startDate}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+                                        helperText={formik.touched.startDate && formik.errors.startDate}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        fullWidth
+                                        type="date"
+                                        id="endDate"
+                                        name="endDate"
+                                        label="End Date "
+                                        value={formik.values.endDate}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                        helperText={formik.touched.endDate && formik.errors.endDate}
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Button type="submit" fullWidth className={classes.addBtn} variant="contained">
+                                SHOW BILL
+                            </Button>
+                        </Box>
+                    </form>
+                </Box>
+            </Dialog>
+
+            <Dialog maxWidth="lg" open={showBill}>
+                <Bill trips={trips} setAlertMsg={setAlertMsg} setShowBill={setShowBill} setErrorSnack={setErrorSnack} />
+            </Dialog>
+
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
                 <Alert onClose={() => setAlertMsg('')} severity="success" variant="filled">
                     {alertMsg}
