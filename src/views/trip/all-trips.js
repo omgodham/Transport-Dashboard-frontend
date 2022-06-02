@@ -1,6 +1,8 @@
 import {
     Alert,
+    Backdrop,
     Button,
+    CircularProgress,
     Dialog,
     Divider,
     FormControl,
@@ -12,23 +14,18 @@ import {
     OutlinedInput,
     Snackbar,
     TextField,
-    Typography,
-    Paper,
-    Modal
+    Typography
 } from '@material-ui/core';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import CloseIcon from '@material-ui/icons/Close';
+import CreateIcon from '@material-ui/icons/Create';
+import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/styles';
 import { Box } from '@material-ui/system';
 import React, { useEffect, useState } from 'react';
 import Axios from '../../axios';
-import theme from '../../themes';
-import CloseIcon from '@material-ui/icons/Close';
+import ChallanImages from './ChallanImages';
 import TripForm from './TripForm';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import SearchIcon from '@material-ui/icons/Search';
-// import { KeyboardDatePicker } from '@material-ui/pickers';
-import { format } from 'date-fns';
-import Challan from './Challan';
-import CreateIcon from '@material-ui/icons/Create';
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
@@ -140,6 +137,10 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         color: '#dc2f02',
         cursor: 'pointer'
+    },
+    backdrop: {
+        zIndex: 11111111,
+        color: '#fff'
     }
 }));
 
@@ -166,6 +167,8 @@ function AllTrips() {
     const [showDateSelect, setShowDateSelect] = useState(true);
     const [activeDriver, setActiveDriver] = useState();
     const [challanDialog, setChallanDialog] = useState(false);
+    const [imagesOpen, setImagesOpen] = useState(false);
+    const [showBackdrop, setShowBackdrop] = useState(false);
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
             .then((res) => {
@@ -238,18 +241,22 @@ function AllTrips() {
             });
     };
 
-    const updateTrip = (data, id) => {
-        handleClose();
+    const updateTrip = (data, id, isClose) => {
+        setShowBackdrop(true);
         setUpdatingTrip(id);
         Axios.patch(`trip/update-trip/${id}`, { data })
             .then((response) => {
+                setShowDetails(response.data);
+                if (isClose) handleClose();
                 getAllTrips();
                 setAlertMessage('Trip Updated successfully');
                 setSuccessSnack(true);
+                setShowBackdrop(false);
             })
             .catch((error) => {
                 setAlertMessage('Something went wrong');
                 setErrorSnack(true);
+                setShowBackdrop(false);
             });
     };
 
@@ -511,7 +518,7 @@ function AllTrips() {
                     </Box>
                 )}
             </Grid>
-            <Dialog open={showDialog && !challanDialog}>
+            <Dialog open={showDialog && !challanDialog && !imagesOpen}>
                 <Box sx={{ p: 2, position: 'default' }} className={classes.tripdetailHead}>
                     <Typography className={classes.cardHeading} textAlign={'center'}>
                         TRIP DETAILS
@@ -520,7 +527,13 @@ function AllTrips() {
                 </Box>
                 <Divider style={{ marginTop: '10px' }} />
                 <Box sx={{ overflow: 'scroll', p: 2 }}>
-                    <TripForm addTrip={addTrip} updateTrip={updateTrip} trip={showDetails} setChallanDialog={setChallanDialog} />
+                    <TripForm
+                        addTrip={addTrip}
+                        updateTrip={updateTrip}
+                        trip={showDetails}
+                        setChallanDialog={setChallanDialog}
+                        setImagesOpen={setImagesOpen}
+                    />
                 </Box>
             </Dialog>
             <Snackbar open={successSnack} autoHideDuration={3000} onClose={() => setSuccessSnack(false)}>
@@ -533,9 +546,29 @@ function AllTrips() {
                     {alertMessage}
                 </Alert>
             </Snackbar>
-            <Modal open={challanDialog} onClose={() => setChallanDialog(false)}>
+            {/* <Modal open={challanDialog} onClose={() => setChallanDialog(false)}>
                 <Challan trip={showDetails} customers={customers} />
-            </Modal>
+            </Modal> */}
+            <Dialog open={imagesOpen} onClose={() => setImagesOpen(false)}>
+                <Box sx={{ p: 2, position: 'default' }} className={classes.tripdetailHead}>
+                    <Typography className={classes.cardHeading} textAlign={'center'}>
+                        Challans
+                    </Typography>
+                    <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => setImagesOpen(false)} />
+                </Box>
+                <Box>
+                    <ChallanImages
+                        updateTrip={updateTrip}
+                        trip={showDetails}
+                        challanImages={showDetails?.challanImages}
+                        setImagesOpen={setImagesOpen}
+                        setShowBackdrop={setShowBackdrop}
+                    />
+                </Box>
+            </Dialog>
+            <Backdrop className={classes.backdrop} open={showBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </div>
     );
 }

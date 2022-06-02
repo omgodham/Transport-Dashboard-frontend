@@ -1,5 +1,6 @@
 import {
     Alert,
+    Autocomplete,
     Box,
     Button,
     FormControl,
@@ -17,6 +18,8 @@ import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Axios from '../../axios';
+import FileBase64 from 'react-file-base64';
+import Compressor from 'compressorjs';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -36,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
+function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }) {
     const classes = useStyles();
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
@@ -99,9 +102,9 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
         // tripDate: yup.string('Select Date').required('Date is required'),
         materialWeight: yup.string('Enter load in KG').required('Load is required'),
         fuelCharge: yup.string('Enter disel charge').required('Disel charge is required'),
-        driverExtraCharge: yup.string("Enter Driver's extra charges").required('Driver extra charge is required'),
-        agent: yup.string('Enter agent name').required('Agent name is required'),
-        challanNo: yup.string('Enter challan number').required('Challan number is required'),
+        // driverExtraCharge: yup.string("Enter Driver's extra charges").required('Driver extra charge is required'),
+        // agent: yup.string('Enter agent name').required('Agent name is required'),
+        // challanNo: yup.string('Enter challan number').required('Challan number is required'),
         truckModel: yup.string('Enter truck model').required('Truck model is required')
     });
 
@@ -129,15 +132,34 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
             totalPayment: trip ? trip.totalPayment : 0,
             agent: trip ? trip.agent : '',
             commission: trip ? trip.commission : 0,
-            driverExtraCharge: trip ? trip.driverExtraCharge : 0
+            driverExtraCharge: trip ? trip.driverExtraCharge : 0,
+            challanImages: trip ? trip.challanImages : []
         },
 
-        validationSchema: validationSchema,
+        // validationSchema: validationSchema,
         onSubmit: (values) => {
-            if (trip) updateTrip(values, trip._id);
-            else addTrip(values);
+            console.log('BBB', values.extraCharge.split('₹'));
+            // if (trip) updateTrip(values, trip._id, false);
+            // else addTrip(values);
         }
     });
+
+    const handleImageCompressionAndConversion = (files) => {
+        let reader = new FileReader();
+        let temp = [...formik.values.challanImages];
+        for (const file of files) {
+            new Compressor(file, {
+                quality: 0.6,
+                success(result) {
+                    reader.readAsDataURL(result);
+                    reader.onload = function () {
+                        temp.push(reader.result);
+                    };
+                }
+            });
+        }
+        formik.setFieldValue('challanImages', temp);
+    };
 
     return (
         <form onSubmit={formik.handleSubmit}>
@@ -319,6 +341,22 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
                             <MenuItem value="none">None</MenuItem>
                         )}
                     </TextField>
+                    {/* <Autocomplete
+                        value={formik.values.extraCharge}
+                        onChange={(event, newValue) => {
+                            formik.setFieldValue('extraCharge', newValue);
+                        }}
+                        inputValue={formik.values.extraCharge}
+                        onInputChange={(event, newInputValue) => {
+                            // let splitted = values.extraCharge.split('₹')
+                            // let temp = splitted.length > 1 ? splitted[0] : splitted;
+                            formik.setFieldValue('extraCharge', newInputValue);
+                        }}
+                        id="extraCharge"
+                        options={extraCharges.map((extraCharge) => `${extraCharge.type}( ₹${extraCharge.amount})`)}
+                        style={{ width: 300 }}
+                        renderInput={(params) => <TextField {...params} label="Controllable" variant="outlined" />}
+                    /> */}
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
@@ -478,6 +516,25 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog }) {
                         error={formik.touched.driverExtraCharge && Boolean(formik.errors.driverExtraCharge)}
                         helperText={formik.touched.driverExtraCharge && formik.errors.driverExtraCharge}
                     />
+                </Grid>
+                <Grid item xs={6}>
+                    <label for="challanImages">Insert challan images</label>
+                    <TextField
+                        type="file"
+                        id="challanImages"
+                        name="challanImages"
+                        inputProps={{ multiple: true }}
+                        onChange={(e) => {
+                            handleImageCompressionAndConversion(e.target.files);
+                        }}
+                        // error={formik.touched.driverExtraCharge && Boolean(formik.errors.driverExtraCharge)}
+                        // helperText={formik.touched.driverExtraCharge && formik.errors.driverExtraCharge}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <Button onClick={() => setImagesOpen(true)} variant="contained">
+                        Show Challan Images
+                    </Button>
                 </Grid>
             </Grid>
             <Button className={classes.submitBtn} variant="contained" fullWidth type="submit" style={{ marginTop: '20px' }}>
