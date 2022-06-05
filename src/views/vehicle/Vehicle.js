@@ -111,7 +111,8 @@ function Vehicle() {
     const [isPreviousMaintenance, setIsPreviousMaintenance] = useState(false);
     const [vehicleMaintenance, setVehicleMaintenance] = useState({
         amount: 0,
-        description: ''
+        description: '',
+        maintenanceDate: new Date()
     });
     const getAllVehicles = () => {
         Axios.get('/vehicle/get-all-vehicles')
@@ -174,7 +175,11 @@ function Vehicle() {
         if (vehicleMaintenance.description) {
             temp.maintenance = [
                 ...currentVehicle.maintenance,
-                { amount: vehicleMaintenance.amount, description: vehicleMaintenance.description }
+                {
+                    amount: vehicleMaintenance.amount,
+                    description: vehicleMaintenance.description,
+                    maintenanceDate: vehicleMaintenance.maintenanceDate
+                }
             ];
         }
         Axios.patch(`/vehicle/update-vehicle/${currentVehicle._id}`, temp)
@@ -219,6 +224,7 @@ function Vehicle() {
         );
     };
 
+    console.log('BBB', currentVehicle?.maintenance);
     return (
         <div className={classes.root}>
             <Box>
@@ -348,6 +354,24 @@ function Vehicle() {
                                                     }
                                                 />
                                             </Grid>
+                                            <Grid item xs={12}>
+                                                <TextField
+                                                    id="maintenanceDate"
+                                                    label="Date of maintenance (MM-DD-YYYY)"
+                                                    name="maintenanceDate"
+                                                    type="date"
+                                                    fullWidth
+                                                    // defaultValue="00-00-0000"
+                                                    value={vehicleMaintenance.maintenanceDate}
+                                                    onChange={(e) =>
+                                                        setVehicleMaintenance({ ...vehicleMaintenance, maintenanceDate: e.target.value })
+                                                    }
+                                                    variant="outlined"
+                                                    InputLabelProps={{
+                                                        shrink: true
+                                                    }}
+                                                />
+                                            </Grid>
                                         </>
                                     )}
 
@@ -389,6 +413,24 @@ function Vehicle() {
                                                                 disabled
                                                             />
                                                         </Grid>
+                                                        {item.maintenanceDate && (
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    id="maintenanceDate"
+                                                                    label="Date of maintenance (MM-DD-YYYY)"
+                                                                    name="maintenanceDate"
+                                                                    type="date"
+                                                                    fullWidth
+                                                                    // defaultValue="00-00-0000"
+                                                                    value={item.maintenanceDate}
+                                                                    variant="outlined"
+                                                                    InputLabelProps={{
+                                                                        shrink: true
+                                                                    }}
+                                                                    disabled
+                                                                />
+                                                            </Grid>
+                                                        )}
                                                     </>
                                                 ))
                                             ) : (

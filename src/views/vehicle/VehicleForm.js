@@ -5,7 +5,27 @@ import Axios from '../../axios';
 import { useFormik } from 'formik';
 import { makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles((theme) => ({}));
+const useStyles = makeStyles((theme) => ({
+    btnCont: {
+        position: 'absolute',
+        top: '20px',
+        right: '10px'
+    },
+    formCont: {
+        padding: '20px '
+    },
+    subBtnCont: {
+        display: 'flex',
+        margin: '20px auto',
+        width: '300px'
+    },
+    subBtn: {
+        backgroundColor: theme.palette.secondary.dark,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary[800]
+        }
+    }
+}));
 
 function VehicleForm({ getAllVehicles, handleClose, setAlertMsg, setSuccessSnack, setErrorSnack }) {
     const classes = useStyles();
