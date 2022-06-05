@@ -136,11 +136,16 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }
             challanImages: trip ? trip.challanImages : []
         },
 
-        // validationSchema: validationSchema,
+        validationSchema: validationSchema,
         onSubmit: (values) => {
-            console.log('BBB', values.extraCharge.split('₹'));
-            // if (trip) updateTrip(values, trip._id, false);
-            // else addTrip(values);
+            let tempValues = values;
+            if (values.extraCharge.includes('₹')) {
+                let temp = values.extraCharge.split('₹')[1];
+                temp = temp.split(')')[0];
+            }
+            tempValues.extraCharge = parseFloat(tempValues.extraCharge);
+            if (trip) updateTrip(tempValues, trip._id, false);
+            else addTrip(tempValues);
         }
     });
 
@@ -211,7 +216,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }
                         type="date"
                         fullWidth
                         // defaultValue="00-00-0000"
-                        value={formik.values.tripDate.toISOString().split('T')[0]}
+                        value={formik.values.tripDate}
                         onChange={formik.handleChange}
                         variant="outlined"
                         InputLabelProps={{
@@ -317,46 +322,19 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }
                 </Grid>
 
                 <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="extraCharge"
-                        name="extraCharge"
-                        label="Select extra charge"
-                        labelId="demo-simple-select-filled-label"
-                        select
-                        value={formik.values.extraCharge}
-                        onChange={formik.handleChange}
-                        error={formik.touched.extraCharge && Boolean(formik.errors.extraCharge)}
-                        helperText={formik.touched.extraCharge && formik.errors.extraCharge}
-                    >
-                        {extraCharges.length ? (
-                            extraCharges.map((extraCharge) => {
-                                return (
-                                    <MenuItem value={extraCharge.amount}>
-                                        {extraCharge.type}( ₹{extraCharge.amount})
-                                    </MenuItem>
-                                );
-                            })
-                        ) : (
-                            <MenuItem value="none">None</MenuItem>
-                        )}
-                    </TextField>
-                    {/* <Autocomplete
+                    <Autocomplete
                         value={formik.values.extraCharge}
                         onChange={(event, newValue) => {
                             formik.setFieldValue('extraCharge', newValue);
                         }}
                         inputValue={formik.values.extraCharge}
                         onInputChange={(event, newInputValue) => {
-                            // let splitted = values.extraCharge.split('₹')
-                            // let temp = splitted.length > 1 ? splitted[0] : splitted;
                             formik.setFieldValue('extraCharge', newInputValue);
                         }}
                         id="extraCharge"
                         options={extraCharges.map((extraCharge) => `${extraCharge.type}( ₹${extraCharge.amount})`)}
-                        style={{ width: 300 }}
-                        renderInput={(params) => <TextField {...params} label="Controllable" variant="outlined" />}
-                    /> */}
+                        renderInput={(params) => <TextField {...params} label="Extra Charge" variant="outlined" />}
+                    />
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
@@ -531,11 +509,13 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }
                         // helperText={formik.touched.driverExtraCharge && formik.errors.driverExtraCharge}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <Button onClick={() => setImagesOpen(true)} variant="contained">
-                        Show Challan Images
-                    </Button>
-                </Grid>
+                {trip && (
+                    <Grid item xs={6}>
+                        <Button onClick={() => setImagesOpen(true)} variant="contained">
+                            Show Challan Images
+                        </Button>
+                    </Grid>
+                )}
             </Grid>
             <Button className={classes.submitBtn} variant="contained" fullWidth type="submit" style={{ marginTop: '20px' }}>
                 {trip ? 'Update' : 'Save'}
