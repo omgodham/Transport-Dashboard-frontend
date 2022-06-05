@@ -11,7 +11,8 @@ import {
     Select,
     Snackbar,
     TextField,
-    Typography
+    Typography,
+    CircularProgress
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useState, useEffect } from 'react';
@@ -36,10 +37,22 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
         }
+    },
+    wrapperLoading: {
+        width: '100%',
+        position: 'relative'
+    },
+    buttonProgress: {
+        color: theme.palette.secondary[800],
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12
     }
 }));
 
-function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }) {
+function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, savingTrip, setSavingTrip }) {
     const classes = useStyles();
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
@@ -138,6 +151,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }
 
         validationSchema: validationSchema,
         onSubmit: (values) => {
+            setSavingTrip(true);
             let tempValues = values;
             if (values.extraCharge.includes('₹')) {
                 let temp = values.extraCharge.split('₹')[1];
@@ -496,30 +510,37 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen }
                     />
                 </Grid>
                 <Grid item xs={6}>
-                    <label for="challanImages">Insert challan images</label>
-                    <TextField
-                        type="file"
-                        id="challanImages"
-                        name="challanImages"
-                        inputProps={{ multiple: true }}
-                        onChange={(e) => {
-                            handleImageCompressionAndConversion(e.target.files);
-                        }}
-                        // error={formik.touched.driverExtraCharge && Boolean(formik.errors.driverExtraCharge)}
-                        // helperText={formik.touched.driverExtraCharge && formik.errors.driverExtraCharge}
-                    />
+                    <Box>
+                        <label for="challanImages">Upload challan images</label>
+                        <TextField
+                            type="file"
+                            id="challanImages"
+                            name="challanImages"
+                            inputProps={{ multiple: true }}
+                            onChange={(e) => {
+                                handleImageCompressionAndConversion(e.target.files);
+                            }}
+                            // error={formik.touched.driverExtraCharge && Boolean(formik.errors.driverExtraCharge)}
+                            // helperText={formik.touched.driverExtraCharge && formik.errors.driverExtraCharge}
+                        />
+                    </Box>
                 </Grid>
                 {trip && (
-                    <Grid item xs={6}>
-                        <Button onClick={() => setImagesOpen(true)} variant="contained">
-                            Show Challan Images
-                        </Button>
+                    <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box display={'flex'} width="100%">
+                            <Button onClick={() => setImagesOpen(true)} color="secondary" fullWidth variant="outlined">
+                                View Challan
+                            </Button>
+                        </Box>
                     </Grid>
                 )}
             </Grid>
-            <Button className={classes.submitBtn} variant="contained" fullWidth type="submit" style={{ marginTop: '20px' }}>
-                {trip ? 'Update' : 'Save'}
-            </Button>
+            <Box className={classes.wrapperLoading} style={{ marginTop: '20px' }}>
+                <Button className={classes.submitBtn} disabled={savingTrip} variant="contained" fullWidth type="submit">
+                    {trip ? 'Update' : 'Save'}
+                </Button>
+                {savingTrip && <CircularProgress size={24} className={classes.buttonProgress} />}
+            </Box>
             {/* {trip && (
                 <Button
                     className={classes.submitBtn}

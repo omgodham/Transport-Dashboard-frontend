@@ -7,6 +7,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
     Grid,
     InputAdornment,
     Snackbar,
@@ -18,12 +19,12 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Axios from '../../axios';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
-        backgroundColor: '#fff',
-        padding: '20px 10px'
+        backgroundColor: '#fff'
     },
     customerSkeleton: {
         width: '100%',
@@ -44,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
         right: '10px'
     },
     formCont: {
-        padding: '20px '
+        padding: ' 10px '
     },
     subBtnCont: {
         display: 'flex',
@@ -80,6 +81,12 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
         }
+    },
+    closeBox: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        cursor: 'pointer'
     }
 }));
 
@@ -88,9 +95,13 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
     const classes = useStyles();
     const validationSchema = yup.object({
         name: yup.string('Please enter driver name.').required('Name is required'),
-        phoneNo: yup.string('Enter phone number').required('Phone number is required'),
+        phoneNo: yup
+            .string('Enter phone number')
+            .required('Phone number is required')
+            .min(10, 'Phone No. should be of minimum 10 characters length'),
         salary: yup.string("Enter driver's salary").required('Salary is required'),
-        aadhar: yup.string("Enter driver's Aadhar No.").required('Aadhar No. is required')
+        aadhar: yup.string("Enter driver's Aadhar No.").required('Aadhar No. is required'),
+        chargePerTrip: yup.string('Enter Charge Per Trip').required('Charge Per Trip No. is required')
     });
 
     const formik = useFormik({
@@ -99,7 +110,8 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
             phoneNo: activeDriver ? activeDriver.phoneNo : '',
             salary: activeDriver ? activeDriver.salary : '',
             aadhar: activeDriver ? activeDriver.aadhar : '',
-            aadharCard: activeDriver ? activeDriver.aadharCard : ''
+            aadharCard: activeDriver ? activeDriver.aadharCard : '',
+            chargePerTrip: activeDriver ? activeDriver.chargePerTrip : ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
@@ -108,7 +120,8 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                 phoneNo: values.phoneNo,
                 salary: values.salary,
                 aadhar: values.aadhar,
-                aadharCard: values.aadharCard
+                aadharCard: values.aadharCard,
+                chargePerTrip: values.chargePerTrip
             };
 
             if (!activeDriver)
@@ -116,7 +129,7 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                     .then((response) => {
                         getAllDrivers();
                         handleClose();
-                        setAlertMsg('New driver saved successfully');
+                        setAlertMsg('Driver details saved successfully');
                         setSuccessSnack(true);
                     })
                     .catch((error) => {
@@ -140,9 +153,13 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
 
     return (
         <div className={classes.formCont}>
-            <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
+            <Box className={classes.closeBox}>
+                <CloseIcon onClick={() => setOpen(false)} />
+            </Box>
+            <Typography variant="h2" style={{ textAlign: 'center', margin: '10px auto' }}>
                 DRIVER DETAILS
             </Typography>
+            <Divider sx={{ mb: 3 }} />
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={6} className={classes.formItems}>
@@ -198,6 +215,19 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                             onChange={formik.handleChange}
                             error={formik.touched.aadhar && Boolean(formik.errors.aadhar)}
                             helperText={formik.touched.aadhar && formik.errors.aadhar}
+                        />
+                    </Grid>
+                    <Grid item xs={6} className={classes.formItems}>
+                        <TextField
+                            fullWidth
+                            id="chargePerTrip"
+                            type="string"
+                            name="chargePerTrip"
+                            label="Charge Per Trip"
+                            value={formik.values.chargePerTrip}
+                            onChange={formik.handleChange}
+                            error={formik.touched.chargePerTrip && Boolean(formik.errors.chargePerTrip)}
+                            helperText={formik.touched.chargePerTrip && formik.errors.chargePerTrip}
                         />
                     </Grid>
                     {/* <Grid item xs={6} className={classes.formItems}>

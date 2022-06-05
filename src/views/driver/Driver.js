@@ -23,6 +23,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DriverForm from './DriverForm';
 import CreateIcon from '@material-ui/icons/Create';
 import DriverTrips from './DriverTrips';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -94,6 +97,18 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         cursor: 'pointer'
+    },
+    closeBox: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        cursor: 'pointer',
+        borderRadius: '50%',
+        border: '1px solid red',
+        fontWeight: 500,
+        marginRight: '8px',
+        // color: theme.palette.grey[100],
+        borderColor: 'black'
     }
 }));
 
@@ -107,9 +122,7 @@ function Driver() {
     const [activeDriver, setActiveDriver] = useState();
     const [anchorEl, setAnchorEl] = useState(null);
     const d = new Date();
-    const [endDate, setEndDate] = useState(new Date());
     d.setMonth(d.getMonth() - 1);
-    const [startDate, setStartDate] = useState(d);
     const [showTrips, setShowTrips] = useState();
     const [trips, setTrips] = useState([]);
 
@@ -141,8 +154,7 @@ function Driver() {
             });
     };
 
-    const showOrders = () => {
-        console.log(activeDriver, 'active');
+    const showOrders = (startDate, endDate) => {
         Axios.post(`/trip/get-trip-by-driver/${activeDriver._id}`, { startDate, endDate })
             .then((response) => {
                 setTrips(response.data);
@@ -157,6 +169,25 @@ function Driver() {
 
     const popOver = Boolean(anchorEl);
     const id = popOver ? 'simple-popover' : undefined;
+
+    const validationSchema = yup.object({
+        startDate: yup.string('Please select Start Date').required('Start Date is required'),
+        endDate: yup.string('Please select End Date').required('End Date is required')
+    });
+
+    const formik = useFormik({
+        initialValues: {
+            startDate: d.toISOString().split('T')[0],
+            endDate: new Date().toISOString().split('T')[0]
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values) => {
+            let startDate = new Date(values.startDate);
+            let endDate = new Date(values.endDate);
+
+            showOrders(startDate, endDate);
+        }
+    });
 
     return (
         <div className={classes.root}>
@@ -175,7 +206,6 @@ function Driver() {
                 <Box sx={{ p: 2 }}>
                     {vehicles?.length ? (
                         vehicles.map((driver) => {
-                            console.log(driver);
                             return (
                                 <Box className={classes.customerCont}>
                                     <Grid container>
@@ -228,55 +258,66 @@ function Driver() {
                                                         setAnchorEl();
                                                     }}
                                                 >
-                                                    <Box display={'flex'} flexDirection="column" sx={{ p: 2 }}>
-                                                        <Typography
-                                                            variant="h6"
-                                                            fontSize={'20px'}
-                                                            marginBottom={'15px'}
-                                                            className={classes.typography}
-                                                            textAlign="center"
-                                                        >
-                                                            Select Date Range
-                                                        </Typography>
-                                                        <Divider backgroundColor="black" />
-                                                        <Box sx={{ mb: 1.5 }}>
-                                                            <TextField
-                                                                type={'date'}
-                                                                label="Select Intial Date"
-                                                                value={startDate.toISOString().split('T')[0]}
-                                                                defaultValue={startDate.toISOString().split('T')[0]}
-                                                                InputLabelProps={{
-                                                                    shrink: true
-                                                                }}
-                                                                onChange={(e) => {
-                                                                    setStartDate(e.target.value);
-                                                                }}
-                                                                size="small"
-                                                                sx={{ mr: 1 }}
-                                                            />
-                                                            <TextField
-                                                                type={'date'}
-                                                                label="Select End Date"
-                                                                value={endDate.toISOString().split('T')[0]}
-                                                                defaultValue={endDate.toISOString().split('T')[0]}
-                                                                InputLabelProps={{
-                                                                    shrink: true
-                                                                }}
-                                                                onChange={(e) => {
-                                                                    setEndDate(e.target.value);
-                                                                }}
-                                                                size="small"
-                                                            />
-                                                        </Box>
-                                                        <Button
-                                                            onClick={() => showOrders()}
-                                                            margin="auto"
-                                                            size="small"
-                                                            variant="contained"
-                                                            color="secondary"
-                                                        >
-                                                            SHOW ORDERS
-                                                        </Button>
+                                                    <Box>
+                                                        <form onSubmit={formik.handleSubmit}>
+                                                            <Box display={'flex'} flexDirection="column" sx={{ p: 2 }}>
+                                                                <Typography
+                                                                    variant="h6"
+                                                                    fontSize={'20px'}
+                                                                    marginBottom={'15px'}
+                                                                    className={classes.typography}
+                                                                    textAlign="center"
+                                                                >
+                                                                    Select Date Range
+                                                                </Typography>
+                                                                <Box>
+                                                                    <CloseIcon className={classes.closeBox} onClick={() => setAnchorEl()} />
+                                                                </Box>
+                                                                <Divider />
+                                                                <Grid container spacing={1}>
+                                                                    <Grid item xs={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            type="date"
+                                                                            id="startDate"
+                                                                            name="startDate"
+                                                                            label="Start Date"
+                                                                            value={formik.values.startDate}
+                                                                            onChange={formik.handleChange}
+                                                                            error={
+                                                                                formik.touched.startDate && Boolean(formik.errors.startDate)
+                                                                            }
+                                                                            helperText={formik.touched.startDate && formik.errors.startDate}
+                                                                        />
+                                                                    </Grid>
+                                                                    <Grid item xs={6}>
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            type="date"
+                                                                            id="endDate"
+                                                                            name="endDate"
+                                                                            label="End Date "
+                                                                            value={formik.values.endDate}
+                                                                            onChange={formik.handleChange}
+                                                                            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+                                                                            helperText={formik.touched.endDate && formik.errors.endDate}
+                                                                        />
+                                                                    </Grid>
+                                                                </Grid>
+                                                                <Box sx={{ mt: 2 }}>
+                                                                    <Button
+                                                                        margin="auto"
+                                                                        size="small"
+                                                                        variant="contained"
+                                                                        color="secondary"
+                                                                        fullWidth
+                                                                        type="submit"
+                                                                    >
+                                                                        SHOW ORDERS
+                                                                    </Button>
+                                                                </Box>
+                                                            </Box>
+                                                        </form>
                                                     </Box>
                                                 </Popover>
                                             </Box>
