@@ -20,6 +20,7 @@ import Axios from '../../axios';
 import logo from '../../images/logo.png';
 import PrintIcon from '@material-ui/icons/Print';
 import CloseIcon from '@material-ui/icons/Close';
+import { ToWords } from 'to-words';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -66,6 +67,12 @@ const useStyles = makeStyles((theme) => ({
         marginRight: '8px',
         // color: theme.palette.grey[100],
         borderColor: 'black'
+    },
+    signBox: {
+        border: '1px solid black',
+        width: '100px',
+        height: '40px',
+        marginBottom: '10px'
     }
 }));
 
@@ -76,7 +83,9 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
     const [drivers, setDrivers] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [totalEarning, setTotalEarning] = useState();
+    const [totalEarningWithComma, setTotalEarningWithComma] = useState();
     const company = trips[0]?.company;
+    const toWords = new ToWords();
 
     useEffect(() => {
         if (trips?.length) {
@@ -84,6 +93,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
             trips.map((trip) => {
                 tempEarning += trip.totalPayment ? trip.totalPayment : 0 + trip.extraCharges ? trip.extraCharges : 0;
             });
+            setTotalEarning(tempEarning);
 
             tempEarning = tempEarning.toString();
             var lastThree = tempEarning.substring(tempEarning.length - 3);
@@ -91,7 +101,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
             if (otherNumbers != '') lastThree = ',' + lastThree;
             tempEarning = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
 
-            setTotalEarning(tempEarning);
+            setTotalEarningWithComma(tempEarning);
         }
     }, [trips]);
 
@@ -264,12 +274,30 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                 Total Payment
                                             </TableCell>
                                             <TableCell className={classes.tripItem} align="right">
-                                                {totalEarning}
+                                                {totalEarningWithComma}
+                                            </TableCell>
+                                        </TableRow>
+                                        <TableRow style={{ border: 'none' }}>
+                                            <TableCell className={classes.tripItem} colSpan={4}></TableCell>
+                                            <TableCell className={classes.tripItem} align="right">
+                                                {totalEarning && toWords.convert(totalEarning, { currency: true })}
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+                        </Box>
+                        <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 5 }}>
+                            <Grid container spacing={5} display={'flex'}>
+                                <Grid item alignItems="center">
+                                    <Box className={classes.signBox}></Box>
+                                    <Typography textAlign={'center'}>TRANSPORT</Typography>
+                                </Grid>
+                                <Grid item alignItems="center">
+                                    <Box className={classes.signBox}></Box>
+                                    <Typography textAlign={'center'}>RECEIVED</Typography>
+                                </Grid>
+                            </Grid>
                         </Box>
                     </Box>
                 </div>

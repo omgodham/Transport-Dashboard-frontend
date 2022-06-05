@@ -27,7 +27,7 @@ export default function ChallanImages({ updateTrip, challanImages, setImagesOpen
     return (
         <Box>
             <Box p={2} ref={imagesRef}>
-                {challanImages.length ? (
+                {challanImages?.length ? (
                     challanImages.map((item, index) => {
                         return (
                             <Box style={{ height: '100%', width: '100%', position: 'relative', display: 'flex' }}>
