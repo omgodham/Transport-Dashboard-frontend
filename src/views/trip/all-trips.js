@@ -25,6 +25,7 @@ import { Box } from '@material-ui/system';
 import React, { useEffect, useState } from 'react';
 import Axios from '../../axios';
 import ChallanImages from './ChallanImages';
+import TripBill from './TripBill';
 import TripForm from './TripForm';
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -147,6 +148,7 @@ const useStyles = makeStyles((theme) => ({
 function AllTrips() {
     const classes = useStyles();
     const [trips, setTrips] = useState([]);
+    const [tripsCopy, setTripsCopy] = useState([]);
     const [tripsLoading, setTripsLoading] = useState(true);
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
@@ -169,6 +171,10 @@ function AllTrips() {
     const [challanDialog, setChallanDialog] = useState(false);
     const [imagesOpen, setImagesOpen] = useState(false);
     const [showBackdrop, setShowBackdrop] = useState(false);
+    const [showBill, setShowBill] = useState();
+    const [activeTrip, setActiveTrip] = useState();
+    const [savingTrip, setSavingTrip] = useState();
+
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
             .then((res) => {
@@ -202,9 +208,10 @@ function AllTrips() {
         Axios.post('/trip/get-all-trips', { startDate, endDate, activeDriver })
             .then((data) => {
                 setTrips(data.data);
+                setTripsCopy(data.data);
                 setTripsLoading(false);
                 setUpdatingTrip();
-                console.log(data.data);
+                return data.data;
             })
             .catch((error) => {
                 setAlertMessage('Something went wrong');
@@ -218,7 +225,6 @@ function AllTrips() {
         // var d = new Date();
         // console.log(d.setMonth(d.getMonth() - 1), 'ago');
         // console.log(d);
-        console.log(startDate.toLocaleString(), endDate);
     }, [startDate, endDate]);
 
     const handleClose = () => {
@@ -229,12 +235,14 @@ function AllTrips() {
     const addTrip = (data) => {
         Axios.post('/trip/create-trip', { data })
             .then((res) => {
+                setSavingTrip(false);
                 getAllTrips();
                 setAlertMessage('Trip Added Successfully');
                 setSuccessSnack(true);
                 handleClose();
             })
             .catch((error) => {
+                setSavingTrip(false);
                 setAlertMessage('Something went wrong');
                 setErrorSnack(true);
                 handleClose();
@@ -246,6 +254,7 @@ function AllTrips() {
         setUpdatingTrip(id);
         Axios.patch(`trip/update-trip/${id}`, { data })
             .then((response) => {
+                setSavingTrip(false);
                 setShowDetails(response.data);
                 if (isClose) handleClose();
                 getAllTrips();
@@ -254,6 +263,7 @@ function AllTrips() {
                 setShowBackdrop(false);
             })
             .catch((error) => {
+                setSavingTrip(false);
                 setAlertMessage('Something went wrong');
                 setErrorSnack(true);
                 setShowBackdrop(false);
@@ -299,7 +309,21 @@ function AllTrips() {
 
     const setDriverFilter = (driver) => {};
 
-    console.log(drivers, 'drivers');
+    const setChallanFilter = (status) => {
+        let tempTrips = tripsCopy;
+
+        if (status == 'added') {
+            tempTrips = tempTrips.filter(function (trip) {
+                return trip.challanImages.length > 0;
+            });
+        } else {
+            tempTrips = tempTrips.filter(function (trip) {
+                return trip.challanImages.length == 0;
+            });
+        }
+
+        setTrips(tempTrips);
+    };
 
     return (
         <div className={classes.root}>
@@ -366,17 +390,12 @@ function AllTrips() {
                         </TextField>
                     </Box>
 
-                    {/* <Box sx={{ width: '150px' }}>
-                        <TextField label="Select Driver" select fullWidth>
-                            {drivers.map((driver, index) => {
-                                return (
-                                    <MenuItem value={index} onClick={() => setDriverFilter(driver._id)}>
-                                        {driver.name}
-                                    </MenuItem>
-                                );
-                            })}
+                    <Box sx={{ width: '150px' }}>
+                        <TextField label="Challan Status" select fullWidth onChange={(e) => setChallanFilter(e.target.value)}>
+                            <MenuItem value="added">Added</MenuItem>
+                            <MenuItem value="notAdded">Not Added</MenuItem>
                         </TextField>
-                    </Box> */}
+                    </Box>
                 </Grid>
                 {/* <Grid container item xs={3}></Grid> */}
                 <Grid item xs={6} container justifyContent={'center'}>
@@ -481,6 +500,19 @@ function AllTrips() {
                                                 >
                                                     <CreateIcon color="black" />
                                                 </Box>
+                                                <Button
+                                                    className={classes.submitBtn}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    style={{ width: 'fit-content' }}
+                                                    color="secondary"
+                                                    onClick={() => {
+                                                        setShowBill(true);
+                                                        setActiveTrip(trip);
+                                                    }}
+                                                >
+                                                    Generate Bill
+                                                </Button>
                                             </Grid>
                                             {/* <Grid item className={classes.tripItems} justifyContent="right" xs={3}>
                                             <Button
@@ -533,6 +565,8 @@ function AllTrips() {
                         trip={showDetails}
                         setChallanDialog={setChallanDialog}
                         setImagesOpen={setImagesOpen}
+                        savingTrip={savingTrip}
+                        setSavingTrip={setSavingTrip}
                     />
                 </Box>
             </Dialog>
@@ -566,6 +600,22 @@ function AllTrips() {
                     />
                 </Box>
             </Dialog>
+
+            <Dialog open={showBill}>
+                <Box sx={{ position: 'relative' }}>
+                    <Box sx={{ p: 2 }}>
+                        <CloseIcon
+                            className={[classes.closeIcon, 'closeIcon']}
+                            style={{ color: 'black', borderColor: 'black' }}
+                            onClick={() => setShowBill(false)}
+                        />
+                    </Box>
+                    <Box sx={{ p: 2 }}>
+                        <TripBill trip={activeTrip} />
+                    </Box>
+                </Box>
+            </Dialog>
+
             <Backdrop className={classes.backdrop} open={showBackdrop}>
                 <CircularProgress color="inherit" />
             </Backdrop>

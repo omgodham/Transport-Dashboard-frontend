@@ -12,7 +12,8 @@ import {
     Snackbar,
     TextField,
     Typography,
-    MenuItem
+    MenuItem,
+    CircularProgress
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useEffect, useRef, useState } from 'react';
@@ -91,10 +92,10 @@ const useStyles = makeStyles((theme) => ({
         color: '#9d0208'
     },
     addBtn: {
-        backgroundColor: theme.palette.secondary.dark,
-        '&:hover': {
-            backgroundColor: theme.palette.secondary[800]
-        }
+        // backgroundColor: theme.palette.secondary.dark,
+        // '&:hover': {
+        //     backgroundColor: theme.palette.secondary[800]
+        // }
     },
     closeIcon: {
         position: 'absolute',
@@ -107,6 +108,29 @@ const useStyles = makeStyles((theme) => ({
         marginRight: '8px',
         // color: theme.palette.grey[100],
         borderColor: 'black'
+    },
+    wrapperLoading: {
+        width: '100%',
+        position: 'relative'
+    },
+    buttonProgress: {
+        color: theme.palette.secondary[800],
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12
+    },
+    editIconBox: {
+        border: '1px solid #9d0208',
+        borderRadius: '5px',
+        padding: '2px',
+        margin: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        color: '#dc2f02',
+        cursor: 'pointer',
+        marginRight: '20px'
     }
 }));
 
@@ -126,6 +150,7 @@ function Customer() {
     d.setMonth(d.getMonth() - 1);
     // const [startDate, setStartDate] = useState(d);
     const [askDate, setAskDate] = useState();
+    const [billBtnLoading, setBillBtnLoading] = useState();
 
     const getAllCustomers = () => {
         Axios.get('/customer/get-all-customers')
@@ -166,6 +191,7 @@ function Customer() {
         Axios.post(`/trip/get-trip-by-customer/${activeCust._id}`, { startDate, endDate, company })
             .then((response) => {
                 setTrips(response.data);
+                setBillBtnLoading(false);
                 setShowBill(true);
             })
             .catch((error) => console.log(error));
@@ -185,6 +211,8 @@ function Customer() {
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
+            setBillBtnLoading(true);
+
             let startDate = new Date(values.startDate);
             let endDate = new Date(values.endDate);
             let company = values.company;
@@ -203,6 +231,7 @@ function Customer() {
                         onClick={() => setOpen(true)}
                         variant="contained"
                         startIcon={<AddCircleOutlineIcon />}
+                        color="secondary"
                     >
                         CUSTOMER
                     </Button>
@@ -232,14 +261,17 @@ function Customer() {
                                     </Grid>
                                     <Grid className={classes.customerItems} item xs={3}>
                                         <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
-                                            <DeleteIcon className={classes.icons} onClick={() => handleDelete(customer._id)} />
+                                            <Box onClick={() => handleDelete(customer._id)} className={classes.editIconBox}>
+                                                <DeleteIcon className={classes.icons} />
+                                            </Box>
                                             <Button
                                                 onClick={() => {
                                                     setActiveCust(customer);
                                                     setAskDate(true);
                                                 }}
                                                 className={classes.addBtn}
-                                                variant="contained"
+                                                variant="outlined"
+                                                color="secondary"
                                             >
                                                 GENERATE BILL
                                             </Button>
@@ -329,9 +361,12 @@ function Customer() {
                                 </Grid>
                             </Grid>
 
-                            <Button type="submit" fullWidth className={classes.addBtn} variant="contained">
-                                SHOW BILL
-                            </Button>
+                            <Box className={classes.wrapperLoading}>
+                                <Button type="submit" disabled={billBtnLoading} fullWidth className={classes.addBtn} variant="contained">
+                                    SHOW BILL
+                                </Button>
+                                {billBtnLoading && <CircularProgress size={24} className={classes.buttonProgress} />}
+                            </Box>
                         </Box>
                     </form>
                 </Box>
