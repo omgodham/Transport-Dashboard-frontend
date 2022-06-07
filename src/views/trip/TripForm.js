@@ -63,6 +63,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
     const [extraCharges, setExtraCharges] = useState([]);
     const [showDetails, setShowDetails] = useState();
     const [showDialog, setShowDialog] = useState(1);
+    const [customExtraChargeCheck, setCustomExtraChargeCheck] = useState(false);
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -102,8 +103,12 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             });
     }, []);
 
-    // var d = new Date(trip?.tripDate);
-    // console.log(d?.toISOString().split('T')[0]);
+    useEffect(() => {
+        if (trip) {
+            if (!extraCharges.some((item) => item.amount == trip.extraCharge)) setCustomExtraChargeCheck(true);
+            else setCustomExtraChargeCheck(false);
+        }
+    }, [trip, extraCharges]);
 
     const validationSchema = yup.object({
         customer: yup.string('Select customer').required('Customer is required'),
@@ -146,18 +151,18 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             agent: trip ? trip.agent : '',
             commission: trip ? trip.commission : 0,
             driverExtraCharge: trip ? trip.driverExtraCharge : 0,
-            challanImages: trip ? trip.challanImages : []
+            challanImages: trip ? trip.challanImages : [],
+            extraChargeDescription: trip ? trip.extraChargeDescription : ''
         },
 
         validationSchema: validationSchema,
         onSubmit: (values) => {
             setSavingTrip(true);
             let tempValues = values;
-            if (values.extraCharge.includes('₹')) {
-                let temp = values.extraCharge.split('₹')[1];
-                temp = temp.split(')')[0];
+            let tempExtraCharge = extraCharges.find((item) => item.amount == tempValues.extraCharge);
+            if (tempExtraCharge && !customExtraChargeCheck) {
+                tempValues.extraChargeDescription = tempExtraCharge.type;
             }
-            tempValues.extraCharge = parseFloat(tempValues.extraCharge);
             if (trip) updateTrip(tempValues, trip._id, false);
             else addTrip(tempValues);
         }
@@ -335,21 +340,73 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                     />
                 </Grid>
 
-                <Grid item xs={6}>
-                    <Autocomplete
-                        value={formik.values.extraCharge}
-                        onChange={(event, newValue) => {
-                            formik.setFieldValue('extraCharge', newValue);
+                <Grid item xs={12}>
+                    {' '}
+                    <input
+                        type="checkbox"
+                        id="customExtraChargeCheck"
+                        checked={customExtraChargeCheck}
+                        onChange={(e) => {
+                            setCustomExtraChargeCheck(e.target.checked);
                         }}
-                        inputValue={formik.values.extraCharge}
-                        onInputChange={(event, newInputValue) => {
-                            formik.setFieldValue('extraCharge', newInputValue);
-                        }}
-                        id="extraCharge"
-                        options={extraCharges.map((extraCharge) => `${extraCharge.type}( ₹${extraCharge.amount})`)}
-                        renderInput={(params) => <TextField {...params} label="Extra Charge" variant="outlined" />}
                     />
+                    <label for="customExtraChargeCheck">Custom extra charges</label>
+                    {customExtraChargeCheck && (
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                id="extraCharge"
+                                name="extraCharge"
+                                label="Enter extra charge"
+                                value={formik.values.extraCharge}
+                                onChange={formik.handleChange}
+                                error={formik.touched.extraCharge && Boolean(formik.errors.extraCharge)}
+                                helperText={formik.touched.extraCharge && formik.errors.extraCharge}
+                                style={{ marginTop: '20px' }}
+                                type="number"
+                            />
+                            <TextField
+                                fullWidth
+                                id="extraChargeDescription"
+                                name="extraChargeDescription"
+                                label="Enter extra charge description"
+                                value={formik.values.extraChargeDescription}
+                                onChange={formik.handleChange}
+                                error={formik.touched.extraCharge && Boolean(formik.errors.extraCharge)}
+                                helperText={formik.touched.extraCharge && formik.errors.extraCharge}
+                                style={{ marginTop: '20px' }}
+                            />
+                        </Grid>
+                    )}
                 </Grid>
+                {!customExtraChargeCheck && (
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            id="extraCharge"
+                            name="extraCharge"
+                            label="Select extra charge"
+                            labelId="demo-simple-select-filled-label"
+                            select
+                            value={formik.values.extraCharge}
+                            onChange={formik.handleChange}
+                            error={formik.touched.extraCharge && Boolean(formik.errors.extraCharge)}
+                            helperText={formik.touched.extraCharge && formik.errors.extraCharge}
+                        >
+                            {extraCharges.length ? (
+                                extraCharges.map((extraCharge) => {
+                                    return (
+                                        <MenuItem value={extraCharge.amount}>
+                                            {extraCharge.type}( ₹{extraCharge.amount})
+                                        </MenuItem>
+                                    );
+                                })
+                            ) : (
+                                <MenuItem value="none">None</MenuItem>
+                            )}
+                        </TextField>
+                    </Grid>
+                )}
                 <Grid item xs={6}>
                     <TextField
                         fullWidth
