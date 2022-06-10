@@ -20,6 +20,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Axios from '../../axios';
 import CloseIcon from '@material-ui/icons/Close';
+import Compressor from 'compressorjs';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -109,8 +110,8 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
             name: activeDriver ? activeDriver.name : '',
             phoneNo: activeDriver ? activeDriver.phoneNo : '',
             salary: activeDriver ? activeDriver.salary : '',
-            aadhar: activeDriver ? activeDriver.aadhar : '',
             aadharCard: activeDriver ? activeDriver.aadharCard : '',
+            license: activeDriver ? activeDriver.license : '',
             chargePerTrip: activeDriver ? activeDriver.chargePerTrip : ''
         },
         validationSchema: validationSchema,
@@ -119,8 +120,8 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                 name: values.name,
                 phoneNo: values.phoneNo,
                 salary: values.salary,
-                aadhar: values.aadhar,
                 aadharCard: values.aadharCard,
+                license: values.license,
                 chargePerTrip: values.chargePerTrip
             };
 
@@ -150,6 +151,21 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                     });
         }
     });
+
+    const handleImageCompressionAndConversion = (files, name) => {
+        let reader = new FileReader();
+        for (const file of files) {
+            new Compressor(file, {
+                quality: 0.6,
+                success(result) {
+                    reader.readAsDataURL(result);
+                    reader.onload = function () {
+                        formik.setFieldValue(name, reader.result);
+                    };
+                }
+            });
+        }
+    };
 
     return (
         <div className={classes.formCont}>
@@ -204,7 +220,7 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                             }}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    {/* <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="aadhar"
@@ -216,7 +232,7 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                             error={formik.touched.aadhar && Boolean(formik.errors.aadhar)}
                             helperText={formik.touched.aadhar && formik.errors.aadhar}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
@@ -230,20 +246,34 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                             helperText={formik.touched.chargePerTrip && formik.errors.chargePerTrip}
                         />
                     </Grid>
-                    {/* <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="aadharCard"
                             type="file"
                             name="aadharCard"
                             label="Driver's Aadhar Card"
-                            value={formik.values.aadharCard}
-                            onChange={formik.handleChange}
+                            onChange={(e) => {
+                                handleImageCompressionAndConversion(e.target.files, 'aadharCard');
+                            }}
                             error={formik.touched.aadharCard && Boolean(formik.errors.aadharCard)}
                             helperText={formik.touched.aadharCard && formik.errors.aadharCard}
-                            autoFocus
                         />
-                    </Grid> */}
+                    </Grid>
+                    <Grid item xs={6} className={classes.formItems}>
+                        <TextField
+                            fullWidth
+                            id="license"
+                            type="file"
+                            name="license"
+                            label="Driver's License"
+                            onChange={(e) => {
+                                handleImageCompressionAndConversion(e.target.files, 'license');
+                            }}
+                            error={formik.touched.license && Boolean(formik.errors.license)}
+                            helperText={formik.touched.license && formik.errors.license}
+                        />
+                    </Grid>
                     <Box className={classes.subBtnCont}>
                         <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
                             Submit

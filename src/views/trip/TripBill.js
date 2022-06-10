@@ -244,6 +244,16 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                     <TableCell className={classes.tripItem} align="center"></TableCell>
                                     <TableCell className={classes.tripItem} align="center"></TableCell>
                                 </TableRow>
+                                <TableRow>
+                                    <TableCell align="left" className={classes.tripItem}>
+                                        LR Number
+                                    </TableCell>
+                                    <TableCell className={classes.tripItem} align="center">
+                                        {trip.lrNo}
+                                    </TableCell>
+                                    <TableCell className={classes.tripItem} align="center"></TableCell>
+                                    <TableCell className={classes.tripItem} align="center"></TableCell>
+                                </TableRow>
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
                                         Amount
@@ -281,14 +291,22 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         </Table>
                     </TableContainer>
                 </Box>
-                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 5 }}>
+                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 7 }}>
                     <Grid container spacing={5} display={'flex'}>
                         <Grid item alignItems="center">
-                            <Box className={classes.signBox}></Box>
-                            <Typography textAlign={'center'}>TRANSPORT</Typography>
+                            <Typography textAlign={'center'}>
+                                {trip.company ? (
+                                    trip.company == 'swapnil' ? (
+                                        'SWAPNIL TRANSPORT'
+                                    ) : (
+                                        trip.company == 'atlas' && 'ATLAS CARGO'
+                                    )
+                                ) : (
+                                    <Skeleton height={60} />
+                                )}
+                            </Typography>
                         </Grid>
                         <Grid item alignItems="center">
-                            <Box className={classes.signBox}></Box>
                             <Typography textAlign={'center'}>RECEIVED</Typography>
                         </Grid>
                     </Grid>

@@ -193,6 +193,7 @@ function Customer() {
                 setTrips(response.data);
                 setBillBtnLoading(false);
                 setShowBill(true);
+                setAskDate(false);
             })
             .catch((error) => console.log(error));
     };
@@ -308,7 +309,14 @@ function Customer() {
 
             <Dialog maxWidth="lg" open={askDate}>
                 <Box sx={{ m: 2 }} justifyContent={'center'} display="flex" flexDirection={'column'}>
-                    <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => setAskDate(false)} />
+                    <CloseIcon
+                        className={[classes.closeIcon, 'closeIcon']}
+                        color="red"
+                        onClick={() => {
+                            setAskDate(false);
+                            setBillBtnLoading(false);
+                        }}
+                    />
                     <form onSubmit={formik.handleSubmit}>
                         <Typography variant="h5" fontSize={'20px'} textAlign={'center'} marginTop="20px">
                             SELECT COMPANY & DATE RANGE
@@ -362,7 +370,14 @@ function Customer() {
                             </Grid>
 
                             <Box className={classes.wrapperLoading}>
-                                <Button type="submit" disabled={billBtnLoading} fullWidth className={classes.addBtn} variant="contained">
+                                <Button
+                                    type="submit"
+                                    disabled={billBtnLoading}
+                                    fullWidth
+                                    className={classes.addBtn}
+                                    color="secondary"
+                                    variant="contained"
+                                >
                                     SHOW BILL
                                 </Button>
                                 {billBtnLoading && <CircularProgress size={24} className={classes.buttonProgress} />}

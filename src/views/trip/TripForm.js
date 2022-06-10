@@ -131,7 +131,6 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             driver: trip ? trip.driver : '',
             lrNo: trip ? trip.lrNo : '',
             challanNo: trip ? trip.challanNo : '',
-            billNo: trip ? trip.billNo : '',
             advanceForCustomer: trip ? trip.advanceForCustomer : '',
             advanceToDriver: trip ? trip.advanceToDriver : '',
             fuelCharge: trip ? trip.fuelCharge : 0,
@@ -384,18 +383,6 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                         helperText={formik.touched.challanNo && formik.errors.challanNo}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="billNo"
-                        name="billNo"
-                        label="Bill Number"
-                        value={formik.values.billNo}
-                        onChange={formik.handleChange}
-                        error={formik.touched.billNo && Boolean(formik.errors.billNo)}
-                        helperText={formik.touched.billNo && formik.errors.billNo}
-                    />
-                </Grid>
 
                 {/* <Grid item xs={6}>
                     <TextField
@@ -535,6 +522,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                     <Box>
                         <label for="challanImages">Upload challan images</label>
                         <TextField
+                            accept="image/*"
                             type="file"
                             id="challanImages"
                             name="challanImages"

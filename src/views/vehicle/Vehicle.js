@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
 import Axios from '../../axios';
 import VehicleForm from './VehicleForm';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,7 +96,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3)
+        padding: theme.spacing(2, 4, 3),
+        position: 'relative'
     }
 }));
 
@@ -265,20 +267,29 @@ function Vehicle() {
                 </Grid>
             </Box>
 
-            <Dialog open={open} onClose={handleClose}>
-                <VehicleForm
-                    getAllVehicles={getAllVehicles}
-                    handleClose={handleClose}
-                    setAlertMsg={setAlertMsg}
-                    setSuccessSnack={setSuccessSnack}
-                    setErrorSnack={setErrorSnack}
-                />
+            <Dialog open={open}>
+                <Box sx={{ position: 'relative' }}>
+                    <VehicleForm
+                        getAllVehicles={getAllVehicles}
+                        handleClose={handleClose}
+                        setAlertMsg={setAlertMsg}
+                        setSuccessSnack={setSuccessSnack}
+                        setErrorSnack={setErrorSnack}
+                    />
+                    <CloseIcon
+                        style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}
+                        onClick={() => handleClose()}
+                    />
+                </Box>
             </Dialog>
 
             {currentVehicle && (
-                <Dialog onClose={handleClose} open={openDialog} style={{ maxHeight: '90vh', overflowY: 'scroll' }}>
+                <Dialog open={openDialog} style={{ maxHeight: '90vh', overflowY: 'scroll' }}>
                     <Box className={classes.paper}>
-                        {' '}
+                        <CloseIcon
+                            style={{ position: 'absolute', top: '10px', right: '10px', cursor: 'pointer' }}
+                            onClick={() => handleClose()}
+                        />
                         <div className={classes.formCont}>
                             <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
                                 Vehicle Details Update
@@ -288,12 +299,12 @@ function Vehicle() {
                                     <Grid item xs={6} className={classes.formItems}>
                                         <TextField
                                             fullWidth
-                                            id="name"
-                                            name="name"
-                                            label="Name"
-                                            type="name"
-                                            value={currentVehicle.name}
-                                            onChange={(e) => setCurrentVehicle({ ...currentVehicle, name: e.target.value })}
+                                            id="model"
+                                            name="model"
+                                            label="Model"
+                                            type="model"
+                                            value={currentVehicle.model}
+                                            onChange={(e) => setCurrentVehicle({ ...currentVehicle, model: e.target.value })}
                                         />
                                     </Grid>
                                     <Grid item xs={6} className={classes.formItems}>
