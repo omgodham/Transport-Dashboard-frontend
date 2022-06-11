@@ -87,9 +87,9 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
 
     const validationSchema = yup.object({
         email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
-        name: yup.string('Please enter customer name.').required('Name is required'),
+        name: yup.string('Please enter customer name.').required('Company Name is required'),
         ownerName: yup.string('Please enter owner name.').required('Owner name is required'),
-        gstNo: yup.string('Please enter GST number.').required('GST number is required'),
+        gstNo: yup.string('Please enter GST number.'),
         phone: yup.string('Please enter phone number.').required('Phone number is required'),
         state: yup.string('Please enter state.').required('State is required'),
         address: yup.string('Please enter address.').required('Address is required')

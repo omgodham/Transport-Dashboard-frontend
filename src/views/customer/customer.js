@@ -193,6 +193,7 @@ function Customer() {
                 setTrips(response.data);
                 setBillBtnLoading(false);
                 setShowBill(true);
+                setAskDate(false);
             })
             .catch((error) => console.log(error));
     };
@@ -252,7 +253,7 @@ function Customer() {
                                     >
                                         <Grid container>
                                             <Grid className={classes.customerItems} item xs={4}>
-                                                <Typography variant="h3">{customer.name}</Typography>
+                                                <Typography variant="h5">{customer.name}</Typography>
                                             </Grid>
                                             <Grid className={classes.customerItems} item xs={4}>
                                                 <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
@@ -296,19 +297,29 @@ function Customer() {
             </Box>
 
             <Dialog open={open} onClose={() => handleClose()}>
-                <CustomerForm
-                    getAllCustomers={getAllCustomers}
-                    setOpen={setOpen}
-                    setAlertMsg={setAlertMsg}
-                    setErrorSnack={setErrorSnack}
-                    setSuccessSnack={setSuccessSnack}
-                    activeCust={activeCust}
-                />
+                <Box sx={{ position: 'relative' }}>
+                    <CustomerForm
+                        getAllCustomers={getAllCustomers}
+                        setOpen={setOpen}
+                        setAlertMsg={setAlertMsg}
+                        setErrorSnack={setErrorSnack}
+                        setSuccessSnack={setSuccessSnack}
+                        activeCust={activeCust}
+                    />
+                    <CloseIcon style={{ position: 'absolute', top: '20px', right: '20px', cursor: 'pointer' }} onClick={handleClose} />
+                </Box>
             </Dialog>
 
             <Dialog maxWidth="lg" open={askDate}>
                 <Box sx={{ m: 2 }} justifyContent={'center'} display="flex" flexDirection={'column'}>
-                    <CloseIcon className={[classes.closeIcon, 'closeIcon']} color="red" onClick={() => setAskDate(false)} />
+                    <CloseIcon
+                        className={[classes.closeIcon, 'closeIcon']}
+                        color="red"
+                        onClick={() => {
+                            setAskDate(false);
+                            setBillBtnLoading(false);
+                        }}
+                    />
                     <form onSubmit={formik.handleSubmit}>
                         <Typography variant="h5" fontSize={'20px'} textAlign={'center'} marginTop="20px">
                             SELECT COMPANY & DATE RANGE
@@ -362,7 +373,14 @@ function Customer() {
                             </Grid>
 
                             <Box className={classes.wrapperLoading}>
-                                <Button type="submit" disabled={billBtnLoading} fullWidth className={classes.addBtn} variant="contained">
+                                <Button
+                                    type="submit"
+                                    disabled={billBtnLoading}
+                                    fullWidth
+                                    className={classes.addBtn}
+                                    color="secondary"
+                                    variant="contained"
+                                >
                                     SHOW BILL
                                 </Button>
                                 {billBtnLoading && <CircularProgress size={24} className={classes.buttonProgress} />}
