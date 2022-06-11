@@ -64,7 +64,6 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
     const [showDetails, setShowDetails] = useState();
     const [showDialog, setShowDialog] = useState(1);
     const [customExtraChargeCheck, setCustomExtraChargeCheck] = useState(false);
-
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
             .then((res) => {
@@ -167,6 +166,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             else addTrip(tempValues);
         }
     });
+    // setCustomExtraChargeCheck(true);
 
     const handleImageCompressionAndConversion = (files) => {
         let reader = new FileReader();
