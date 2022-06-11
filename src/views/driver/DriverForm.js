@@ -131,7 +131,7 @@ function DriverForm({
             .required('Phone number is required')
             .min(10, 'Phone No. should be of minimum 10 characters length'),
         salary: yup.string("Enter driver's salary").required('Salary is required'),
-        aadhar: yup.string("Enter driver's Aadhar No.").required('Aadhar No. is required'),
+        // aadhar: yup.string("Enter driver's Aadhar No.").required('Aadhar No. is required'),
         chargePerTrip: yup.string('Enter Charge Per Trip')
     });
 
