@@ -1,4 +1,4 @@
-import { Alert, Avatar, Box, Button, Dialog, Grid, Snackbar, TextField, Typography } from '@material-ui/core';
+import { Alert, Avatar, Box, Button, Dialog, Divider, Grid, Snackbar, TextField, Typography } from '@material-ui/core';
 import React from 'react';
 import * as yup from 'yup';
 import Axios from '../../axios';
@@ -6,6 +6,10 @@ import { useFormik } from 'formik';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        minWidth: '500px',
+        padding: '0 20px 20px'
+    },
     btnCont: {
         position: 'absolute',
         top: '20px',
@@ -65,25 +69,13 @@ function VehicleForm({ getAllVehicles, handleClose, setAlertMsg, setSuccessSnack
     });
 
     return (
-        <div className={classes.formCont}>
+        <div className={classes.root}>
             <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
                 Vehicle Details
             </Typography>
+            <Divider />
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
-                    <Grid item xs={6} className={classes.formItems}>
-                        <TextField
-                            fullWidth
-                            id="name"
-                            name="name"
-                            label="Name"
-                            type="name"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
-                        />
-                    </Grid>
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
@@ -106,12 +98,12 @@ function VehicleForm({ getAllVehicles, handleClose, setAlertMsg, setSuccessSnack
                             onChange={formik.handleChange}
                         />
                     </Grid>
-                    <Box className={classes.subBtnCont}>
-                        <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
-                            Submit
-                        </Button>
-                    </Box>
                 </Grid>
+                <Box sx={{ mt: 3 }} className={classes.subBtnCont}>
+                    <Button color="secondary" className={classes.subBtn} variant="contained" fullWidth type="submit">
+                        Submit
+                    </Button>
+                </Box>
             </form>
         </div>
     );

@@ -21,6 +21,7 @@ import * as yup from 'yup';
 import Axios from '../../axios';
 import FileBase64 from 'react-file-base64';
 import Compressor from 'compressorjs';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -122,7 +123,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
         // driverExtraCharge: yup.string("Enter Driver's extra charges").required('Driver extra charge is required'),
         // agent: yup.string('Enter agent name').required('Agent name is required'),
         // challanNo: yup.string('Enter challan number').required('Challan number is required'),
-        truckModel: yup.string('Enter truck model').required('Truck model is required')
+        truckModel: yup.string('Enter truck model')
     });
 
     const formik = useFormik({
@@ -135,7 +136,6 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             driver: trip ? trip.driver : '',
             lrNo: trip ? trip.lrNo : '',
             challanNo: trip ? trip.challanNo : '',
-            billNo: trip ? trip.billNo : '',
             advanceForCustomer: trip ? trip.advanceForCustomer : '',
             advanceToDriver: trip ? trip.advanceToDriver : '',
             fuelCharge: trip ? trip.fuelCharge : 0,
@@ -145,12 +145,13 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             paymentVoucherNumber: trip ? trip.paymentVoucherNumber : 0,
             materialWeight: trip ? trip.materialWeight : 0,
             truckModel: trip ? trip.truckModel : '',
-            tripDate: trip ? new Date(trip.tripDate) : new Date(),
+            tripDate: trip ? moment(new Date(trip.tripDate)).format('DD-MM-YYYY') : moment(new Date()).format('DD-MM-YYYY'),
             totalPayment: trip ? trip.totalPayment : 0,
             agent: trip ? trip.agent : '',
             commission: trip ? trip.commission : 0,
             driverExtraCharge: trip ? trip.driverExtraCharge : 0,
             challanImages: trip ? trip.challanImages : [],
+            driverBhatta: trip ? trip.Bhatta : 0,
             extraChargeDescription: trip ? trip.extraChargeDescription : ''
         },
 
@@ -418,18 +419,6 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                         helperText={formik.touched.challanNo && formik.errors.challanNo}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="billNo"
-                        name="billNo"
-                        label="Bill Number"
-                        value={formik.values.billNo}
-                        onChange={formik.handleChange}
-                        error={formik.touched.billNo && Boolean(formik.errors.billNo)}
-                        helperText={formik.touched.billNo && formik.errors.billNo}
-                    />
-                </Grid>
 
                 {/* <Grid item xs={6}>
                     <TextField
@@ -566,9 +555,22 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                     />
                 </Grid>
                 <Grid item xs={6}>
+                    <TextField
+                        fullWidth
+                        id="driverBhatta"
+                        name="driverBhatta"
+                        label="Driver's Bhatta"
+                        value={formik.values.driverBhatta}
+                        onChange={formik.handleChange}
+                        error={formik.touched.driverBhatta && Boolean(formik.errors.driverBhatta)}
+                        helperText={formik.touched.driverBhatta && formik.errors.driverBhatta}
+                    />
+                </Grid>
+                <Grid item xs={6}>
                     <Box>
                         <label for="challanImages">Upload challan images</label>
                         <TextField
+                            accept="image/*"
                             type="file"
                             id="challanImages"
                             name="challanImages"

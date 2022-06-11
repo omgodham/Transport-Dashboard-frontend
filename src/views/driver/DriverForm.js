@@ -22,6 +22,7 @@ import * as yup from 'yup';
 import Axios from '../../axios';
 import CloseIcon from '@material-ui/icons/Close';
 import SalaryDetails from './SalaryDetails';
+import Compressor from 'compressorjs';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -131,7 +132,7 @@ function DriverForm({
             .min(10, 'Phone No. should be of minimum 10 characters length'),
         salary: yup.string("Enter driver's salary").required('Salary is required'),
         aadhar: yup.string("Enter driver's Aadhar No.").required('Aadhar No. is required'),
-        chargePerTrip: yup.string('Enter Charge Per Trip').required('Charge Per Trip No. is required')
+        chargePerTrip: yup.string('Enter Charge Per Trip')
     });
 
     const formik = useFormik({
@@ -139,12 +140,12 @@ function DriverForm({
             name: activeDriver ? activeDriver.name : '',
             phoneNo: activeDriver ? activeDriver.phoneNo : '',
             salary: activeDriver ? activeDriver.salary : '',
-            aadhar: activeDriver ? activeDriver.aadhar : '',
             aadharCard: activeDriver ? activeDriver.aadharCard : '',
+            license: activeDriver ? activeDriver.license : '',
             chargePerTrip: activeDriver ? activeDriver.chargePerTrip : '',
             salaryDetails: activeDriver ? (activeDriver.salaryDetails ? activeDriver.salaryDetails : []) : []
         },
-        // validationSchema: validationSchema,
+        validationSchema: validationSchema,
         onSubmit: (values) => {
             if (activeDriver) {
                 setSavingDriver(true);
@@ -168,8 +169,8 @@ function DriverForm({
                 name: values.name,
                 phoneNo: values.phoneNo,
                 salary: values.salary,
-                aadhar: values.aadhar,
                 aadharCard: values.aadharCard,
+                license: values.license,
                 chargePerTrip: values.chargePerTrip,
                 salaryDetails: temp
             };
@@ -203,6 +204,21 @@ function DriverForm({
                     });
         }
     });
+
+    const handleImageCompressionAndConversion = (files, name) => {
+        let reader = new FileReader();
+        for (const file of files) {
+            new Compressor(file, {
+                quality: 0.6,
+                success(result) {
+                    reader.readAsDataURL(result);
+                    reader.onload = function () {
+                        formik.setFieldValue(name, reader.result);
+                    };
+                }
+            });
+        }
+    };
 
     return (
         <div className={classes.formCont}>
@@ -257,7 +273,7 @@ function DriverForm({
                             }}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    {/* <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="aadhar"
@@ -269,7 +285,7 @@ function DriverForm({
                             error={formik.touched.aadhar && Boolean(formik.errors.aadhar)}
                             helperText={formik.touched.aadhar && formik.errors.aadhar}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
@@ -283,20 +299,36 @@ function DriverForm({
                             helperText={formik.touched.chargePerTrip && formik.errors.chargePerTrip}
                         />
                     </Grid>
-                    {/* <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={6} className={classes.formItems}>
+                        <label for="aadharCard">Driver's Aadhar Card</label>
                         <TextField
                             fullWidth
                             id="aadharCard"
                             type="file"
                             name="aadharCard"
-                            label="Driver's Aadhar Card"
-                            value={formik.values.aadharCard}
-                            onChange={formik.handleChange}
+                            // label="Driver's Aadhar Card"
+                            onChange={(e) => {
+                                handleImageCompressionAndConversion(e.target.files, 'aadharCard');
+                            }}
                             error={formik.touched.aadharCard && Boolean(formik.errors.aadharCard)}
                             helperText={formik.touched.aadharCard && formik.errors.aadharCard}
-                            autoFocus
                         />
-                    </Grid> */}
+                    </Grid>
+                    <Grid item xs={6} className={classes.formItems}>
+                        <label for="license">Driver's License</label>
+                        <TextField
+                            fullWidth
+                            id="license"
+                            type="file"
+                            name="license"
+                            // label="Driver's License"
+                            onChange={(e) => {
+                                handleImageCompressionAndConversion(e.target.files, 'license');
+                            }}
+                            error={formik.touched.license && Boolean(formik.errors.license)}
+                            helperText={formik.touched.license && formik.errors.license}
+                        />
+                    </Grid>
                     {activeDriver && (
                         <>
                             <Grid item xs={12} className={classes.formItems}>

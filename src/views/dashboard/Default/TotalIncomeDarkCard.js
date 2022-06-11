@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // material-ui
 import { makeStyles } from '@material-ui/styles';
@@ -16,7 +16,7 @@ import TableChartOutlinedIcon from '@material-ui/icons/TableChartOutlined';
 const useStyles = makeStyles((theme) => ({
     card: {
         backgroundColor: theme.palette.primary.dark,
-        color: theme.palette.primary.light,
+        color: '#fff',
         overflow: 'hidden',
         position: 'relative',
         '&:after': {
@@ -66,6 +66,24 @@ const useStyles = makeStyles((theme) => ({
 
 const TotalIncomeDarkCard = ({ isLoading, trips }) => {
     const classes = useStyles();
+    const [totalBhatta, setTotalBhatta] = useState();
+
+    useEffect(() => {
+        if (trips?.length) {
+            let tempBhatta = 0;
+            trips.map((trip) => {
+                tempBhatta += trip.driverBhatta ? trip.driverBhatta : 0;
+            });
+
+            tempBhatta = tempBhatta.toString();
+            var lastThree = tempBhatta.substring(tempBhatta.length - 3);
+            var otherNumbers = tempBhatta.substring(0, tempBhatta.length - 3);
+            if (otherNumbers != '') lastThree = ',' + lastThree;
+            tempBhatta = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+
+            setTotalBhatta(tempBhatta);
+        }
+    }, [trips]);
 
     return (
         <React.Fragment>
@@ -88,12 +106,12 @@ const TotalIncomeDarkCard = ({ isLoading, trips }) => {
                                 }}
                                 primary={
                                     <Typography variant="h4" className={classes.primary}>
-                                        {trips.length}
+                                        ₹ {totalBhatta}
                                     </Typography>
                                 }
                                 secondary={
                                     <Typography variant="subtitle2" className={classes.secondary}>
-                                        Total Trips
+                                        Total Bhatta
                                     </Typography>
                                 }
                             />
