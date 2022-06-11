@@ -1,7 +1,9 @@
 import {
     Alert,
+    Backdrop,
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -84,12 +86,7 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         color: '#9d0208'
     },
-    addBtn: {
-        backgroundColor: theme.palette.secondary.dark,
-        '&:hover': {
-            backgroundColor: theme.palette.secondary[800]
-        }
-    },
+
     iconBox: {
         borderRadius: '5px',
         padding: '2px',
@@ -109,6 +106,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: '8px',
         // color: theme.palette.grey[100],
         borderColor: 'black'
+    },
+    backdrop: {
+        zIndex: 11111111,
+        color: '#fff'
     }
 }));
 
@@ -121,6 +122,8 @@ function Driver() {
     const [alertMsg, setAlertMsg] = useState('');
     const [activeDriver, setActiveDriver] = useState();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [savingDriver, setSavingDriver] = useState(false);
+    const [showBackdrop, setShowBackdrop] = useState(false);
     const d = new Date();
     d.setMonth(d.getMonth() - 1);
     const [showTrips, setShowTrips] = useState();
@@ -138,7 +141,7 @@ function Driver() {
 
     const handleClose = () => {
         setOpen(false);
-        setActiveDriver();
+        setActiveDriver(null);
     };
 
     const handleDelete = (id) => {
@@ -196,7 +199,7 @@ function Driver() {
                 <Box className={classes.btnCont}>
                     <Button
                         onClick={() => setOpen(true)}
-                        className={classes.addBtn}
+                        className={classes.subBtn}
                         variant="contained"
                         startIcon={<AddCircleOutlineIcon />}
                     >
@@ -347,13 +350,19 @@ function Driver() {
                     setAlertMsg={setAlertMsg}
                     handleClose={handleClose}
                     activeDriver={activeDriver}
+                    setActiveDriver={setActiveDriver}
+                    setSavingDriver={setSavingDriver}
+                    savingDriver={savingDriver}
+                    setShowBackdrop={setShowBackdrop}
                 />
             </Dialog>
 
             <Dialog maxWidth="lg" open={showTrips}>
                 <DriverTrips trips={trips} setAlertMsg={setAlertMsg} setShowTrips={setShowTrips} setErrorSnack={setErrorSnack} />
             </Dialog>
-
+            <Backdrop className={classes.backdrop} open={showBackdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
                 <Alert onClose={() => setAlertMsg('')} severity="success" variant="filled">
                     {alertMsg}

@@ -111,8 +111,6 @@ const EarningCard = ({ isLoading, trips }) => {
             let tempEarning = 0;
             trips.map((trip) => {
                 tempEarning += trip.paymentPending ? trip.paymentPending : 0 + trip.paymentReceived ? trip.paymentReceived : 0;
-                console.log(tempEarning, 'earning');
-                console.log(tempEarning, 'tempearning');
             });
 
             tempEarning = tempEarning.toString();
@@ -133,7 +131,6 @@ const EarningCard = ({ isLoading, trips }) => {
         setAnchorEl(null);
     };
 
-    console.log(trips, 'trips');
     return (
         <React.Fragment>
             {isLoading ? (

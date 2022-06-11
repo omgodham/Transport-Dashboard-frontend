@@ -156,7 +156,6 @@ function Customer() {
         Axios.get('/customer/get-all-customers')
             .then((response) => {
                 setCustomers(response.data);
-                console.log(response.data);
             })
             .catch((error) => console.log(error));
     };
@@ -177,10 +176,6 @@ function Customer() {
                 setErrorSnack(true);
             });
     };
-
-    useEffect(() => {
-        activeCust ? console.log(activeCust) : console.log('jjk');
-    }, [activeCust]);
 
     const handleClose = () => {
         setOpen(false);

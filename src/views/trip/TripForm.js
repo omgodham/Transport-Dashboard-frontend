@@ -167,7 +167,6 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             else addTrip(tempValues);
         }
     });
-    // setCustomExtraChargeCheck(true);
 
     const handleImageCompressionAndConversion = (files) => {
         let reader = new FileReader();
@@ -231,7 +230,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                 <Grid item xs={6}>
                     <TextField
                         id="tripDate"
-                        label="Date of trip (DD-MM-YYYY)"
+                        label="Date of trip (MM-DD-YYYY)"
                         name="tripDate"
                         type="date"
                         fullWidth
