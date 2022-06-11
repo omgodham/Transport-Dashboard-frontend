@@ -222,9 +222,6 @@ function AllTrips() {
 
     useEffect(() => {
         getAllTrips();
-        // var d = new Date();
-        // console.log(d.setMonth(d.getMonth() - 1), 'ago');
-        // console.log(d);
     }, [startDate, endDate]);
 
     const handleClose = () => {
@@ -275,7 +272,6 @@ function AllTrips() {
             Axios.get(`/trip/get-trip-by-lr/${searchInput}`)
                 .then((response) => {
                     setTrips(response.data);
-                    console.log(response);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -295,14 +291,12 @@ function AllTrips() {
             //for previous month last date
             var date = new Date();
             date.setDate(0);
-            console.log(date);
             setEndDate(date);
 
             //for perivous Month First date
             var date = new Date();
             date.setDate(0);
             date.setDate(1);
-            console.log(date);
             setStartDate(date);
         }
     };

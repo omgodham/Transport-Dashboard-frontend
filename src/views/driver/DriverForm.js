@@ -2,6 +2,7 @@ import {
     Alert,
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -15,11 +16,12 @@ import {
     Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Axios from '../../axios';
 import CloseIcon from '@material-ui/icons/Close';
+import SalaryDetails from './SalaryDetails';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -76,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         cursor: 'pointer'
     },
-    addBtn: {
+    submitBtn: {
         backgroundColor: theme.palette.secondary.dark,
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
@@ -87,12 +89,40 @@ const useStyles = makeStyles((theme) => ({
         top: '10px',
         right: '10px',
         cursor: 'pointer'
+    },
+    buttonProgress: {
+        color: theme.palette.secondary[800],
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12
+    },
+    wrapperLoading: {
+        width: '100%',
+        position: 'relative'
     }
 }));
 
-function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack, setOpen, handleClose, activeDriver }) {
-    console.log(activeDriver);
+function DriverForm({
+    getAllDrivers,
+    setErrorSnack,
+    setAlertMsg,
+    setSuccessSnack,
+    setOpen,
+    handleClose,
+    activeDriver,
+    setActiveDriver,
+    savingDriver,
+    setSavingDriver,
+    setShowBackdrop
+}) {
     const classes = useStyles();
+    const [addSalaryDetailsCheck, setAddSalaryDetailsCheck] = useState(false);
+    const [showSalaryDetailsCheck, setShowSalaryDetailsCheck] = useState(false);
+    const [tempSalaryDetails, setTempSalaryDetails] = useState(null);
+    const [detailFound, setDetailFound] = useState(false);
+
     const validationSchema = yup.object({
         name: yup.string('Please enter driver name.').required('Name is required'),
         phoneNo: yup
@@ -111,33 +141,40 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
             salary: activeDriver ? activeDriver.salary : '',
             aadhar: activeDriver ? activeDriver.aadhar : '',
             aadharCard: activeDriver ? activeDriver.aadharCard : '',
-            chargePerTrip: activeDriver ? activeDriver.chargePerTrip : ''
+            chargePerTrip: activeDriver ? activeDriver.chargePerTrip : '',
+            salaryDetails: activeDriver ? (activeDriver.salaryDetails ? activeDriver.salaryDetails : []) : []
         },
-        validationSchema: validationSchema,
+        // validationSchema: validationSchema,
         onSubmit: (values) => {
+            if (activeDriver) {
+                setSavingDriver(true);
+                setShowBackdrop(true);
+            }
+            let temp = [...values.salaryDetails];
+            if (addSalaryDetailsCheck && activeDriver && !detailFound) {
+                temp.push(tempSalaryDetails);
+            }
+            if ((showSalaryDetailsCheck && activeDriver && detailFound) || (addSalaryDetailsCheck && activeDriver && detailFound)) {
+                let index = temp.findIndex((item) => item.monthYear === tempSalaryDetails.monthYear);
+                temp[index] = {
+                    ...temp[index],
+                    advance: tempSalaryDetails.advance,
+                    remaining: parseInt(tempSalaryDetails.remaining),
+                    currentSalary: tempSalaryDetails.currentSalary
+                };
+            }
+
             let data = {
                 name: values.name,
                 phoneNo: values.phoneNo,
                 salary: values.salary,
                 aadhar: values.aadhar,
                 aadharCard: values.aadharCard,
-                chargePerTrip: values.chargePerTrip
+                chargePerTrip: values.chargePerTrip,
+                salaryDetails: temp
             };
-
             if (!activeDriver)
                 Axios.post('/driver/create-driver', { data })
-                    .then((response) => {
-                        getAllDrivers();
-                        handleClose();
-                        setAlertMsg('Driver details saved successfully');
-                        setSuccessSnack(true);
-                    })
-                    .catch((error) => {
-                        setAlertMsg('Something went wrong');
-                        setErrorSnack(true);
-                    });
-            else
-                Axios.patch(`/driver/update-driver/${activeDriver._id}`, { data })
                     .then((response) => {
                         getAllDrivers();
                         handleClose();
@@ -148,13 +185,29 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                         setAlertMsg('Something went wrong');
                         setErrorSnack(true);
                     });
+            else
+                Axios.patch(`/driver/update-driver/${activeDriver._id}`, { data })
+                    .then((response) => {
+                        getAllDrivers();
+                        setActiveDriver(response.data);
+                        setAlertMsg('Driver details saved successfully');
+                        setSuccessSnack(true);
+                        setSavingDriver(false);
+                        setShowBackdrop(false);
+                    })
+                    .catch((error) => {
+                        setAlertMsg('Something went wrong');
+                        setErrorSnack(true);
+                        setSavingDriver(false);
+                        setShowBackdrop(false);
+                    });
         }
     });
 
     return (
         <div className={classes.formCont}>
             <Box className={classes.closeBox}>
-                <CloseIcon onClick={() => setOpen(false)} />
+                <CloseIcon onClick={() => handleClose()} />
             </Box>
             <Typography variant="h2" style={{ textAlign: 'center', margin: '10px auto' }}>
                 DRIVER DETAILS
@@ -244,12 +297,53 @@ function DriverForm({ getAllDrivers, setErrorSnack, setAlertMsg, setSuccessSnack
                             autoFocus
                         />
                     </Grid> */}
-                    <Box className={classes.subBtnCont}>
-                        <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
-                            Submit
-                        </Button>
-                    </Box>
-                </Grid>
+                    {activeDriver && (
+                        <>
+                            <Grid item xs={12} className={classes.formItems}>
+                                <input
+                                    type="checkbox"
+                                    id="addSalaryDetailsCheck"
+                                    checked={addSalaryDetailsCheck}
+                                    onChange={(e) => {
+                                        setAddSalaryDetailsCheck(e.target.checked);
+                                        setShowSalaryDetailsCheck(!e.target.checked);
+                                    }}
+                                />
+                                <label htmlFor="addSalaryDetailsCheck">Add salary details</label>
+                            </Grid>
+
+                            <Grid item xs={12} className={classes.formItems}>
+                                <input
+                                    type="checkbox"
+                                    id="showSalaryDetailsCheck"
+                                    checked={showSalaryDetailsCheck}
+                                    onChange={(e) => {
+                                        setShowSalaryDetailsCheck(e.target.checked);
+                                        setAddSalaryDetailsCheck(!e.target.checked);
+                                    }}
+                                />
+                                <label htmlFor="showSalaryDetailsCheck">Show previous salary details</label>
+                            </Grid>
+
+                            <Grid item xs={12} className={classes.formItems}>
+                                <SalaryDetails
+                                    activeDriver={activeDriver}
+                                    addSalaryDetailsCheck={addSalaryDetailsCheck}
+                                    showSalaryDetailsCheck={showSalaryDetailsCheck}
+                                    setTempSalaryDetails={setTempSalaryDetails}
+                                    detailFound={detailFound}
+                                    setDetailFound={setDetailFound}
+                                />
+                            </Grid>
+                        </>
+                    )}
+                </Grid>{' '}
+                <Box className={classes.wrapperLoading} style={{ marginTop: '20px' }}>
+                    <Button className={classes.submitBtn} variant="contained" fullWidth type="submit">
+                        {activeDriver ? 'Update' : 'Submit'}
+                    </Button>
+                    {savingDriver && <CircularProgress size={24} className={classes.buttonProgress} />}
+                </Box>
             </form>
         </div>
     );
