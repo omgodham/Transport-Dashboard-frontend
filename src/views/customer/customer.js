@@ -253,7 +253,7 @@ function Customer() {
                                     >
                                         <Grid container>
                                             <Grid className={classes.customerItems} item xs={4}>
-                                                <Typography variant="h3">{customer.name}</Typography>
+                                                <Typography variant="h5">{customer.name}</Typography>
                                             </Grid>
                                             <Grid className={classes.customerItems} item xs={4}>
                                                 <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
@@ -297,14 +297,17 @@ function Customer() {
             </Box>
 
             <Dialog open={open} onClose={() => handleClose()}>
-                <CustomerForm
-                    getAllCustomers={getAllCustomers}
-                    setOpen={setOpen}
-                    setAlertMsg={setAlertMsg}
-                    setErrorSnack={setErrorSnack}
-                    setSuccessSnack={setSuccessSnack}
-                    activeCust={activeCust}
-                />
+                <Box sx={{ position: 'relative' }}>
+                    <CustomerForm
+                        getAllCustomers={getAllCustomers}
+                        setOpen={setOpen}
+                        setAlertMsg={setAlertMsg}
+                        setErrorSnack={setErrorSnack}
+                        setSuccessSnack={setSuccessSnack}
+                        activeCust={activeCust}
+                    />
+                    <CloseIcon style={{ position: 'absolute', top: '20px', right: '20px', cursor: 'pointer' }} onClick={handleClose} />
+                </Box>
             </Dialog>
 
             <Dialog maxWidth="lg" open={askDate}>

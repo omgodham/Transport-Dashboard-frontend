@@ -24,6 +24,7 @@ export default function ChallanImages({ updateTrip, challanImages, setImagesOpen
         updateTrip({ challanImages: challanImages.filter((item, thisIndex) => thisIndex !== index) }, trip._id, false);
     };
     const imagesRef = useRef();
+    console.log('BBB', challanImages, trip);
     return (
         <Box>
             <Box p={2} ref={imagesRef}>

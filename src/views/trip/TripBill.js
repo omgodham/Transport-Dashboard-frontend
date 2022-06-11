@@ -19,6 +19,7 @@ import logo from '../../images/logo.png';
 import { ToWords } from 'to-words';
 import ReactToPrint from 'react-to-print';
 import PrintIcon from '@material-ui/icons/Print';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -153,7 +154,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         </Box>
 
                         <Box>
-                            <Typography variant="h5">Date : {new Date().toLocaleDateString()}</Typography>
+                            <Typography variant="h5">Date : {moment(new Date()).format('DD-MM-YYYY')}</Typography>
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>
@@ -178,7 +179,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                 <TableRow>
                                     <TableCell className={classes.tripItem}>Trip Date</TableCell>
                                     <TableCell className={classes.tripItem} component="th" scope="row" align="center">
-                                        {new Date(trip.createdAt).toLocaleDateString()}
+                                        {moment(new Date(trip.createdAt)).format('DD-MM-YYYY')}
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
                                         Freight

@@ -9,6 +9,25 @@ const useStyles = makeStyles((theme) => ({
     root: {
         minWidth: '500px',
         padding: '0 20px 20px'
+    },
+    btnCont: {
+        position: 'absolute',
+        top: '20px',
+        right: '10px'
+    },
+    formCont: {
+        padding: '20px '
+    },
+    subBtnCont: {
+        display: 'flex',
+        margin: '20px auto',
+        width: '300px'
+    },
+    subBtn: {
+        backgroundColor: theme.palette.secondary.dark,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary[800]
+        }
     }
 }));
 
