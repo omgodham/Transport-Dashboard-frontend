@@ -194,6 +194,7 @@ function TripForm({
             challanImages: trip ? trip.challanImages : [],
             driverBhatta: trip ? trip.Bhatta : 0,
             extraChargeDescription: trip ? trip.extraChargeDescription : '',
+            billNo: trip ? trip.billNo : '',
             selfTrip: trip ? trip.selfTrip : selfTrip
         },
 
@@ -518,7 +519,20 @@ function TripForm({
                         helperText={formik.touched.challanNo && formik.errors.challanNo}
                     />
                 </Grid>
-
+                {trip && (
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            id="billNo"
+                            name="billNo"
+                            label="Bill Number"
+                            value={formik.values.billNo}
+                            onChange={formik.handleChange}
+                            error={formik.touched.billNo && Boolean(formik.errors.billNo)}
+                            helperText={formik.touched.billNo && formik.errors.billNo}
+                        />
+                    </Grid>
+                )}
                 {/* <Grid item xs={6}>
                     <TextField
                         fullWidth

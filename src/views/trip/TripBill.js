@@ -173,7 +173,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                     <Divider sx={{ my: 2, height: '2px', backgroundColor: 'black' }}></Divider>
                     <Box display={'flex'} justifyContent="space-between">
                         <Box>
-                            <Typography variant="h5">Bill No - </Typography>
+                            <Typography variant="h5">Bill No - {trip.billNo}</Typography>
                         </Box>
 
                         <Box>

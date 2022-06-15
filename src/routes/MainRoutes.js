@@ -5,7 +5,6 @@ import { Route, Switch, useLocation } from 'react-router-dom';
 import MainLayout from './../layout/MainLayout';
 import Loadable from '../ui-component/Loadable';
 import AuthGuard from './../utils/route-guard/AuthGuard';
-import Trip from '../views/trip/add-trip';
 import AllTrips from '../views/trip/all-trips';
 import customer from '../views/customer/customer';
 import Customer from '../views/customer/customer';
@@ -35,7 +34,6 @@ const MainRoutes = () => {
         <Route
             path={[
                 '/dashboard/default',
-                '/trip/add-trip',
                 '/trip/all-trips',
                 '/utils/util-typography',
                 '/utils/util-color',
@@ -53,7 +51,6 @@ const MainRoutes = () => {
                 <Switch location={location} key={location.pathname}>
                     <AuthGuard>
                         <Route path="/dashboard/default" component={DashboardDefault} />
-                        <Route path="/trip/add-trip" component={Trip} />
                         <Route path="/trip/all-trips" component={AllTrips} />
                         <Route path="/utils/util-typography" component={UtilsTypography} />
                         <Route path="/utils/util-color" component={UtilsColor} />

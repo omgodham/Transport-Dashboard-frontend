@@ -13,10 +13,11 @@ import {
     Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Axios from '../../axios';
+import PaymentDetails from './PaymentDetails';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -82,9 +83,9 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, setErrorSnack, activeCust }) {
+function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, setErrorSnack, activeCust, setActiveCust }) {
     const classes = useStyles();
-
+    const [paymentDetailsOpen, setPaymentDetailsOpen] = useState(false);
     const validationSchema = yup.object({
         email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
         name: yup.string('Please enter customer name.').required('Company Name is required'),
@@ -242,6 +243,15 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.state && formik.errors.state}
                         />
                     </Grid>
+                    {activeCust && (
+                        <Grid item xs={6} className={classes.formItems}>
+                            <Box className={classes.subBtnCont}>
+                                <Button className={classes.subBtn} variant="contained" onClick={() => setPaymentDetailsOpen(true)}>
+                                    SHOW PAYMENT DETAILS
+                                </Button>
+                            </Box>
+                        </Grid>
+                    )}
                     <Box className={classes.subBtnCont}>
                         <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
                             SAVE
@@ -249,6 +259,19 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                     </Box>
                 </Grid>
             </form>
+            <Dialog open={paymentDetailsOpen} onClose={() => setPaymentDetailsOpen(false)}>
+                <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
+                <DialogContent id="simple-dialog-content">
+                    <PaymentDetails
+                        activeCust={activeCust}
+                        getAllCustomers={getAllCustomers}
+                        setAlertMsg={setAlertMsg}
+                        setSuccessSnack={setSuccessSnack}
+                        setErrorSnack={setErrorSnack}
+                        setActiveCust={setActiveCust}
+                    />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
