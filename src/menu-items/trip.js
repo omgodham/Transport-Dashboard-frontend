@@ -16,14 +16,6 @@ export const trip = {
     title: 'trip',
     type: 'group',
     children: [
-        // {
-        //     id: 'add-trip',
-        //     title: 'Add Trip',
-        //     type: 'item',
-        //     url: '/trip/add-trip',
-        //     icon: icons['IconDashboard'],
-        //     breadcrumbs: false
-        // },
         {
             id: 'all-trips',
             title: 'All Trips',

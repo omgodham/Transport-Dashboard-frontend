@@ -300,6 +300,7 @@ function Customer() {
                         setErrorSnack={setErrorSnack}
                         setSuccessSnack={setSuccessSnack}
                         activeCust={activeCust}
+                        setActiveCust={setActiveCust}
                     />
                     <CloseIcon style={{ position: 'absolute', top: '20px', right: '20px', cursor: 'pointer' }} onClick={handleClose} />
                 </Box>
