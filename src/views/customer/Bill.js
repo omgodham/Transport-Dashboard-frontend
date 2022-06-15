@@ -224,6 +224,9 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                         Vehicle Model
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
+                                                        LR No.
+                                                    </TableCell>
+                                                    <TableCell align="right" className={classes.tripItem}>
                                                         Challan
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
@@ -259,6 +262,9 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                             {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.model)}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="right">
+                                                            {trip.lrNo}
+                                                        </TableCell>
+                                                        <TableCell className={classes.tripItem} align="right">
                                                             {trip.challanNo}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="right">
@@ -275,35 +281,65 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                         </TableCell>
                                                     </TableRow>
                                                 ))}
-                                                <TableRow>
-                                                    <TableCell rowSpan={5} />
-                                                    <TableCell rowSpan={3} />
-                                                    <TableCell rowSpan={3} />
-                                                    <TableCell rowSpan={3} />
-                                                    <TableCell className={classes.tripItem} colSpan={4}>
-                                                        Total Trips
-                                                    </TableCell>
-                                                    <TableCell className={classes.tripItem} align="right">
-                                                        {trips.length}
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow style={{ border: 'none' }}>
-                                                    <TableCell className={classes.tripItem} colSpan={4}>
-                                                        Total Payment
-                                                    </TableCell>
-                                                    <TableCell className={classes.tripItem} align="right">
-                                                        {totalEarningWithComma}
-                                                    </TableCell>
-                                                </TableRow>
-                                                <TableRow style={{ border: 'none' }}>
-                                                    <TableCell className={classes.tripItem} colSpan={4}></TableCell>
-                                                    <TableCell className={classes.tripItem} align="right">
-                                                        {totalEarning && toWords.convert(totalEarning, { currency: true })}
-                                                    </TableCell>
-                                                </TableRow>
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
+                                </Box>
+                                <Box sx={{ mt: 4 }}>
+                                    <Box width="fit-content">
+                                        <Grid container>
+                                            <Grid item>
+                                                <Box sx={{ p: 1 }}>
+                                                    <Typography variant="h5">Total Trips -</Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item>
+                                                <Box sx={{ p: 1 }}>
+                                                    <Typography variant="h6" style={{ fontSize: '14px' }}>
+                                                        {trips.length}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
+                                    <Divider />
+                                    <Box width="fit-content">
+                                        <Grid container>
+                                            <Grid item>
+                                                <Grid container>
+                                                    <Grid item>
+                                                        <Box sx={{ p: 1 }}>
+                                                            <Typography variant="h5">Grand Total - </Typography>
+                                                        </Box>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Box sx={{ p: 1 }}>
+                                                            <Typography variant="h5">Rs. {totalEarningWithComma}</Typography>
+                                                        </Box>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
+                                    <Divider />
+                                    <Box width="fit-content">
+                                        <Grid container>
+                                            <Grid item>
+                                                <Box sx={{ p: 1 }}>
+                                                    <Typography variant="h5">In Words - </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item>
+                                                <Box sx={{ p: 1 }}>
+                                                    <Typography variant="h6" style={{ fontSize: '14px' }}>
+                                                        {' '}
+                                                        {totalEarning && toWords.convert(totalEarning, { currency: true })}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
+                                    <Divider />
                                 </Box>
                                 <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 7 }}>
                                     <Grid container spacing={5} display={'flex'}>
@@ -342,7 +378,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                 ) : (
                     <Box sx={{ m: 'auto' }}>
                         <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
-                        <Typography style={{ marginTop: '10px' }}> No Data to Display</Typography>
+                        <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
                     </Box>
                 )}
             </div>

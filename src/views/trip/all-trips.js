@@ -4,14 +4,19 @@ import {
     Button,
     CircularProgress,
     Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
     Divider,
     FormControl,
     Grid,
     IconButton,
     InputAdornment,
     InputLabel,
+    Menu,
     MenuItem,
     OutlinedInput,
+    Skeleton,
     Snackbar,
     TextField,
     Typography
@@ -27,21 +32,22 @@ import Axios from '../../axios';
 import ChallanImages from './ChallanImages';
 import TripBill from './TripBill';
 import TripForm from './TripForm';
+import DeleteIcon from '@material-ui/icons/Delete';
+import noData from '../../images/noData.png';
+import Voucher from './Voucher';
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
         padding: '10px',
         borderRadius: '10px',
-        position: 'relative'
+        position: 'relative',
+        minHeight: '600px'
     },
     tripSkeleton: {
+        height: '110px',
         width: '100%',
-        height: '50px',
-        padding: '10px 20px',
-        margin: '20px auto',
         borderRadius: '5px',
-        backgroundColor: theme.palette.grey[300],
-        animation: `$myEffect 1000ms ease infinite alternate`
+        margin: '0'
     },
     '@keyframes myEffect': {
         to: {
@@ -49,13 +55,13 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     tripCont: {
-        height: '50px',
+        // height: '50px',
         margin: '10px auto',
-        padding: '10px 20px',
+        padding: '15px 20px',
         // border: '1px solid grey',
         display: 'flex',
         alignItems: 'center',
-        borderRadius: '10px',
+        borderRadius: '5px',
         boxShadow: ' rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;'
     },
     tripItems: {
@@ -174,6 +180,10 @@ function AllTrips() {
     const [showBill, setShowBill] = useState();
     const [activeTrip, setActiveTrip] = useState();
     const [savingTrip, setSavingTrip] = useState();
+    const [addingTrip, setAddingTrip] = useState();
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [selfTrip, setSelfTrip] = useState();
+    const [showDeleteWarn, setShowDeleteWarn] = useState();
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -233,12 +243,14 @@ function AllTrips() {
         Axios.post('/trip/create-trip', { data })
             .then((res) => {
                 setSavingTrip(false);
+                setAddingTrip(false);
                 getAllTrips();
                 setAlertMessage('Trip Added Successfully');
                 setSuccessSnack(true);
                 handleClose();
             })
             .catch((error) => {
+                setAddingTrip(false);
                 setSavingTrip(false);
                 setAlertMessage('Something went wrong');
                 setErrorSnack(true);
@@ -247,7 +259,6 @@ function AllTrips() {
     };
 
     const updateTrip = (data, id, isClose) => {
-        setShowBackdrop(true);
         setUpdatingTrip(id);
         Axios.patch(`trip/update-trip/${id}`, { data })
             .then((response) => {
@@ -317,6 +328,37 @@ function AllTrips() {
         }
 
         setTrips(tempTrips);
+    };
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = (value) => {
+        if (value == 'self') setSelfTrip(true);
+        else setSelfTrip(false);
+        setAnchorEl(null);
+        setShowDialog(true);
+    };
+
+    const deleteTrip = () => {
+        setUpdatingTrip(activeTrip._id);
+        Axios.patch(`trip/delete-trip/${activeTrip._id}`)
+            .then((response) => {
+                setSavingTrip(false);
+                setShowDeleteWarn(false);
+                getAllTrips();
+                setAlertMessage('Trip Deleted successfully');
+                setSuccessSnack(true);
+                setShowBackdrop(false);
+            })
+            .catch((error) => {
+                setSavingTrip(false);
+                setShowDeleteWarn(false);
+                setAlertMessage('Something went wrong');
+                setErrorSnack(true);
+                setShowBackdrop(false);
+            });
     };
 
     return (
@@ -421,7 +463,7 @@ function AllTrips() {
                     <Box className={classes.btnCont}>
                         <Button
                             className={classes.addBtn}
-                            onClick={() => setShowDialog(true)}
+                            onClick={handleClick}
                             variant="contained"
                             startIcon={<AddCircleOutlineIcon />}
                             size="medium"
@@ -433,6 +475,11 @@ function AllTrips() {
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
             <Grid container justifyContent="center">
+                {addingTrip && (
+                    <Box display={'flex'} sx={{ width: '100%' }}>
+                        <Skeleton width="100%" height={90} />
+                    </Box>
+                )}
                 {trips.length ? (
                     trips
                         .slice(0)
@@ -494,18 +541,28 @@ function AllTrips() {
                                                 >
                                                     <CreateIcon color="black" />
                                                 </Box>
+                                                <Box
+                                                    onClick={() => {
+                                                        setActiveTrip(trip);
+                                                        setShowDeleteWarn(true);
+                                                    }}
+                                                    className={classes.editIconBox}
+                                                >
+                                                    <DeleteIcon color="black" />
+                                                </Box>
+
                                                 <Button
                                                     className={classes.submitBtn}
                                                     variant="outlined"
                                                     fullWidth
-                                                    style={{ width: 'fit-content' }}
+                                                    style={{ width: '150px' }}
                                                     color="secondary"
                                                     onClick={() => {
                                                         setShowBill(true);
                                                         setActiveTrip(trip);
                                                     }}
                                                 >
-                                                    Generate Bill
+                                                    {trip.selfTrip ? 'Generate Bill' : 'Generate Voucher'}
                                                 </Button>
                                             </Grid>
                                             {/* <Grid item className={classes.tripItems} justifyContent="right" xs={3}>
@@ -531,16 +588,18 @@ function AllTrips() {
                         )
                 ) : tripsLoading ? (
                     <>
-                        <Box className={classes.tripSkeleton}></Box>
-                        <Box className={classes.tripSkeleton}></Box>
-                        <Box className={classes.tripSkeleton}></Box>
-                        <Box className={classes.tripSkeleton}></Box>
-                        <Box className={classes.tripSkeleton}></Box>
-                        <Box className={classes.tripSkeleton}></Box>
+                        <Skeleton className={classes.tripSkeleton} />
+                        <Skeleton className={classes.tripSkeleton} />
+                        <Skeleton className={classes.tripSkeleton} />
+                        <Skeleton className={classes.tripSkeleton} />
+                        <Skeleton className={classes.tripSkeleton} />
                     </>
                 ) : (
-                    <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                        <Typography textAlign={'center'}>No Data Available</Typography>
+                    <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                        <Box sx={{ m: 'auto' }}>
+                            <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
+                            <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
+                        </Box>
                     </Box>
                 )}
             </Grid>
@@ -561,6 +620,9 @@ function AllTrips() {
                         setImagesOpen={setImagesOpen}
                         savingTrip={savingTrip}
                         setSavingTrip={setSavingTrip}
+                        addingTrip={addingTrip}
+                        setAddingTrip={setAddingTrip}
+                        selfTrip={selfTrip}
                     />
                 </Box>
             </Dialog>
@@ -604,15 +666,40 @@ function AllTrips() {
                             onClick={() => setShowBill(false)}
                         />
                     </Box>
-                    <Box sx={{ p: 2 }}>
-                        <TripBill trip={activeTrip} />
-                    </Box>
+                    <Box sx={{ p: 2 }}>{activeTrip?.selfTrip ? <TripBill trip={activeTrip} /> : <Voucher trip={activeTrip} />}</Box>
                 </Box>
+            </Dialog>
+
+            <Dialog open={showDeleteWarn}>
+                <DialogContent>
+                    <Typography variant="h6" style={{ fontSize: '20px' }} id="alert-dialog-description">
+                        Trip will be delete permanantly
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => {
+                            setShowDeleteWarn(false);
+                        }}
+                        color="secondary"
+                        variant="outlined"
+                    >
+                        Cancel
+                    </Button>
+                    <Button onClick={deleteTrip} color="secondary" variant="contained" autoFocus>
+                        Delete
+                    </Button>
+                </DialogActions>
             </Dialog>
 
             <Backdrop className={classes.backdrop} open={showBackdrop}>
                 <CircularProgress color="inherit" />
             </Backdrop>
+
+            <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+                <MenuItem onClick={(e) => handleCloseMenu('self')}>Self Trip</MenuItem>
+                <MenuItem onClick={(e) => handleCloseMenu('other')}>Other Transport</MenuItem>
+            </Menu>
         </div>
     );
 }
