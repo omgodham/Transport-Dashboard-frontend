@@ -12,7 +12,8 @@ import {
     Snackbar,
     TextField,
     Typography,
-    CircularProgress
+    CircularProgress,
+    Skeleton
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useState, useEffect } from 'react';
@@ -53,7 +54,18 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, savingTrip, setSavingTrip }) {
+function TripForm({
+    trip,
+    updateTrip,
+    addTrip,
+    setChallanDialog,
+    setImagesOpen,
+    savingTrip,
+    setSavingTrip,
+    addingTrip,
+    setAddingTrip,
+    selfTrip
+}) {
     const classes = useStyles();
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
@@ -65,40 +77,67 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
     const [showDetails, setShowDetails] = useState();
     const [showDialog, setShowDialog] = useState(1);
     const [customExtraChargeCheck, setCustomExtraChargeCheck] = useState(false);
+    const [customerProgress, setCustomerProgress] = useState(0);
+    const [driverProgress, setDrivererProgress] = useState(0);
+    const [vehicleProgress, setVehicleProgress] = useState(0);
+    const [chargeProgress, setChargeProgress] = useState(0);
+
     useEffect(() => {
-        Axios.get('/customer/get-all-customers')
-            .then((res) => {
-                setCustomers(res.data);
+        if (selfTrip || trip?.selfTrip) {
+            Axios.get('/customer/get-all-customers', {
+                onDownloadProgress: (progressEvent) => {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setCustomerProgress(percentCompleted);
+                }
             })
-            .catch((error) => {
-                setAlertMessage('Could not get customers');
-                setErrorSnack(true);
-            });
+                .then((res) => {
+                    setCustomers(res.data);
+                })
+                .catch((error) => {
+                    setAlertMessage('Could not get customers');
+                    setErrorSnack(true);
+                });
 
-        Axios.get('/vehicle/get-all-vehicles')
-            .then((res) => {
-                setVehicles(res.data);
+            Axios.get('/vehicle/get-all-vehicles', {
+                onDownloadProgress: (progressEvent) => {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setVehicleProgress(percentCompleted);
+                }
             })
-            .catch((error) => {
-                setAlertMessage('Could not get vehicles');
-                setErrorSnack(true);
-            });
+                .then((res) => {
+                    setVehicles(res.data);
+                })
+                .catch((error) => {
+                    setAlertMessage('Could not get vehicles');
+                    setErrorSnack(true);
+                });
 
-        Axios.get('/extracharge/get-all-extra-charges')
+            Axios.get('/driver/get-all-drivers', {
+                onDownloadProgress: (progressEvent) => {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setDrivererProgress(percentCompleted);
+                }
+            })
+                .then((res) => {
+                    setDrivers(res.data);
+                })
+                .catch((error) => {
+                    setAlertMessage('Could not get drivers');
+                    setErrorSnack(true);
+                });
+        }
+
+        Axios.get('/extracharge/get-all-extra-charges', {
+            onDownloadProgress: (progressEvent) => {
+                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setChargeProgress(percentCompleted);
+            }
+        })
             .then((res) => {
                 setExtraCharges(res.data);
             })
             .catch((error) => {
                 setAlertMessage('Could not get extra charges');
-                setErrorSnack(true);
-            });
-
-        Axios.get('/driver/get-all-drivers')
-            .then((res) => {
-                setDrivers(res.data);
-            })
-            .catch((error) => {
-                setAlertMessage('Could not get drivers');
                 setErrorSnack(true);
             });
     }, []);
@@ -129,8 +168,10 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
     const formik = useFormik({
         initialValues: {
             customer: trip ? trip.customer : '',
+            customerName: trip ? trip.customerName : '',
             company: trip ? trip.company : '',
             vehicle: trip ? trip.vehicle : '',
+            vehicleNo: trip ? trip.vehicleNo : '',
             pickup: trip ? trip.pickup : '',
             dropup: trip ? trip.dropup : '',
             driver: trip ? trip.driver : '',
@@ -141,7 +182,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             fuelCharge: trip ? trip.fuelCharge : 0,
             extraCharge: trip ? trip.extraCharge : 0,
             paymentReceived: trip ? trip.paymentReceived : 0,
-            paymentPending: trip ? trip.paymentPending : 0,
+            paymentToTransporter: trip ? trip.paymentToTransporter : 0,
             paymentVoucherNumber: trip ? trip.paymentVoucherNumber : 0,
             materialWeight: trip ? trip.materialWeight : 0,
             truckModel: trip ? trip.truckModel : '',
@@ -152,7 +193,8 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
             driverExtraCharge: trip ? trip.driverExtraCharge : 0,
             challanImages: trip ? trip.challanImages : [],
             driverBhatta: trip ? trip.Bhatta : 0,
-            extraChargeDescription: trip ? trip.extraChargeDescription : ''
+            extraChargeDescription: trip ? trip.extraChargeDescription : '',
+            selfTrip: trip ? trip.selfTrip : selfTrip
         },
 
         validationSchema: validationSchema,
@@ -164,7 +206,11 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                 tempValues.extraChargeDescription = tempExtraCharge.type;
             }
             if (trip) updateTrip(tempValues, trip._id, false);
-            else addTrip(tempValues);
+            else {
+                setAddingTrip(true);
+
+                addTrip(tempValues);
+            }
         }
     });
 
@@ -189,26 +235,48 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
         <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={4}>
                 <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="customer"
-                        name="customer"
-                        label="Select Customer"
-                        labelId="demo-simple-select-filled-label"
-                        select
-                        value={formik.values.customer}
-                        onChange={formik.handleChange}
-                        error={formik.touched.customer && Boolean(formik.errors.customer)}
-                        helperText={formik.touched.customer && formik.errors.customer}
-                    >
-                        {customers.length ? (
-                            customers.map((customer) => {
-                                return <MenuItem value={customer._id}>{customer.name}</MenuItem>;
-                            })
-                        ) : (
-                            <MenuItem value="none">None</MenuItem>
-                        )}
-                    </TextField>
+                    {selfTrip || trip?.selfTrip ? (
+                        <TextField
+                            fullWidth
+                            id="customer"
+                            name="customer"
+                            label="Select Customer"
+                            labelId="demo-simple-select-filled-label"
+                            select
+                            value={formik.values.customer}
+                            onChange={formik.handleChange}
+                            error={formik.touched.customer && Boolean(formik.errors.customer)}
+                            helperText={formik.touched.customer && formik.errors.customer}
+                        >
+                            {customers.length ? (
+                                customers.map((customer) => {
+                                    return <MenuItem value={customer._id}>{customer.name}</MenuItem>;
+                                })
+                            ) : customerProgress == 100 ? (
+                                <MenuItem value="none">Customers not available</MenuItem>
+                            ) : (
+                                <>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                </>
+                            )}
+                        </TextField>
+                    ) : (
+                        <TextField
+                            fullWidth
+                            id="customerName"
+                            name="customerName"
+                            label="Customer Name"
+                            value={formik.values.customerName}
+                            onChange={formik.handleChange}
+                            error={formik.touched.customerName && Boolean(formik.errors.customerName)}
+                            helperText={formik.touched.customerName && formik.errors.customerName}
+                        />
+                    )}
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
@@ -234,7 +302,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                         name="tripDate"
                         type="date"
                         fullWidth
-                        // defaultValue="00-00-0000"
+                        // defaultValue={formik.values.tripDate}
                         value={formik.values.tripDate}
                         onChange={formik.handleChange}
                         variant="outlined"
@@ -269,26 +337,48 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                     />
                 </Grid>
                 <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="vehicle"
-                        name="vehicle"
-                        label="Select Vehicle"
-                        labelId="demo-simple-select-filled-label"
-                        select
-                        value={formik.values.vehicle}
-                        onChange={formik.handleChange}
-                        error={formik.touched.vehicle && Boolean(formik.errors.vehicle)}
-                        helperText={formik.touched.vehicle && formik.errors.vehicle}
-                    >
-                        {vehicles.length ? (
-                            vehicles.map((vehicle) => {
-                                return <MenuItem value={vehicle._id}>{vehicle.name}</MenuItem>;
-                            })
-                        ) : (
-                            <MenuItem value="none">None</MenuItem>
-                        )}
-                    </TextField>
+                    {selfTrip || trip?.selfTrip ? (
+                        <TextField
+                            fullWidth
+                            id="vehicle"
+                            name="vehicle"
+                            label="Select Vehicle"
+                            labelId="demo-simple-select-filled-label"
+                            select
+                            value={formik.values.vehicle}
+                            onChange={formik.handleChange}
+                            error={formik.touched.vehicle && Boolean(formik.errors.vehicle)}
+                            helperText={formik.touched.vehicle && formik.errors.vehicle}
+                        >
+                            {vehicles.length ? (
+                                vehicles.map((vehicle) => {
+                                    return <MenuItem value={vehicle._id}>{vehicle.name}</MenuItem>;
+                                })
+                            ) : driverProgress == 100 ? (
+                                <MenuItem value="none">Drivers not available</MenuItem>
+                            ) : (
+                                <>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                </>
+                            )}
+                        </TextField>
+                    ) : (
+                        <TextField
+                            fullWidth
+                            id="vehicleNo"
+                            name="vehicleNo"
+                            label="Vehicle Number"
+                            value={formik.values.vehicleNo}
+                            onChange={formik.handleChange}
+                            error={formik.touched.vehicleNo && Boolean(formik.errors.vehicleNo)}
+                            helperText={formik.touched.vehicleNo && formik.errors.vehicleNo}
+                        />
+                    )}
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
@@ -401,8 +491,17 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                                         </MenuItem>
                                     );
                                 })
+                            ) : chargeProgress == 100 ? (
+                                <MenuItem value="none">Charges not available</MenuItem>
                             ) : (
-                                <MenuItem value="none">None</MenuItem>
+                                <>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                </>
                             )}
                         </TextField>
                     </Grid>
@@ -444,30 +543,36 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                         helperText={formik.touched.totalPayment && formik.errors.totalPayment}
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="paymentReceived"
-                        name="paymentReceived"
-                        label="Payment Received"
-                        value={formik.values.paymentReceived}
-                        onChange={formik.handleChange}
-                        error={formik.touched.paymentReceived && Boolean(formik.errors.paymentReceived)}
-                        helperText={formik.touched.paymentReceived && formik.errors.paymentReceived}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="paymentPending"
-                        name="paymentPending"
-                        label="Payment Pending"
-                        value={formik.values.paymentPending}
-                        onChange={formik.handleChange}
-                        error={formik.touched.paymentPending && Boolean(formik.errors.paymentPending)}
-                        helperText={formik.touched.paymentPending && formik.errors.paymentPending}
-                    />
-                </Grid>
+                {!selfTrip ||
+                    (!trip?.selfTrip && (
+                        <Grid item xs={6}>
+                            <TextField
+                                fullWidth
+                                id="paymentReceived"
+                                name="paymentReceived"
+                                label="Payment Received"
+                                value={formik.values.paymentReceived}
+                                onChange={formik.handleChange}
+                                error={formik.touched.paymentReceived && Boolean(formik.errors.paymentReceived)}
+                                helperText={formik.touched.paymentReceived && formik.errors.paymentReceived}
+                            />
+                        </Grid>
+                    ))}
+                {!selfTrip ||
+                    (!trip?.selfTrip && (
+                        <Grid item xs={6}>
+                            <TextField
+                                fullWidth
+                                id="paymentToTransporter"
+                                name="paymentToTransporter"
+                                label="Payment to Transporter"
+                                value={formik.values.paymentToTransporter}
+                                onChange={formik.handleChange}
+                                error={formik.touched.paymentToTransporter && Boolean(formik.errors.paymentToTransporter)}
+                                helperText={formik.touched.paymentToTransporter && formik.errors.paymentToTransporter}
+                            />
+                        </Grid>
+                    ))}
 
                 <Grid item xs={6}>
                     <TextField
@@ -486,8 +591,17 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                             drivers.map((driver) => {
                                 return <MenuItem value={driver._id}>{driver.name}</MenuItem>;
                             })
+                        ) : driverProgress == 100 ? (
+                            <MenuItem value="none">Drivers not available</MenuItem>
                         ) : (
-                            <MenuItem value="none">None</MenuItem>
+                            <>
+                                <MenuItem value="none">
+                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                </MenuItem>
+                                <MenuItem value="none">
+                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                </MenuItem>
+                            </>
                         )}
                     </TextField>
                 </Grid>
@@ -583,7 +697,7 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                         />
                     </Box>
                 </Grid>
-                {trip && (
+                {trip?.challanImages.length ? (
                     <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
                         <Box display={'flex'} width="100%">
                             <Button onClick={() => setImagesOpen(true)} color="secondary" fullWidth variant="outlined">
@@ -591,6 +705,8 @@ function TripForm({ trip, updateTrip, addTrip, setChallanDialog, setImagesOpen, 
                             </Button>
                         </Box>
                     </Grid>
+                ) : (
+                    ''
                 )}
             </Grid>
             <Box className={classes.wrapperLoading} style={{ marginTop: '20px' }}>

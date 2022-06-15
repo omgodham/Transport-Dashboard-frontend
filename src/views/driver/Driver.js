@@ -124,6 +124,7 @@ function Driver() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [savingDriver, setSavingDriver] = useState(false);
     const [showBackdrop, setShowBackdrop] = useState(false);
+    const [addingDriver, setAddingDriver] = useState(false);
     const d = new Date();
     d.setMonth(d.getMonth() - 1);
     const [showTrips, setShowTrips] = useState();
@@ -341,7 +342,7 @@ function Driver() {
                 </Box>
             </Box>
 
-            <Dialog open={open} onClose={() => handleClose()}>
+            <Dialog open={open}>
                 <DriverForm
                     getAllDrivers={getAllDrivers}
                     setOpen={setOpen}
@@ -354,6 +355,8 @@ function Driver() {
                     setSavingDriver={setSavingDriver}
                     savingDriver={savingDriver}
                     setShowBackdrop={setShowBackdrop}
+                    setAddingDriver={setAddingDriver}
+                    addingDriver={addingDriver}
                 />
             </Dialog>
 

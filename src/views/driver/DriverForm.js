@@ -23,6 +23,9 @@ import Axios from '../../axios';
 import CloseIcon from '@material-ui/icons/Close';
 import SalaryDetails from './SalaryDetails';
 import Compressor from 'compressorjs';
+import { Link } from 'react-router-dom';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CreateIcon from '@material-ui/icons/Create';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -89,7 +92,11 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: '10px',
         right: '10px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        backgroundColor: 'white',
+        borderRadius: '50%',
+        width: '25px',
+        height: '25px'
     },
     buttonProgress: {
         color: theme.palette.secondary[800],
@@ -101,6 +108,29 @@ const useStyles = makeStyles((theme) => ({
     },
     wrapperLoading: {
         width: '100%',
+        position: 'relative'
+    },
+    imgBox: {
+        border: '1px solid gray',
+        width: 'fit-content',
+        borderRadius: '5px',
+        padding: '5px'
+    },
+    imgWrapper: {
+        display: 'flex',
+        alignItems: 'center'
+    },
+    iconBox: {
+        // border: '1px solid gray',
+        margin: '10px',
+        borderRadius: '5px'
+    },
+    img: {
+        cursor: 'pointer',
+        objectFit: 'cover'
+    },
+    bigImgBox: {
+        padding: '10px ',
         position: 'relative'
     }
 }));
@@ -116,13 +146,17 @@ function DriverForm({
     setActiveDriver,
     savingDriver,
     setSavingDriver,
-    setShowBackdrop
+    setShowBackdrop,
+    addingDriver,
+    setAddingDriver
 }) {
     const classes = useStyles();
     const [addSalaryDetailsCheck, setAddSalaryDetailsCheck] = useState(false);
     const [showSalaryDetailsCheck, setShowSalaryDetailsCheck] = useState(false);
     const [tempSalaryDetails, setTempSalaryDetails] = useState(null);
     const [detailFound, setDetailFound] = useState(false);
+    const [showImg, setShowImg] = useState();
+    const [activeImg, setActiveImg] = useState();
 
     const validationSchema = yup.object({
         name: yup.string('Please enter driver name.').required('Name is required'),
@@ -149,7 +183,9 @@ function DriverForm({
         onSubmit: (values) => {
             if (activeDriver) {
                 setSavingDriver(true);
-                setShowBackdrop(true);
+                // setShowBackdrop(true);
+            } else {
+                setAddingDriver(true);
             }
             let temp = [...values.salaryDetails];
             if (addSalaryDetailsCheck && activeDriver && !detailFound) {
@@ -181,8 +217,10 @@ function DriverForm({
                         handleClose();
                         setAlertMsg('New driver saved successfully');
                         setSuccessSnack(true);
+                        setAddingDriver(false);
                     })
                     .catch((error) => {
+                        setAddingDriver(false);
                         setAlertMsg('Something went wrong');
                         setErrorSnack(true);
                     });
@@ -300,34 +338,80 @@ function DriverForm({
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.formItems}>
-                        <label for="aadharCard">Driver's Aadhar Card</label>
-                        <TextField
-                            fullWidth
-                            id="aadharCard"
-                            type="file"
-                            name="aadharCard"
-                            // label="Driver's Aadhar Card"
-                            onChange={(e) => {
-                                handleImageCompressionAndConversion(e.target.files, 'aadharCard');
-                            }}
-                            error={formik.touched.aadharCard && Boolean(formik.errors.aadharCard)}
-                            helperText={formik.touched.aadharCard && formik.errors.aadharCard}
-                        />
+                        {activeDriver?.aadharCard ? (
+                            <Box className={classes.imgWrapper}>
+                                <Box className={classes.imgBox}>
+                                    <img
+                                        className={classes.img}
+                                        src={activeDriver.aadharCard}
+                                        width="55px"
+                                        height={'25px'}
+                                        alt="Aadhar Card"
+                                        onClick={() => {
+                                            setActiveImg(activeDriver.aadharCard);
+                                            setShowImg(true);
+                                        }}
+                                    />
+                                </Box>
+                                <Box className={classes.iconBox}>
+                                    <DeleteIcon />
+                                </Box>
+                            </Box>
+                        ) : (
+                            <>
+                                <label for="aadharCard">Driver's Aadhar Card</label>
+                                <TextField
+                                    fullWidth
+                                    id="aadharCard"
+                                    type="file"
+                                    name="aadharCard"
+                                    // label="Driver's Aadhar Card"
+                                    onChange={(e) => {
+                                        handleImageCompressionAndConversion(e.target.files, 'aadharCard');
+                                    }}
+                                    error={formik.touched.aadharCard && Boolean(formik.errors.aadharCard)}
+                                    helperText={formik.touched.aadharCard && formik.errors.aadharCard}
+                                />
+                            </>
+                        )}
                     </Grid>
                     <Grid item xs={6} className={classes.formItems}>
-                        <label for="license">Driver's License</label>
-                        <TextField
-                            fullWidth
-                            id="license"
-                            type="file"
-                            name="license"
-                            // label="Driver's License"
-                            onChange={(e) => {
-                                handleImageCompressionAndConversion(e.target.files, 'license');
-                            }}
-                            error={formik.touched.license && Boolean(formik.errors.license)}
-                            helperText={formik.touched.license && formik.errors.license}
-                        />
+                        {activeDriver?.license ? (
+                            <Box className={classes.imgWrapper}>
+                                <Box className={classes.imgBox}>
+                                    <img
+                                        className={classes.img}
+                                        src={activeDriver.license}
+                                        width="55px"
+                                        height={'25px'}
+                                        alt="Aadhar Card"
+                                        onClick={() => {
+                                            setActiveImg(activeDriver.license);
+                                            setShowImg(true);
+                                        }}
+                                    />
+                                </Box>
+                                <Box className={classes.iconBox}>
+                                    <DeleteIcon />
+                                </Box>
+                            </Box>
+                        ) : (
+                            <>
+                                <label for="license">Driver's License</label>
+                                <TextField
+                                    fullWidth
+                                    id="license"
+                                    type="file"
+                                    name="license"
+                                    // label="Driver's License"
+                                    onChange={(e) => {
+                                        handleImageCompressionAndConversion(e.target.files, 'license');
+                                    }}
+                                    error={formik.touched.license && Boolean(formik.errors.license)}
+                                    helperText={formik.touched.license && formik.errors.license}
+                                />
+                            </>
+                        )}
                     </Grid>
                     {activeDriver && (
                         <>
@@ -374,9 +458,17 @@ function DriverForm({
                     <Button className={classes.submitBtn} variant="contained" fullWidth type="submit">
                         {activeDriver ? 'Update' : 'Submit'}
                     </Button>
-                    {savingDriver && <CircularProgress size={24} className={classes.buttonProgress} />}
+                    {(savingDriver || addingDriver) && <CircularProgress size={24} className={classes.buttonProgress} />}
                 </Box>
             </form>
+            <Dialog open={showImg}>
+                <Box className={classes.bigImgBox}>
+                    <Box className={classes.closeBox}>
+                        <CloseIcon onClick={() => setShowImg(false)} />
+                    </Box>
+                    <img src={activeImg} width="400px" alt="Aadhar/License" />
+                </Box>
+            </Dialog>
         </div>
     );
 }
