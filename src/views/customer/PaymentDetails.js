@@ -13,9 +13,10 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
         monthYear: '',
         advance: '0',
         remaining: '0',
-        total: '0'
+        total: '0',
+        paymentDone: false
     });
-    const { monthYear, advance, remaining, total } = paymentDetails;
+    const { monthYear, advance, remaining, total, paymentDone } = paymentDetails;
 
     // Note: 1. Add add and save functionality give btns over here itself
     useEffect(async () => {
@@ -32,7 +33,8 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
                     ...paymentDetails,
                     advance: '0',
                     remaining: '0',
-                    total: '0'
+                    total: '0',
+                    paymentDone: false
                 });
                 setDetailFound(false);
             }
@@ -48,7 +50,8 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
                     ...paymentDetails,
                     advance: '0',
                     remaining: '0',
-                    total: '0'
+                    total: '0',
+                    paymentDone: false
                 });
                 setDetailFound(false);
             }
@@ -61,7 +64,8 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
             monthYear: '',
             advance: '0',
             remaining: '0',
-            total: '0'
+            total: '0',
+            paymentDone: false
         });
     }, [showPaymentDetailsCheck, addPaymentDetailsCheck]);
 
@@ -85,7 +89,7 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
                 setActiveCust(response.data);
                 getAllCustomers();
                 // setOpen(false);
-                setAlertMsg('New customer saved successfully');
+                setAlertMsg('Customer payment details updated successfully');
                 setSuccessSnack(true);
             })
             .catch((error) => {
@@ -148,6 +152,14 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
                     </Typography>
                 </Grid>
             )}
+            {!fetchingData && showPaymentDetailsCheck && detailFound && (
+                <Grid item xs={12} mt={2}>
+                    <Typography variant="h5" color="success">
+                        Note: This payment details are being shown from data stored in the records for this month if you update this details
+                        then previous details of this month will get delete
+                    </Typography>
+                </Grid>
+            )}
             {(addPaymentDetailsCheck || (showPaymentDetailsCheck && detailFound && paymentDetails.monthYear)) && !fetchingData && (
                 <Grid item xs={12} mt={2}>
                     <Grid item xs={12} mt={2}>
@@ -186,6 +198,20 @@ function PaymentDetails({ activeCust, getAllCustomers, setAlertMsg, setSuccessSn
                             // helperText={!remaining && 'Enter some amount'}
                         />
                     </Grid>
+
+                    {showPaymentDetailsCheck && (
+                        <Grid item xs={12} mt={2}>
+                            <input
+                                type="checkbox"
+                                id="paymentDone"
+                                checked={paymentDone}
+                                onChange={(e) => {
+                                    setPaymentDetails({ ...paymentDetails, paymentDone: e.target.checked });
+                                }}
+                            />
+                            <label htmlFor="paymentDone">Payment Completed</label>
+                        </Grid>
+                    )}
                 </Grid>
             )}
             {fetchingData && (
