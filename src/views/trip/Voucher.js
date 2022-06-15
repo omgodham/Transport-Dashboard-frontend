@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         // borderRight: '1px solid black'
     },
     tableContainer: {
-        // border: '1px solid black'
+        border: '1px solid black'
     },
     table: {},
     tableHead: {
@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function TripBill({ trip, setAlertMessage, setErrorSnack }) {
+function Voucher({ trip, setAlertMessage, setErrorSnack }) {
     const classes = useStyles();
     const componentRef = useRef();
     const [vehicles, setVehicles] = useState([]);
@@ -253,7 +253,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                         {trip.lrNo}
                                     </TableCell>
                                 </TableRow>
-                                {/* <TableRow>
+                                <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
                                         From
                                     </TableCell>
@@ -267,7 +267,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                     <TableCell className={classes.tripItem} align="center">
                                         {trip.dropup}
                                     </TableCell>
-                                </TableRow> */}
+                                </TableRow>
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
                                         Amount
@@ -296,46 +296,6 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         </Table>
                     </TableContainer>
                 </Box>
-                <Box sx={{ mt: 2 }}>
-                    <TableContainer>
-                        <Table>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        Weight
-                                    </TableCell>
-                                    <TableCell className={classes.tripItem} align="left">
-                                        {trip.materialWeight} KG
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        Vehicle Model
-                                    </TableCell>
-                                    <TableCell className={classes.tripItem} align="left">
-                                        {trip.truckModel}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        From
-                                    </TableCell>
-                                    <TableCell className={classes.tripItem} align="left">
-                                        {trip.pickup}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        To
-                                    </TableCell>
-                                    <TableCell className={classes.tripItem} align="left">
-                                        {trip.dropup}
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
                 <Box sx={{ mt: 3, minHeight: '300px' }}>
                     <Grid container>
                         <Grid item xs={8}>
@@ -349,61 +309,62 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         <Grid item xs={8}>
                             <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
                                 <Box sx={{ m: 1 }}>Freight</Box>
+                                <Box sx={{ m: 1 }}>Advance</Box>
                                 <Box sx={{ m: 1 }}>{trip.extraChargeDescription}</Box>
                                 <Box sx={{ m: 1 }}>LR Charges</Box>
-                                <Box sx={{ m: 1 }}>Statistical Charges</Box>
                             </Box>
                         </Grid>
                         <Grid item xs={4}>
                             <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
                                 <Box sx={{ m: 1 }}>Rs. {trip.totalPayment}</Box>
+                                <Box sx={{ m: 1 }}>Rs. {trip.paymentReceived}</Box>
                                 <Box sx={{ m: 1 }}>Rs. {trip.extraCharge}</Box>
                                 <Box sx={{ m: 1 }}>Rs. {trip.lrCharges}</Box>
                             </Box>
                         </Grid>
                         <Grid item xs={4}></Grid>
                     </Grid>
-                    <Box sx={{ mt: 2 }}>
-                        <Box width="fit-content">
-                            <Grid container>
-                                <Grid item>
-                                    <Grid container>
-                                        <Grid item>
-                                            <Box sx={{ p: 1 }}>
-                                                <Typography variant="h5">Grand Total - </Typography>
-                                            </Box>
-                                        </Grid>
-                                        <Grid item>
-                                            <Box sx={{ p: 1 }}>
-                                                <Typography variant="h5">
-                                                    Rs. {trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived}
-                                                </Typography>
-                                            </Box>
-                                        </Grid>
+                </Box>
+                <Box sx={{ mt: 2 }}>
+                    <Box width="fit-content">
+                        <Grid container>
+                            <Grid item>
+                                <Grid container>
+                                    <Grid item>
+                                        <Box sx={{ p: 1 }}>
+                                            <Typography variant="h5">Grand Total - </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item>
+                                        <Box sx={{ p: 1 }}>
+                                            <Typography variant="h5">
+                                                Rs. {trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived}
+                                            </Typography>
+                                        </Box>
                                     </Grid>
                                 </Grid>
                             </Grid>
-                        </Box>
-                        <Divider />
-                        <Box width="fit-content">
-                            <Grid container>
-                                <Grid item>
-                                    <Box sx={{ p: 1 }}>
-                                        <Typography variant="h5">In Words - </Typography>
-                                    </Box>
-                                </Grid>
-                                <Grid item>
-                                    <Box sx={{ p: 1 }}>
-                                        <Typography variant="h6" style={{ fontSize: '14px' }}>
-                                            {' '}
-                                            {totalPayment && toWords.convert(totalPayment, { currency: true })}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-                        </Box>
-                        <Divider />
+                        </Grid>
                     </Box>
+                    <Divider />
+                    <Box width="fit-content">
+                        <Grid container>
+                            <Grid item>
+                                <Box sx={{ p: 1 }}>
+                                    <Typography variant="h5">In Words - </Typography>
+                                </Box>
+                            </Grid>
+                            <Grid item>
+                                <Box sx={{ p: 1 }}>
+                                    <Typography variant="h6" style={{ fontSize: '14px' }}>
+                                        {' '}
+                                        {totalPayment && toWords.convert(totalPayment, { currency: true })}
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Divider />
                 </Box>
                 <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 7 }}>
                     <Grid container spacing={5} display={'flex'}>
@@ -440,4 +401,4 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
     );
 }
 
-export default TripBill;
+export default Voucher;

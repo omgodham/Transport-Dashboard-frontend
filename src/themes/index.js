@@ -26,7 +26,7 @@ export function theme(customization) {
         textDark: color.grey900,
         menuSelected: color.secondaryDark,
         menuSelectedBack: color.secondaryLight,
-        divider: color.grey200,
+        // divider: color.grey200,
         customization: customization
     };
 
