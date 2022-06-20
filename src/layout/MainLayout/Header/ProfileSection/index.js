@@ -60,14 +60,14 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         borderRadius: '27px',
         transition: 'all .2s ease-in-out',
-        borderColor: theme.palette.primary.light,
-        backgroundColor: theme.palette.primary.light,
+        borderColor: theme.palette.secondary.light,
+        backgroundColor: theme.palette.secondary.light,
         '&[aria-controls="menu-list-grow"], &:hover': {
-            borderColor: theme.palette.primary.main,
-            background: theme.palette.primary.main + '!important',
-            color: theme.palette.primary.light,
+            borderColor: theme.palette.secondary.main,
+            background: theme.palette.secondary.main + '!important',
+            color: theme.palette.secondary.light,
             '& svg': {
-                stroke: theme.palette.primary.light
+                stroke: theme.palette.secondary.light
             }
         }
     },
@@ -157,23 +157,23 @@ const ProfileSection = () => {
             <Chip
                 classes={{ label: classes.profileLabel }}
                 className={classes.profileChip}
-                icon={
-                    <Avatar
-                        src={User1}
-                        className={classes.headerAvatar}
-                        ref={anchorRef}
-                        aria-controls={open ? 'menu-list-grow' : undefined}
-                        aria-haspopup="true"
-                        color="inherit"
-                    />
-                }
-                label={<IconSettings stroke={1.5} size="1.5rem" color={theme.palette.primary.main} />}
-                variant="outlined"
+                // icon={
+                //     <Avatar
+                //         src={User1}
+                //         className={classes.headerAvatar}
+                //         ref={anchorRef}
+                //         aria-controls={open ? 'menu-list-grow' : undefined}
+                //         aria-haspopup="true"
+                //         color="inherit"
+                //     />
+                // }
+                label={<IconLogout stroke={1.5} size="1.5rem" color={theme.palette.secondary.main} />}
+                variant="contained"
                 ref={anchorRef}
                 aria-controls={open ? 'menu-list-grow' : undefined}
                 aria-haspopup="true"
-                onClick={handleToggle}
-                color="primary"
+                onClick={handleLogout}
+                color="secondary"
             />
             <Popper
                 placement="bottom-end"
@@ -199,7 +199,7 @@ const ProfileSection = () => {
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                                     <CardContent className={classes.cardContent}>
-                                        <Grid container direction="column" spacing={0}>
+                                        {/* <Grid container direction="column" spacing={0}>
                                             <Grid item className={classes.flex}>
                                                 <Typography variant="h4">Good Morning,</Typography>
                                                 <Typography component="span" variant="h4" className={classes.name}>
@@ -209,8 +209,8 @@ const ProfileSection = () => {
                                             <Grid item>
                                                 <Typography variant="subtitle2">Project Admin</Typography>
                                             </Grid>
-                                        </Grid>
-                                        <OutlinedInput
+                                        </Grid> */}
+                                        {/* <OutlinedInput
                                             className={classes.searchControl}
                                             id="input-search-profile"
                                             value={value}
@@ -225,15 +225,15 @@ const ProfileSection = () => {
                                             inputProps={{
                                                 'aria-label': 'weight'
                                             }}
-                                        />
-                                        <Divider />
+                                        /> */}
+                                        {/* <Divider /> */}
                                         <PerfectScrollbar className={classes.ScrollHeight}>
-                                            <UpgradePlanCard />
+                                            {/* <UpgradePlanCard /> */}
                                             <Divider />
-                                            <Card className={classes.card}>
+                                            {/* <Card className={classes.card}>
                                                 <CardContent>
                                                     <Grid container spacing={3} direction="column">
-                                                        <Grid item>
+                                                         <Grid item>
                                                             <Grid item container alignItems="center" justifyContent="space-between">
                                                                 <Grid item>
                                                                     <Typography variant="subtitle1">Start DND Mode</Typography>
@@ -248,8 +248,8 @@ const ProfileSection = () => {
                                                                     />
                                                                 </Grid>
                                                             </Grid>
-                                                        </Grid>
-                                                        <Grid item>
+                                                        </Grid> */}
+                                            {/* <Grid item>
                                                             <Grid item container alignItems="center" justifyContent="space-between">
                                                                 <Grid item>
                                                                     <Typography variant="subtitle1">Allow Notifications</Typography>
@@ -266,7 +266,7 @@ const ProfileSection = () => {
                                                         </Grid>
                                                     </Grid>
                                                 </CardContent>
-                                            </Card>
+                                            </Card> */}
                                             <Divider />
                                             <List component="nav" className={classes.navContainer}>
                                                 <ListItemButton

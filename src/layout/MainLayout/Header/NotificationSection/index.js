@@ -140,7 +140,7 @@ const NotificationSection = () => {
 
     return (
         <React.Fragment>
-            <Box component="span" className={classes.box}>
+            {/* <Box component="span" className={classes.box}>
                 <ButtonBase sx={{ borderRadius: '12px' }}>
                     <Avatar
                         variant="rounded"
@@ -154,7 +154,7 @@ const NotificationSection = () => {
                         <IconBell stroke={1.5} size="1.3rem" />
                     </Avatar>
                 </ButtonBase>
-            </Box>
+            </Box> */}
             <Popper
                 placement={matchesXs ? 'bottom' : 'bottom-end'}
                 open={open}

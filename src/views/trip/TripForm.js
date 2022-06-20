@@ -64,7 +64,8 @@ function TripForm({
     setSavingTrip,
     addingTrip,
     setAddingTrip,
-    selfTrip
+    selfTrip,
+    setSelfTrip
 }) {
     const classes = useStyles();
     const [alertMessage, setAlertMessage] = useState();
@@ -81,9 +82,11 @@ function TripForm({
     const [driverProgress, setDrivererProgress] = useState(0);
     const [vehicleProgress, setVehicleProgress] = useState(0);
     const [chargeProgress, setChargeProgress] = useState(0);
+    const [companies, setCompanies] = useState([]);
+    const [companyProgress, setCompanyProgress] = useState(0);
 
     useEffect(() => {
-        if (selfTrip || trip?.selfTrip) {
+        if (selfTrip) {
             Axios.get('/customer/get-all-customers', {
                 onDownloadProgress: (progressEvent) => {
                     var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -140,25 +143,37 @@ function TripForm({
                 setAlertMessage('Could not get extra charges');
                 setErrorSnack(true);
             });
-    }, []);
+
+        Axios.get('/company/get-all-companies', {
+            onDownloadProgress: (progressEvent) => {
+                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setCompanyProgress(percentCompleted);
+            }
+        })
+            .then((response) => {
+                setCompanies(response.data);
+            })
+            .catch((error) => console.log(error));
+    }, [trip, selfTrip]);
 
     useEffect(() => {
         if (trip) {
             if (!extraCharges.some((item) => item.amount == trip.extraCharge)) setCustomExtraChargeCheck(true);
             else setCustomExtraChargeCheck(false);
+            setSelfTrip(trip.selfTrip);
         }
     }, [trip, extraCharges]);
 
     const validationSchema = yup.object({
-        customer: yup.string('Select customer').required('Customer is required'),
-        company: yup.string('Select Company').required('Company is required'),
-        vehicle: yup.string('Select Vehicle').required('vehicle is required'),
-        driver: yup.string('Select Driver').required('Driver is required'),
-        dropup: yup.string('Select DropUp Locaiton').required('Dropup location is required'),
-        pickup: yup.string('Select Pickup Location').required('Pickup location is required'),
+        customer: yup.string('Select customer'),
+        company: yup.string('Select Company'),
+        vehicle: yup.string('Select Vehicle'),
+        driver: yup.string('Select Driver'),
+        dropup: yup.string('Select DropUp Locaiton'),
+        pickup: yup.string('Select Pickup Location'),
         // tripDate: yup.string('Select Date').required('Date is required'),
-        materialWeight: yup.string('Enter load in KG').required('Load is required'),
-        fuelCharge: yup.string('Enter disel charge').required('Disel charge is required'),
+        materialWeight: yup.string('Enter load in KG'),
+        fuelCharge: yup.string('Enter disel charge'),
         // driverExtraCharge: yup.string("Enter Driver's extra charges").required('Driver extra charge is required'),
         // agent: yup.string('Enter agent name').required('Agent name is required'),
         // challanNo: yup.string('Enter challan number').required('Challan number is required'),
@@ -167,14 +182,14 @@ function TripForm({
 
     const formik = useFormik({
         initialValues: {
-            customer: trip ? trip.customer : '',
+            customer: trip && trip.customer,
             customerName: trip ? trip.customerName : '',
             company: trip ? trip.company : '',
-            vehicle: trip ? trip.vehicle : '',
+            vehicle: trip && trip.vehicle,
             vehicleNo: trip ? trip.vehicleNo : '',
             pickup: trip ? trip.pickup : '',
             dropup: trip ? trip.dropup : '',
-            driver: trip ? trip.driver : '',
+            driver: trip && trip.driver,
             lrNo: trip ? trip.lrNo : '',
             challanNo: trip ? trip.challanNo : '',
             advanceForCustomer: trip ? trip.advanceForCustomer : '',
@@ -195,7 +210,8 @@ function TripForm({
             driverBhatta: trip ? trip.Bhatta : 0,
             extraChargeDescription: trip ? trip.extraChargeDescription : '',
             billNo: trip ? trip.billNo : '',
-            selfTrip: trip ? trip.selfTrip : selfTrip
+            selfTrip: trip ? trip.selfTrip : selfTrip,
+            driverName: trip ? trip.driverName : ''
         },
 
         validationSchema: validationSchema,
@@ -209,7 +225,6 @@ function TripForm({
             if (trip) updateTrip(tempValues, trip._id, false);
             else {
                 setAddingTrip(true);
-
                 addTrip(tempValues);
             }
         }
@@ -236,7 +251,7 @@ function TripForm({
         <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={4}>
                 <Grid item xs={6}>
-                    {selfTrip || trip?.selfTrip ? (
+                    {selfTrip ? (
                         <TextField
                             fullWidth
                             id="customer"
@@ -292,8 +307,22 @@ function TripForm({
                         error={formik.touched.company && Boolean(formik.errors.company)}
                         helperText={formik.touched.company && formik.errors.company}
                     >
-                        <MenuItem value="swapnil">Swapnil Transport</MenuItem>
-                        <MenuItem value="atlas">Atlas Cargo</MenuItem>
+                        {companies.length ? (
+                            companies.map((company) => {
+                                return <MenuItem value={company._id}>{company.name}</MenuItem>;
+                            })
+                        ) : companyProgress == 100 ? (
+                            <MenuItem value="none">Company not available</MenuItem>
+                        ) : (
+                            <>
+                                <MenuItem value="none">
+                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                </MenuItem>
+                                <MenuItem value="none">
+                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                </MenuItem>
+                            </>
+                        )}
                     </TextField>
                 </Grid>
                 <Grid item xs={6}>
@@ -326,19 +355,7 @@ function TripForm({
                     />
                 </Grid>
                 <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="paymentVoucherNumber"
-                        name="paymentVoucherNumber"
-                        label="Payment Voucher Number"
-                        value={formik.values.paymentVoucherNumber}
-                        onChange={formik.handleChange}
-                        error={formik.touched.paymentVoucherNumber && Boolean(formik.errors.paymentVoucherNumber)}
-                        helperText={formik.touched.paymentVoucherNumber && formik.errors.paymentVoucherNumber}
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    {selfTrip || trip?.selfTrip ? (
+                    {selfTrip ? (
                         <TextField
                             fullWidth
                             id="vehicle"
@@ -353,7 +370,7 @@ function TripForm({
                         >
                             {vehicles.length ? (
                                 vehicles.map((vehicle) => {
-                                    return <MenuItem value={vehicle._id}>{vehicle.name}</MenuItem>;
+                                    return <MenuItem value={vehicle._id}>{vehicle.number}</MenuItem>;
                                 })
                             ) : driverProgress == 100 ? (
                                 <MenuItem value="none">Drivers not available</MenuItem>
@@ -557,67 +574,78 @@ function TripForm({
                         helperText={formik.touched.totalPayment && formik.errors.totalPayment}
                     />
                 </Grid>
-                {!selfTrip ||
-                    (!trip?.selfTrip && (
-                        <Grid item xs={6}>
-                            <TextField
-                                fullWidth
-                                id="paymentReceived"
-                                name="paymentReceived"
-                                label="Payment Received"
-                                value={formik.values.paymentReceived}
-                                onChange={formik.handleChange}
-                                error={formik.touched.paymentReceived && Boolean(formik.errors.paymentReceived)}
-                                helperText={formik.touched.paymentReceived && formik.errors.paymentReceived}
-                            />
-                        </Grid>
-                    ))}
-                {!selfTrip ||
-                    (!trip?.selfTrip && (
-                        <Grid item xs={6}>
-                            <TextField
-                                fullWidth
-                                id="paymentToTransporter"
-                                name="paymentToTransporter"
-                                label="Payment to Transporter"
-                                value={formik.values.paymentToTransporter}
-                                onChange={formik.handleChange}
-                                error={formik.touched.paymentToTransporter && Boolean(formik.errors.paymentToTransporter)}
-                                helperText={formik.touched.paymentToTransporter && formik.errors.paymentToTransporter}
-                            />
-                        </Grid>
-                    ))}
+                {!selfTrip && (
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            id="paymentReceived"
+                            name="paymentReceived"
+                            label="Payment Received"
+                            value={formik.values.paymentReceived}
+                            onChange={formik.handleChange}
+                            error={formik.touched.paymentReceived && Boolean(formik.errors.paymentReceived)}
+                            helperText={formik.touched.paymentReceived && formik.errors.paymentReceived}
+                        />
+                    </Grid>
+                )}
+                {!selfTrip && (
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            id="paymentToTransporter"
+                            name="paymentToTransporter"
+                            label="Payment to Transporter"
+                            value={formik.values.paymentToTransporter}
+                            onChange={formik.handleChange}
+                            error={formik.touched.paymentToTransporter && Boolean(formik.errors.paymentToTransporter)}
+                            helperText={formik.touched.paymentToTransporter && formik.errors.paymentToTransporter}
+                        />
+                    </Grid>
+                )}
 
                 <Grid item xs={6}>
-                    <TextField
-                        fullWidth
-                        id="driver"
-                        name="driver"
-                        label="Select Driver"
-                        select
-                        labelId="demo-simple-select-filled-label"
-                        value={formik.values.driver}
-                        onChange={formik.handleChange}
-                        error={formik.touched.driver && Boolean(formik.errors.driver)}
-                        helperText={formik.touched.driver && formik.errors.driver}
-                    >
-                        {drivers.length ? (
-                            drivers.map((driver) => {
-                                return <MenuItem value={driver._id}>{driver.name}</MenuItem>;
-                            })
-                        ) : driverProgress == 100 ? (
-                            <MenuItem value="none">Drivers not available</MenuItem>
-                        ) : (
-                            <>
-                                <MenuItem value="none">
-                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
-                                </MenuItem>
-                                <MenuItem value="none">
-                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
-                                </MenuItem>
-                            </>
-                        )}
-                    </TextField>
+                    {selfTrip ? (
+                        <TextField
+                            fullWidth
+                            id="driver"
+                            name="driver"
+                            label="Select Driver"
+                            select
+                            labelId="demo-simple-select-filled-label"
+                            value={formik.values.driver}
+                            onChange={formik.handleChange}
+                            error={formik.touched.driver && Boolean(formik.errors.driver)}
+                            helperText={formik.touched.driver && formik.errors.driver}
+                        >
+                            {drivers.length ? (
+                                drivers.map((driver) => {
+                                    return <MenuItem value={driver._id}>{driver.name}</MenuItem>;
+                                })
+                            ) : driverProgress == 100 ? (
+                                <MenuItem value="none">Drivers not available</MenuItem>
+                            ) : (
+                                <>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                    <MenuItem value="none">
+                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                    </MenuItem>
+                                </>
+                            )}
+                        </TextField>
+                    ) : (
+                        <TextField
+                            fullWidth
+                            id="driverName"
+                            name="driverName"
+                            label="Driver Name"
+                            value={formik.values.driverName}
+                            onChange={formik.handleChange}
+                            error={formik.touched.driverName && Boolean(formik.errors.driverName)}
+                            helperText={formik.touched.driverName && formik.errors.driverName}
+                        />
+                    )}
                 </Grid>
                 <Grid item xs={6}>
                     <TextField

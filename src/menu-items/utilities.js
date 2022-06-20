@@ -1,8 +1,10 @@
 // assets
 import { IconBrandFramer, IconTypography, IconPalette, IconShadow, IconWindmill, IconLayoutGridAdd } from '@tabler/icons';
 import LocalShippingIcon from '@material-ui/icons/LocalShipping';
-import ContactsIcon from '@material-ui/icons/Contacts';
+import PermContactCalendarIcon from '@material-ui/icons/PermContactCalendar';
 import BusinessIcon from '@material-ui/icons/Business';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import StoreIcon from '@material-ui/icons/Store';
 
 // constant
 const icons = {
@@ -13,7 +15,9 @@ const icons = {
     IconBrandFramer: IconBrandFramer,
     IconLayoutGridAdd: IconLayoutGridAdd,
     LocalShippingIcon,
-    ContactsIcon,
+    PermContactCalendarIcon,
+    AccountBalanceWalletIcon,
+    StoreIcon,
     BusinessIcon
 };
 
@@ -45,7 +49,7 @@ export const utilities = {
             title: 'Drivers',
             type: 'item',
             url: '/drivers',
-            icon: icons['ContactsIcon'],
+            icon: icons['PermContactCalendarIcon'],
             breadcrumbs: false
         },
         {
@@ -53,7 +57,15 @@ export const utilities = {
             title: 'Extra Charges',
             type: 'item',
             url: '/extra-charges',
-            icon: icons['ContactsIcon'],
+            icon: icons['AccountBalanceWalletIcon'],
+            breadcrumbs: false
+        },
+        {
+            id: 'company',
+            title: 'Company',
+            type: 'item',
+            url: '/company',
+            icon: icons['StoreIcon'],
             breadcrumbs: false
         }
     ]

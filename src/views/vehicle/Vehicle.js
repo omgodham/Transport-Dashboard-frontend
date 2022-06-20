@@ -1,4 +1,4 @@
-import { Alert, Avatar, Box, Button, Dialog, Grid, Snackbar, TextField, Typography } from '@material-ui/core';
+import { Alert, Avatar, Box, Button, Dialog, Divider, Grid, Skeleton, Snackbar, TextField, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { makeStyles } from '@material-ui/styles';
 import { useFormik } from 'formik';
@@ -7,14 +7,15 @@ import * as yup from 'yup';
 import Axios from '../../axios';
 import VehicleForm from './VehicleForm';
 import CloseIcon from '@material-ui/icons/Close';
-
+import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined';
+import noData from '../../images/noData.png';
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         padding: '20px 10px',
         height: '100%',
         backgroundColor: '#fff',
-        minHeight: '700px'
+        minHeight: '600px'
     },
     customerSkeleton: {
         width: '100%',
@@ -75,15 +76,15 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         padding: '20px',
-        alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: '15px',
-        border: `2px solid ${theme.palette.secondary.dark}`,
+        borderRadius: '10px',
+        // border: `2px solid ${theme.palette.secondary.dark}`,
         backgroundColor: '#fff',
+        boxShadow: ' rgba(0, 0, 0, 0.16) 0px 1px 4px',
         '&:hover': {
-            transform: `scale(1.03)`,
+            transform: `scale(1.02)`,
             cursor: 'pointer',
-            transition: 'all 450ms ease-in-out'
+            transition: 'all 150ms ease-in-out'
         }
     },
     modalStyle: {
@@ -116,8 +117,14 @@ function Vehicle() {
         description: '',
         maintenanceDate: new Date()
     });
+    const [progress, setProgress] = useState(0);
     const getAllVehicles = () => {
-        Axios.get('/vehicle/get-all-vehicles')
+        Axios.get('/vehicle/get-all-vehicles', {
+            onDownloadProgress: (progressEvent) => {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setProgress(percentCompleted);
+            }
+        })
             .then((response) => setVehicles(response.data))
             .catch((error) => console.log(error));
     };
@@ -216,11 +223,19 @@ function Vehicle() {
         return (
             <>
                 <Box className={classes.vehicleBox}>
-                    <Avatar alt="Remy Sharp" src="truck1.png" style={{ height: '80px', width: '80px' }} />
-                    <Typography style={{ fontSize: '28px' }} variant="h6">
-                        {vehicleData.name}
-                    </Typography>
-                    <Typography style={{ fontSize: '24px', color: 'gray' }}>{vehicleData.number}</Typography>
+                    <Box display="flex" alignItems={'center'}>
+                        <LocalShippingOutlinedIcon sx={{ fontSize: '40px', color: 'black' }} />
+                        <Typography style={{ fontSize: '24px', marginLeft: '20px' }} variant="h6">
+                            {vehicleData.model}
+                        </Typography>
+                    </Box>
+                    <Divider />
+                    <Box sx={{ my: 2 }}>
+                        <Typography style={{ fontSize: '20px' }}>
+                            <span style={{ color: 'black' }}>Vehicle No. - </span>
+                            {vehicleData.number}
+                        </Typography>
+                    </Box>
                 </Box>
             </>
         );
@@ -230,18 +245,23 @@ function Vehicle() {
     return (
         <div className={classes.root}>
             <Box>
-                <Typography variant="h2">Vehicles</Typography>
-                <Box className={classes.btnCont}>
-                    <Button
-                        onClick={() => setOpen(true)}
-                        className={classes.addBtn}
-                        variant="contained"
-                        startIcon={<AddCircleOutlineIcon />}
-                    >
-                        VEHICLE
-                    </Button>
+                <Box>
+                    <Typography textAlign={'center'} variant="h2">
+                        VEHICLES
+                    </Typography>
+                    <Box className={classes.btnCont}>
+                        <Button
+                            onClick={() => setOpen(true)}
+                            className={classes.addBtn}
+                            variant="contained"
+                            startIcon={<AddCircleOutlineIcon />}
+                        >
+                            VEHICLE
+                        </Button>
+                    </Box>
                 </Box>
-                <Grid container justifyContent="center" spacing={2}>
+                <Divider style={{ margin: '20px 0' }} />
+                <Grid container spacing={2}>
                     {vehicles.length ? (
                         vehicles.map((vehicle, index) => {
                             return (
@@ -251,24 +271,29 @@ function Vehicle() {
                                     sm={6}
                                     md={3}
                                     lg={3}
+                                    // sx={{ display: 'flex' }}
                                     onClick={() => {
                                         setCurrentVehicle(vehicle);
                                         setOpenDialog(true);
                                     }}
                                 >
-                                    {' '}
                                     <VehicleBox vehicleData={vehicle} index={index} />
                                 </Grid>
                             );
                         })
+                    ) : progress == 100 ? (
+                        <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                            <Box sx={{ m: 'auto' }}>
+                                <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
+                                <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
+                            </Box>
+                        </Box>
                     ) : (
-                        <>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                        </>
+                        <Grid item xs={12} sm={6} md={3} lg={3}>
+                            <Box className={classes.vehicleBox}>
+                                <Skeleton variant="rect" width={'100%'} height={100} />
+                            </Box>
+                        </Grid>
                     )}
                 </Grid>
             </Box>

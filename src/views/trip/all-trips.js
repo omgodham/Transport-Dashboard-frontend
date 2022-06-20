@@ -35,6 +35,8 @@ import TripForm from './TripForm';
 import DeleteIcon from '@material-ui/icons/Delete';
 import noData from '../../images/noData.png';
 import Voucher from './Voucher';
+import { MoreVert } from '@material-ui/icons';
+import TripActions from './TripActions';
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
@@ -44,8 +46,6 @@ const useStyles = makeStyles((theme) => ({
         minHeight: '600px'
     },
     tripSkeleton: {
-        height: '110px',
-        width: '100%',
         borderRadius: '5px',
         margin: '0'
     },
@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.grey[100]
     },
     mainHeading: {
-        fontSize: '2rem',
+        // fontSize: '2rem',
         color: theme.palette.grey[600]
     },
     editIconBox: {
@@ -184,6 +184,7 @@ function AllTrips() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [selfTrip, setSelfTrip] = useState();
     const [showDeleteWarn, setShowDeleteWarn] = useState();
+    const [companies, setCompanies] = useState();
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -212,6 +213,11 @@ function AllTrips() {
                 setAlertMessage('Could not get drivers');
                 setErrorSnack(true);
             });
+        Axios.get('/company/get-all-companies', {})
+            .then((response) => {
+                setCompanies(response.data);
+            })
+            .catch((error) => console.log(error));
     }, []);
 
     const getAllTrips = () => {
@@ -363,7 +369,7 @@ function AllTrips() {
 
     return (
         <div className={classes.root}>
-            <Box sx={{ mb: 1 }}>
+            <Box sx={{ mb: 2 }}>
                 <Typography className={classes.mainHeading} textAlign={'center'} variant="h2">
                     ALL TRIPS
                 </Typography>
@@ -485,40 +491,16 @@ function AllTrips() {
                         .slice(0)
                         .reverse()
                         .map((trip) =>
-                            trip._id != updatingTrip && trip.driver != activeDriver ? (
+                            trip._id != updatingTrip ? (
                                 <>
-                                    {/* <Grid
-                                    item
-                                    xs={12}
-                                    sm={3}
-                                    md={3}
-                                    lg={3}
-                                    className={classes.tripBlock}
-                                    onClick={() => {
-                                        setShowDetails(trip);
-                                        setShowDialog(true);
-                                    }}
-                                >
-                                    <Box display="flex" justifyContent="space-between" style={{ width: '100%' }}>
-                                        <Typography style={{ fontSize: '14px', fontWeight: 'bold', color: 'black' }}>
-                                            Customer: {customers.find((o) => o._id == trip.customer)?.name}
-                                        </Typography>
-                                        <Typography style={{ fontSize: '14px', fontWeight: 'bold', color: 'gray' }}>
-                                            {format(new Date(trip.tripDate), 'dd MMM yy')}
-                                        </Typography>
-                                    </Box>
-                                    <Typography style={{ fontSize: '24px', fontWeight: 'bold', color: 'black' }}>
-                                        Location: {trip.pickup} to {trip.dropup}
-                                    </Typography>
-                                    <Typography style={{ fontSize: '18px', fontWeight: 'bold', color: 'gray' }}>
-                                        Vehicle: {vehicles.find((o) => o._id == trip.vehicle)?.name}
-                                    </Typography>
-                                </Grid> */}
                                     <Grid item xs={12} className={classes.tripCont}>
                                         <Grid container>
                                             <Grid item className={classes.tripItems} xs={3}>
                                                 <Typography variant="h5">
-                                                    Customer - {customers.find((o) => o._id == trip.customer)?.name}
+                                                    Customer -{' '}
+                                                    {trip.selfTrip
+                                                        ? customers.find((o) => o._id == trip.customer)?.name
+                                                        : trip.customerName}
                                                 </Typography>
                                             </Grid>
                                             <Grid item className={classes.tripItems} xs={3}>
@@ -527,72 +509,57 @@ function AllTrips() {
                                                 </Typography>
                                             </Grid>
                                             <Grid item className={classes.tripItems} xs={3}>
-                                                <Typography variant="h5">
-                                                    Vehicle - {vehicles.find((o) => o._id == trip.vehicle)?.name}
-                                                </Typography>
+                                                {/* <Typography variant="h5">
+                                                    Vehicle -{' '}
+                                                    {trip.selfTrip ? vehicles.find((o) => o._id == trip.vehicle)?.name : trip.vehicleNo}
+
+                                                </Typography> */}
+                                                {!trip.selfTrip &&
+                                                    (trip.billPaid ? (
+                                                        <Typography style={{ color: 'green' }}>Bill Paid</Typography>
+                                                    ) : (
+                                                        <Typography style={{ color: 'maroon' }}>Bill Not Paid</Typography>
+                                                    ))}
                                             </Grid>
                                             <Grid item className={classes.tripItems} xs={3}>
-                                                <Box
-                                                    onClick={() => {
-                                                        setShowDetails(trip);
-                                                        setShowDialog(true);
-                                                    }}
-                                                    className={classes.editIconBox}
-                                                >
-                                                    <CreateIcon color="black" />
+                                                <Box width={'100%'} display={'flex'} justifyContent="space-around" alignItems={'center'}>
+                                                    <Button
+                                                        className={classes.submitBtn}
+                                                        variant="outlined"
+                                                        fullWidth
+                                                        style={{ width: '150px' }}
+                                                        color="secondary"
+                                                        onClick={() => {
+                                                            setShowBill(true);
+                                                            setActiveTrip(trip);
+                                                        }}
+                                                    >
+                                                        {trip.selfTrip ? 'Generate Bill' : 'Generate Voucher'}
+                                                    </Button>
+                                                    <TripActions
+                                                        setActiveTrip={setActiveTrip}
+                                                        setShowDeleteWarn={setShowDeleteWarn}
+                                                        setShowDetails={setShowDetails}
+                                                        setShowDialog={setShowDialog}
+                                                        trip={trip}
+                                                        getAllTrips={getAllTrips}
+                                                    />
                                                 </Box>
-                                                <Box
-                                                    onClick={() => {
-                                                        setActiveTrip(trip);
-                                                        setShowDeleteWarn(true);
-                                                    }}
-                                                    className={classes.editIconBox}
-                                                >
-                                                    <DeleteIcon color="black" />
-                                                </Box>
-
-                                                <Button
-                                                    className={classes.submitBtn}
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    style={{ width: '150px' }}
-                                                    color="secondary"
-                                                    onClick={() => {
-                                                        setShowBill(true);
-                                                        setActiveTrip(trip);
-                                                    }}
-                                                >
-                                                    {trip.selfTrip ? 'Generate Bill' : 'Generate Voucher'}
-                                                </Button>
                                             </Grid>
-                                            {/* <Grid item className={classes.tripItems} justifyContent="right" xs={3}>
-                                            <Button
-                                                className={classes.submitBtn}
-                                                variant="contained"
-                                                fullWidth
-                                                style={{ backgroundColor: 'green', width: 'fit-content' }}
-                                                onClick={() => {
-                                                    setShowDetails(trip);
-                                                    setChallanDialog(true);
-                                                }}
-                                            >
-                                                Generate Challan
-                                            </Button>
-                                        </Grid> */}
                                         </Grid>
                                     </Grid>
                                 </>
                             ) : (
-                                <Box className={classes.tripSkeleton}></Box>
+                                <Skeleton className={classes.tripSkeleton}></Skeleton>
                             )
                         )
                 ) : tripsLoading ? (
                     <>
-                        <Skeleton className={classes.tripSkeleton} />
-                        <Skeleton className={classes.tripSkeleton} />
-                        <Skeleton className={classes.tripSkeleton} />
-                        <Skeleton className={classes.tripSkeleton} />
-                        <Skeleton className={classes.tripSkeleton} />
+                        <Skeleton width={'100%'} height={110} className={classes.tripSkeleton} />
+                        <Skeleton width={'100%'} height={110} className={classes.tripSkeleton} />
+                        <Skeleton width={'100%'} height={110} className={classes.tripSkeleton} />
+                        <Skeleton width={'100%'} height={110} className={classes.tripSkeleton} />
+                        <Skeleton width={'100%'} height={110} className={classes.tripSkeleton} />
                     </>
                 ) : (
                     <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>
@@ -623,6 +590,7 @@ function AllTrips() {
                         addingTrip={addingTrip}
                         setAddingTrip={setAddingTrip}
                         selfTrip={selfTrip}
+                        setSelfTrip={setSelfTrip}
                     />
                 </Box>
             </Dialog>

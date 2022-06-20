@@ -13,6 +13,7 @@ import {
     Grid,
     InputAdornment,
     Popover,
+    Skeleton,
     Snackbar,
     TextField,
     Typography
@@ -28,12 +29,14 @@ import DriverTrips from './DriverTrips';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import CloseIcon from '@material-ui/icons/Close';
+import noData from '../../images/noData.png';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         backgroundColor: '#fff',
-        padding: '20px 10px'
+        padding: '20px 10px',
+        minHeight: '600px'
     },
     customerSkeleton: {
         width: '100%',
@@ -70,7 +73,8 @@ const useStyles = makeStyles((theme) => ({
     customerCont: {
         padding: '10px 20px',
         margin: '20px auto',
-        border: '1px solid grey',
+        // border: '1px solid grey',
+        boxShadow: ' rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;',
         borderRadius: '10px'
     },
     customerItems: {
@@ -125,14 +129,22 @@ function Driver() {
     const [savingDriver, setSavingDriver] = useState(false);
     const [showBackdrop, setShowBackdrop] = useState(false);
     const [addingDriver, setAddingDriver] = useState(false);
+    const [progress, setProgress] = useState(0);
     const d = new Date();
     d.setMonth(d.getMonth() - 1);
     const [showTrips, setShowTrips] = useState();
     const [trips, setTrips] = useState([]);
 
     const getAllDrivers = () => {
-        Axios.get('/driver/get-all-drivers')
-            .then((response) => setVehicles(response.data))
+        Axios.get('/driver/get-all-drivers', {
+            onDownloadProgress: (progressEvent) => {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setProgress(percentCompleted);
+            }
+        })
+            .then((response) => {
+                setVehicles(response.data);
+            })
             .catch((error) => console.log(error));
     };
 
@@ -196,7 +208,9 @@ function Driver() {
     return (
         <div className={classes.root}>
             <Box>
-                <Typography variant="h2">DRIVERS</Typography>
+                <Typography textAlign={'center'} variant="h2">
+                    DRIVERS
+                </Typography>
                 <Box className={classes.btnCont}>
                     <Button
                         onClick={() => setOpen(true)}
@@ -207,6 +221,7 @@ function Driver() {
                         DRIVER
                     </Button>
                 </Box>
+                <Divider style={{ margin: '20px 0' }} />
                 <Box sx={{ p: 2 }}>
                     {vehicles?.length ? (
                         vehicles.map((driver) => {
@@ -214,7 +229,7 @@ function Driver() {
                                 <Box className={classes.customerCont}>
                                     <Grid container>
                                         <Grid className={classes.customerItems} item xs={4}>
-                                            <Typography variant="h3">{driver.name}</Typography>
+                                            <Typography variant="h5">{driver.name}</Typography>
                                         </Grid>
                                         <Grid className={classes.customerItems} item xs={4}>
                                             <Typography variant="h6">Driver NO. - {driver.phoneNo}</Typography>
@@ -330,13 +345,27 @@ function Driver() {
                                 </Box>
                             );
                         })
+                    ) : progress == 100 ? (
+                        <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                            <Box sx={{ m: 'auto' }}>
+                                <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
+                                <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
+                            </Box>
+                        </Box>
                     ) : (
                         <>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
                         </>
                     )}
                 </Box>

@@ -20,8 +20,8 @@ import React, { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Axios from '../../axios';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ExtraChargesForm from './ExtraChargesForm';
 import noData from '../../images/noData.png';
+import CompanyForm from './CompanyForm';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -71,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
     customerItems: {
         display: 'flex',
         alignItems: 'center'
+
         // padding: '10px'
         // justifyContent: 'center'
     },
@@ -89,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function ExtraCharges() {
+function Company() {
     const classes = useStyles();
     const [open, setOpen] = useState();
     const [extraCharges, setExtraCharges] = useState([]);
@@ -100,13 +101,16 @@ function ExtraCharges() {
     const [progress, setProgress] = useState(0);
 
     const getAllExtraCharges = () => {
-        Axios.get('/extracharge/get-all-extra-charges', {
+        Axios.get('/company/get-all-companies', {
             onDownloadProgress: (progressEvent) => {
                 let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                 setProgress(percentCompleted);
             }
         })
-            .then((response) => setExtraCharges(response.data))
+            .then((response) => {
+                setExtraCharges(response.data);
+                console.log(response.data);
+            })
             .catch((error) => console.log(error));
     };
 
@@ -120,10 +124,10 @@ function ExtraCharges() {
     };
 
     const handleDelete = (id) => {
-        Axios.delete(`/extracharge/delete-extra-charge/${id}`)
+        Axios.delete(`/company/delete-company/${id}`)
             .then((response) => {
                 getAllExtraCharges();
-                setAlertMsg('Driver deleted successfully');
+                setAlertMsg('Company deleted successfully');
                 setSuccessSnack(true);
             })
             .catch((error) => {
@@ -135,7 +139,7 @@ function ExtraCharges() {
         <div className={classes.root}>
             <Box>
                 <Typography variant="h2" textAlign={'center'}>
-                    EXTRA CHARGES
+                    COMPANY
                 </Typography>
                 <Box className={classes.btnCont}>
                     <Button
@@ -144,7 +148,7 @@ function ExtraCharges() {
                         variant="contained"
                         startIcon={<AddCircleOutlineIcon />}
                     >
-                        Extra Charges
+                        Company
                     </Button>
                 </Box>
                 <Divider style={{ margin: '20px 0' }} />
@@ -165,7 +169,7 @@ function ExtraCharges() {
                                             }}
                                             sx={{ cursor: 'pointer' }}
                                         >
-                                            <Typography variant="h4">{extraCharge.type}</Typography>
+                                            <Typography variant="h4">{extraCharge.name}</Typography>
                                         </Grid>
                                         <Grid
                                             className={classes.customerItems}
@@ -215,7 +219,7 @@ function ExtraCharges() {
             </Box>
 
             <Dialog open={open} onClose={() => handleClose()}>
-                <ExtraChargesForm
+                <CompanyForm
                     getAllExtraCharges={getAllExtraCharges}
                     setOpen={setOpen}
                     setErrorSnack={setErrorSnack}
@@ -240,4 +244,4 @@ function ExtraCharges() {
     );
 }
 
-export default ExtraCharges;
+export default Company;
