@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function ExtraChargesForm({
+function CompanyForm({
     activeCharge,
     setErrorSnack,
     setAlertMsg,
@@ -98,31 +98,34 @@ function ExtraChargesForm({
     console.log(activeCharge);
     const classes = useStyles();
     const validationSchema = yup.object({
-        type: yup.string('Please enter Charge Type.').required('Charge type is required'),
-        amount: yup.string('Enter charge amount.').required('Charge amount is required'),
-        description: yup.string('Enter charge description')
+        name: yup.string('Please enter Charge Type.').required('Charge type is required'),
+        address: yup.string('Enter charge amount.').required('Charge amount is required'),
+        gstNo: yup.string('Enter charge description'),
+        phoneNo: yup.string('Enter charge description')
     });
 
     const formik = useFormik({
         initialValues: {
-            type: activeCharge ? activeCharge.type : '',
-            amount: activeCharge ? activeCharge.amount : '',
-            description: activeCharge ? activeCharge.description : ''
+            name: activeCharge ? activeCharge.name : '',
+            address: activeCharge ? activeCharge.address : '',
+            gstNo: activeCharge ? activeCharge.gstNo : '',
+            phoneNo: activeCharge ? activeCharge.phoneNo : ''
         },
         validationSchema: validationSchema,
         onSubmit: (values) => {
             let data = {
-                type: values.type,
-                amount: values.amount,
-                description: values.description
+                name: values.name,
+                address: values.address,
+                phoneNo: values.phoneNo,
+                gstNo: values.gstNo
             };
 
             if (!activeCharge)
-                Axios.post('/extracharge/create-extra-charge', { data })
+                Axios.post('/company/create-company', { data })
                     .then((response) => {
                         getAllExtraCharges();
                         handleClose();
-                        setAlertMsg('New Charge saved successfully');
+                        setAlertMsg('New Company saved successfully');
                         setSuccessSnack(true);
                     })
                     .catch((error) => {
@@ -130,11 +133,11 @@ function ExtraChargesForm({
                         setErrorSnack(true);
                     });
             else
-                Axios.patch(`/extracharge/update-extra-charge/${activeCharge._id}`, { data })
+                Axios.patch(`/company/update-company/${activeCharge._id}`, { data })
                     .then((response) => {
                         getAllExtraCharges();
                         handleClose();
-                        setAlertMsg('New Charge saved successfully');
+                        setAlertMsg(' Company saved successfully');
                         setSuccessSnack(true);
                     })
                     .catch((error) => {
@@ -148,7 +151,7 @@ function ExtraChargesForm({
         <div className={classes.formCont}>
             <Box display={'flex'}>
                 <Typography variant="h2" style={{ textAlign: 'center', margin: '0px auto' }}>
-                    CHARGE DETAILS
+                    COMPANY DETAILS
                 </Typography>
                 <CloseIcon
                     onClick={() => {
@@ -164,43 +167,53 @@ function ExtraChargesForm({
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
-                            id="type"
+                            id="name"
                             type="string"
-                            name="type"
-                            label="Charge Type"
-                            value={formik.values.type}
+                            name="name"
+                            label="Company Name"
+                            value={formik.values.name}
                             onChange={formik.handleChange}
-                            error={formik.touched.type && Boolean(formik.errors.type)}
-                            helperText={formik.touched.type && formik.errors.type}
+                            error={formik.touched.name && Boolean(formik.errors.name)}
+                            helperText={formik.touched.name && formik.errors.name}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
-                            id="amount"
-                            type="number"
-                            name="amount"
-                            label="Charge Amount"
-                            value={formik.values.amount}
+                            id="address"
+                            type="string"
+                            name="address"
+                            label="Company Address"
+                            value={formik.values.address}
                             onChange={formik.handleChange}
-                            error={formik.touched.amount && Boolean(formik.errors.amount)}
-                            helperText={formik.touched.amount && formik.errors.amount}
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start">Rs.</InputAdornment>
-                            }}
+                            error={formik.touched.address && Boolean(formik.errors.address)}
+                            helperText={formik.touched.address && formik.errors.address}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.formItems}>
                         <TextField
                             fullWidth
-                            id="description"
-                            name="description"
-                            label="Name"
-                            type="description"
-                            value={formik.values.description}
+                            id="phoneNo"
+                            name="phoneNo"
+                            label="Phone Number"
+                            type="phoneNo"
+                            value={formik.values.phoneNo}
                             onChange={formik.handleChange}
-                            error={formik.touched.description && Boolean(formik.errors.description)}
-                            helperText={formik.touched.description && formik.errors.description}
+                            error={formik.touched.phoneNo && Boolean(formik.errors.phoneNo)}
+                            helperText={formik.touched.phoneNo && formik.errors.phoneNo}
+                        />
+                    </Grid>
+                    <Grid item xs={6} className={classes.formItems}>
+                        <TextField
+                            fullWidth
+                            id="gstNo"
+                            name="gstNo"
+                            label="GST Number"
+                            type="gstNo"
+                            value={formik.values.gstNo}
+                            onChange={formik.handleChange}
+                            error={formik.touched.gstNo && Boolean(formik.errors.gstNo)}
+                            helperText={formik.touched.gstNo && formik.errors.gstNo}
                         />
                     </Grid>
 
@@ -215,4 +228,4 @@ function ExtraChargesForm({
     );
 }
 
-export default ExtraChargesForm;
+export default CompanyForm;

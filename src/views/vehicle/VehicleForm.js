@@ -36,7 +36,7 @@ function VehicleForm({ getAllVehicles, handleClose, setAlertMsg, setSuccessSnack
 
     const validationSchema = yup.object({
         number: yup.string('Enter vehicle number').required('Vehicles number is required'),
-        name: yup.string('Please enter vehicle name.').required('Name is required'),
+        // name: yup.string('Please enter vehicle name.').required('Name is required'),
         model: yup.string('Please enter vehicle model.').required('Vehicle model is required')
     });
 
@@ -73,7 +73,7 @@ function VehicleForm({ getAllVehicles, handleClose, setAlertMsg, setSuccessSnack
             <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
                 Vehicle Details
             </Typography>
-            <Divider />
+            <Divider style={{ margin: '20px 0' }} />
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={6} className={classes.formItems}>

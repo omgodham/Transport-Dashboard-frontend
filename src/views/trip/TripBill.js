@@ -99,6 +99,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
     const [customers, setCustomers] = useState([]);
     const toWords = new ToWords();
     const [totalPayment, setTotalPayment] = useState();
+    const [companies, setCompanies] = useState([]);
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -127,6 +128,16 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                 setAlertMessage('Could not get drivers');
                 setErrorSnack(true);
             });
+        Axios.get('/company/get-all-companies')
+            .then((response) => {
+                setCompanies(response.data);
+            })
+            .catch((error) => console.log(error));
+        Axios.get('/company/get-all-companies')
+            .then((response) => {
+                setCompanies(response.data);
+            })
+            .catch((error) => console.log(error));
     }, []);
 
     useEffect(() => {
@@ -148,24 +159,34 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         <Grid item xs={9} display="flex" alignItems="right" alignContent={'right'} justifyContent="right">
                             <Box width={'fit-content'} minWidth={'200px'}>
                                 <Typography variant="h2" textAlign={'left'}>
-                                    {trip.company ? (
-                                        trip.company == 'swapnil' ? (
-                                            'SWAPNIL TRANSPORT'
-                                        ) : (
-                                            trip.company == 'atlas' && 'ATLAS CARGO'
-                                        )
+                                    {trip.length && companies.length ? (
+                                        companies.map((company) => company._id == trip.company && company.name)
                                     ) : (
-                                        <Skeleton height={60} />
+                                        <Skeleton />
                                     )}
                                 </Typography>
                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                    {trip.company ? 'SR.NO.300 ADARSH NAGAR DIGHI, PUNE' : <Skeleton />}
+                                    {trip.length && companies.length ? (
+                                        companies.map((company) => company._id == trip.company && company.address)
+                                    ) : (
+                                        <Skeleton />
+                                    )}
                                 </Typography>
                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                    {trip.company ? 'GST - 27AEXPH6465H1ZU' : <Skeleton />}
+                                    GST -{' '}
+                                    {trip.length && companies.length ? (
+                                        companies.map((company) => company._id == trip.company && company.gstNo)
+                                    ) : (
+                                        <Skeleton />
+                                    )}
                                 </Typography>
                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                    {trip.company ? 'MOB.NO.9850774981,9922431249' : <Skeleton />}
+                                    Phone -{' '}
+                                    {trip.length && companies.length ? (
+                                        companies.map((company) => company._id == trip.company && company.phoneNo)
+                                    ) : (
+                                        <Skeleton />
+                                    )}
                                 </Typography>
                             </Box>
                         </Grid>
@@ -338,33 +359,41 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                 </Box>
                 <Box sx={{ mt: 3, minHeight: '300px' }}>
                     <Grid container>
-                        <Grid item xs={8}>
+                        <Grid item xs={6}>
                             <Box className={classes.gridBox}>Description</Box>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={6}>
                             <Box className={classes.gridBox}>Amount</Box>
                         </Grid>
                     </Grid>
                     <Grid container sx={{ height: '300px' }}>
-                        <Grid item xs={8}>
-                            <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
-                                <Box sx={{ m: 1 }}>Freight</Box>
-                                <Box sx={{ m: 1 }}>{trip.extraChargeDescription}</Box>
-                                <Box sx={{ m: 1 }}>LR Charges</Box>
-                                <Box sx={{ m: 1 }}>Statistical Charges</Box>
-                            </Box>
+                        <Grid item xs={6}>
+                            <Box className={classes.gridInnerBox} sx={{ height: '300px' }}></Box>
                         </Grid>
-                        <Grid item xs={4}>
-                            <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
-                                <Box sx={{ m: 1 }}>Rs. {trip.totalPayment}</Box>
-                                <Box sx={{ m: 1 }}>Rs. {trip.extraCharge}</Box>
-                                <Box sx={{ m: 1 }}>Rs. {trip.lrCharges}</Box>
-                            </Box>
+                        <Grid item xs={6}>
+                            <Grid display="flex">
+                                <Grid xs={7}>
+                                    <Box className={classes.gridInnerBox} textAlign="left" sx={{ height: '300px' }}>
+                                        <Box sx={{ m: 1 }}>Freight</Box>
+                                        <Box sx={{ m: 1 }}>Advance</Box>
+                                        <Box sx={{ m: 1 }}>{trip.extraChargeDescription}</Box>
+                                        <Box sx={{ m: 1 }}>LR Charges</Box>
+                                    </Box>
+                                </Grid>
+                                <Grid xs={5}>
+                                    <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
+                                        <Box sx={{ m: 1 }}>Rs. {trip.totalPayment}</Box>
+                                        <Box sx={{ m: 1 }}>Rs. {trip.paymentReceived}</Box>
+                                        <Box sx={{ m: 1 }}>Rs. {trip.extraCharge}</Box>
+                                        <Box sx={{ m: 1 }}>Rs. {trip.lrCharges}</Box>
+                                    </Box>
+                                </Grid>
+                            </Grid>
                         </Grid>
                         <Grid item xs={4}></Grid>
                     </Grid>
                     <Box sx={{ mt: 2 }}>
-                        <Box width="fit-content">
+                        <Box width="fit-content" sx={{ ml: 'auto' }}>
                             <Grid container>
                                 <Grid item>
                                     <Grid container>
@@ -385,7 +414,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             </Grid>
                         </Box>
                         <Divider />
-                        <Box width="fit-content">
+                        <Box width="fit-content" sx={{ ml: 'auto' }}>
                             <Grid container>
                                 <Grid item>
                                     <Box sx={{ p: 1 }}>
@@ -405,24 +434,20 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         <Divider />
                     </Box>
                 </Box>
-                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 7 }}>
+                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 17 }}>
                     <Grid container spacing={5} display={'flex'}>
                         <Grid item alignItems="center">
                             <Typography textAlign={'center'}>
-                                {trip.company ? (
-                                    trip.company == 'swapnil' ? (
-                                        'SWAPNIL TRANSPORT'
-                                    ) : (
-                                        trip.company == 'atlas' && 'ATLAS CARGO'
-                                    )
+                                {trip.length && companies.length ? (
+                                    companies.map((company) => company._id == trip.company && company.name)
                                 ) : (
-                                    <Skeleton height={60} />
+                                    <Skeleton />
                                 )}
                             </Typography>
                         </Grid>
-                        <Grid item alignItems="center">
+                        {/* <Grid item alignItems="center">
                             <Typography textAlign={'center'}>RECEIVED</Typography>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                 </Box>
             </Box>

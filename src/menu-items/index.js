@@ -6,7 +6,7 @@ import { trip } from './trip';
 //-----------------------|| MENU ITEMS ||-----------------------//
 
 const menuItems = {
-    items: [dashboard, trip, utilities, other]
+    items: [dashboard, trip, utilities]
 };
 
 export default menuItems;

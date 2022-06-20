@@ -80,6 +80,7 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
     const [totalEarning, setTotalEarning] = useState();
     const toWords = new ToWords();
     const company = trips[0]?.company;
+    const [companies, setCompanies] = useState([]);
 
     useEffect(() => {
         if (trips?.length) {
@@ -127,6 +128,11 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                 setAlertMessage('Could not get drivers');
                 setErrorSnack(true);
             });
+        Axios.get('/company/get-all-companies')
+            .then((response) => {
+                setCompanies(response.data);
+            })
+            .catch((error) => console.log(error));
     }, []);
 
     return (
@@ -145,14 +151,10 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                                 <Grid item xs={9} display="flex" alignItems="right" alignContent={'right'} justifyContent="right">
                                     <Box width={'fit-content'} minWidth={'200px'}>
                                         <Typography variant="h2" textAlign={'left'}>
-                                            {company ? (
-                                                company == 'swapnil' ? (
-                                                    'SWAPNIL TRANSPORT'
-                                                ) : (
-                                                    company == 'atlas' && 'ATLAS CARGO'
-                                                )
+                                            {trips.length && companies.length ? (
+                                                companies.map((company) => company._id == trips[0].company && company.name)
                                             ) : (
-                                                <Skeleton height={60} />
+                                                <Skeleton />
                                             )}
                                         </Typography>
                                         <Typography fontSize={'10px'} textAlign={'left'}>

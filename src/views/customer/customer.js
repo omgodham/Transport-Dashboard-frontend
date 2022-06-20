@@ -13,7 +13,8 @@ import {
     TextField,
     Typography,
     MenuItem,
-    CircularProgress
+    CircularProgress,
+    Skeleton
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useEffect, useRef, useState } from 'react';
@@ -25,20 +26,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import CustomerForm from './CustomerForm';
 import Bill from './Bill';
 import CloseIcon from '@material-ui/icons/Close';
+import noData from '../../images/noData.png';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
         backgroundColor: '#fff',
-        padding: '20px 10px'
+        padding: '20px 10px',
+        minHeight: '600px'
     },
     customerSkeleton: {
         width: '100%',
         height: '50px',
         marginTop: '20px',
-        borderRadius: '5px',
-        backgroundColor: theme.palette.grey[300],
-        animation: `$myEffect 1000ms ease infinite alternate`
+        borderRadius: '5px'
     },
     '@keyframes myEffect': {
         to: {
@@ -70,8 +71,8 @@ const useStyles = makeStyles((theme) => ({
         // border: '1px solid grey',
         // borderRadius: '10px'
         // height: '60px',
-        margin: '10px auto',
-        padding: '10px 20px',
+        margin: '15px auto',
+        padding: '15px 20px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -151,9 +152,17 @@ function Customer() {
     // const [startDate, setStartDate] = useState(d);
     const [askDate, setAskDate] = useState();
     const [billBtnLoading, setBillBtnLoading] = useState();
+    const [progress, setProgress] = useState(0);
+    const [companies, setCompanies] = useState([]);
+    const [companyProgress, setCompanyProgress] = useState(0);
 
     const getAllCustomers = () => {
-        Axios.get('/customer/get-all-customers')
+        Axios.get('/customer/get-all-customers', {
+            onDownloadProgress: (progressEvent) => {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setProgress(percentCompleted);
+            }
+        })
             .then((response) => {
                 setCustomers(response.data);
             })
@@ -162,6 +171,19 @@ function Customer() {
 
     useEffect(() => {
         getAllCustomers();
+    }, []);
+
+    useEffect(() => {
+        Axios.get('/company/get-all-companies', {
+            onDownloadProgress: (progressEvent) => {
+                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setCompanyProgress(percentCompleted);
+            }
+        })
+            .then((response) => {
+                setCompanies(response.data);
+            })
+            .catch((error) => console.log(error));
     }, []);
 
     const handleDelete = (id) => {
@@ -220,7 +242,9 @@ function Customer() {
     return (
         <div className={classes.root}>
             <Box>
-                <Typography variant="h2">CUSOTMERS</Typography>
+                <Typography textAlign={'center'} variant="h2">
+                    CUSOTMERS
+                </Typography>
                 <Box className={classes.btnCont}>
                     <Button
                         className={classes.addBtn}
@@ -232,6 +256,7 @@ function Customer() {
                         CUSTOMER
                     </Button>
                 </Box>
+                <Divider style={{ margin: '20px 0' }} />
                 <Box sx={{ p: 2 }}>
                     {customers?.length ? (
                         customers.map((customer) => (
@@ -247,7 +272,7 @@ function Customer() {
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <Grid container>
-                                            <Grid className={classes.customerItems} item xs={4}>
+                                            <Grid className={classes.customerItems} item xs={5}>
                                                 <Typography variant="h5">{customer.name}</Typography>
                                             </Grid>
                                             <Grid className={classes.customerItems} item xs={4}>
@@ -279,13 +304,27 @@ function Customer() {
                                 </Grid>
                             </Box>
                         ))
+                    ) : progress == 100 ? (
+                        <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                            <Box sx={{ m: 'auto' }}>
+                                <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
+                                <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
+                            </Box>
+                        </Box>
                     ) : (
                         <>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
-                            <Box className={classes.customerSkeleton}></Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
+                            <Box sx={{ mt: 2 }}>
+                                <Skeleton variant="rect" height={70} width={'100%'} />
+                            </Box>
                         </>
                     )}
                 </Box>
@@ -336,8 +375,22 @@ function Customer() {
                                         error={formik.touched.company && Boolean(formik.errors.company)}
                                         helperText={formik.touched.company && formik.errors.company}
                                     >
-                                        <MenuItem value="swapnil">Swapnil Transport</MenuItem>
-                                        <MenuItem value="atlas">Atlas Cargo</MenuItem>
+                                        {companies.length ? (
+                                            companies.map((company) => {
+                                                return <MenuItem value={company._id}>{company.name}</MenuItem>;
+                                            })
+                                        ) : companyProgress == 100 ? (
+                                            <MenuItem value="none">Company not available</MenuItem>
+                                        ) : (
+                                            <>
+                                                <MenuItem value="none">
+                                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                                </MenuItem>
+                                                <MenuItem value="none">
+                                                    <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                                </MenuItem>
+                                            </>
+                                        )}
                                     </TextField>
                                 </Grid>
                                 <Grid item xs={6}>

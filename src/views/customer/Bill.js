@@ -93,6 +93,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
     const [totalEarningWithComma, setTotalEarningWithComma] = useState();
     const company = trips[0]?.company;
     const toWords = new ToWords();
+    const [companies, setCompanies] = useState([]);
 
     useEffect(() => {
         if (trips?.length) {
@@ -140,6 +141,11 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                     setAlertMessage('Could not get drivers');
                     setErrorSnack(true);
                 });
+            Axios.get('/company/get-all-companies')
+                .then((response) => {
+                    setCompanies(response.data);
+                })
+                .catch((error) => console.log(error));
         }
     }, [trips]);
 
@@ -161,24 +167,34 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                         <Grid item xs={9} display="flex" alignItems="right" alignContent={'right'} justifyContent="right">
                                             <Box width={'fit-content'} minWidth={'200px'}>
                                                 <Typography variant="h2" textAlign={'left'}>
-                                                    {company ? (
-                                                        company == 'swapnil' ? (
-                                                            'SWAPNIL TRANSPORT'
-                                                        ) : (
-                                                            company == 'atlas' && 'ATLAS CARGO'
-                                                        )
+                                                    {trips.length && companies.length ? (
+                                                        companies.map((company) => company._id == trips[0].company && company.name)
                                                     ) : (
-                                                        <Skeleton height={60} />
+                                                        <Skeleton />
                                                     )}
                                                 </Typography>
                                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                                    {company ? 'SR.NO.300 ADARSH NAGAR DIGHI, PUNE' : <Skeleton />}
+                                                    {trips.length && companies.length ? (
+                                                        companies.map((company) => company._id == trips[0].company && company.address)
+                                                    ) : (
+                                                        <Skeleton />
+                                                    )}
                                                 </Typography>
                                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                                    {company ? 'GST - 27AEXPH6465H1ZU' : <Skeleton />}
+                                                    GST No. -{' '}
+                                                    {trips.length && companies.length ? (
+                                                        companies.map((company) => company._id == trips[0].company && company.gstNo)
+                                                    ) : (
+                                                        <Skeleton />
+                                                    )}
                                                 </Typography>
                                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                                    {company ? 'MOB.NO.9850774981,9922431249' : <Skeleton />}
+                                                    Phone No. -{' '}
+                                                    {trips.length && companies.length ? (
+                                                        companies.map((company) => company._id == trips[0].company && company.phoneNo)
+                                                    ) : (
+                                                        <Skeleton />
+                                                    )}
                                                 </Typography>
                                             </Box>
                                         </Grid>
@@ -341,18 +357,14 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                     </Box>
                                     <Divider />
                                 </Box>
-                                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 7 }}>
+                                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 17 }}>
                                     <Grid container spacing={5} display={'flex'}>
                                         <Grid item alignItems="center">
                                             <Typography textAlign={'center'}>
-                                                {company ? (
-                                                    company == 'swapnil' ? (
-                                                        'SWAPNIL TRANSPORT'
-                                                    ) : (
-                                                        company == 'atlas' && 'ATLAS CARGO'
-                                                    )
+                                                {trips.length && companies.length ? (
+                                                    companies.map((company) => company._id == trips[0].company && company.name)
                                                 ) : (
-                                                    <Skeleton height={60} />
+                                                    <Skeleton />
                                                 )}
                                             </Typography>
                                         </Grid>
