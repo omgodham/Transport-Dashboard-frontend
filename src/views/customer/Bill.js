@@ -269,7 +269,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                     <TableRow className={classes.tableRow} key={trip._id}>
                                                         <TableCell className={classes.tripItem}>{index + 1}</TableCell>
                                                         <TableCell className={classes.tripItem} component="th" scope="row">
-                                                            {moment(new Date(trip.createdAt)).format('DD-MM-YYYY')}
+                                                            {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="right">
                                                             {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)}
