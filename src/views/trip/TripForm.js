@@ -211,13 +211,15 @@ function TripForm({
             extraChargeDescription: trip ? trip.extraChargeDescription : '',
             billNo: trip ? trip.billNo : '',
             selfTrip: trip ? trip.selfTrip : selfTrip,
-            driverName: trip ? trip.driverName : ''
+            driverName: trip ? trip.driverName : '',
+            lrCharges: trip ? trip.lrCharges : 100
         },
 
         validationSchema: validationSchema,
         onSubmit: (values) => {
             setSavingTrip(true);
             let tempValues = values;
+            tempValues.tripDate = new Date(values.tripDate);
             let tempExtraCharge = extraCharges.find((item) => item.amount == tempValues.extraCharge);
             if (tempExtraCharge && !customExtraChargeCheck) {
                 tempValues.extraChargeDescription = tempExtraCharge.type;
@@ -328,12 +330,14 @@ function TripForm({
                 <Grid item xs={6}>
                     <TextField
                         id="tripDate"
-                        label="Date of trip (MM-DD-YYYY)"
+                        label="Date of trip (DD-MM-YYYY)"
                         name="tripDate"
                         type="date"
                         fullWidth
                         // defaultValue={formik.values.tripDate}
-                        value={formik.values.tripDate}
+                        defaultValue={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
+                        // value={formik.values.tripDate}
+                        value={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
                         onChange={formik.handleChange}
                         variant="outlined"
                         InputLabelProps={{
@@ -720,6 +724,19 @@ function TripForm({
                         onChange={formik.handleChange}
                         error={formik.touched.driverBhatta && Boolean(formik.errors.driverBhatta)}
                         helperText={formik.touched.driverBhatta && formik.errors.driverBhatta}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <TextField
+                        fullWidth
+                        id="lrCharges"
+                        name="lrCharges"
+                        label="LR Charges"
+                        value={formik.values.lrCharges}
+                        onChange={formik.handleChange}
+                        error={formik.touched.lrCharges && Boolean(formik.errors.lrCharges)}
+                        helperText={formik.touched.lrCharges && formik.errors.lrCharges}
+                        type="number"
                     />
                 </Grid>
                 <Grid item xs={6}>

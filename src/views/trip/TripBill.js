@@ -159,14 +159,14 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         <Grid item xs={9} display="flex" alignItems="right" alignContent={'right'} justifyContent="right">
                             <Box width={'fit-content'} minWidth={'200px'}>
                                 <Typography variant="h2" textAlign={'left'}>
-                                    {trip.length && companies.length ? (
+                                    {trip && companies.length ? (
                                         companies.map((company) => company._id == trip.company && company.name)
                                     ) : (
                                         <Skeleton />
                                     )}
                                 </Typography>
                                 <Typography fontSize={'10px'} textAlign={'left'}>
-                                    {trip.length && companies.length ? (
+                                    {trip && companies.length ? (
                                         companies.map((company) => company._id == trip.company && company.address)
                                     ) : (
                                         <Skeleton />
@@ -174,7 +174,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                 </Typography>
                                 <Typography fontSize={'10px'} textAlign={'left'}>
                                     GST -{' '}
-                                    {trip.length && companies.length ? (
+                                    {trip && companies.length ? (
                                         companies.map((company) => company._id == trip.company && company.gstNo)
                                     ) : (
                                         <Skeleton />
@@ -182,7 +182,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                 </Typography>
                                 <Typography fontSize={'10px'} textAlign={'left'}>
                                     Phone -{' '}
-                                    {trip.length && companies.length ? (
+                                    {trip && companies.length ? (
                                         companies.map((company) => company._id == trip.company && company.phoneNo)
                                     ) : (
                                         <Skeleton />
@@ -240,7 +240,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                     </TableCell>
                                     <TableCell className={classes.tripItem}>Trip Date</TableCell>
                                     <TableCell className={classes.tripItem} component="th" scope="row" align="center">
-                                        {moment(new Date(trip.createdAt)).format('DD-MM-YYYY')}
+                                        {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
                                     </TableCell>
                                 </TableRow>
                                 {/* <TableRow>
