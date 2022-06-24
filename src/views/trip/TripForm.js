@@ -252,7 +252,7 @@ function TripForm({
     return (
         <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={4}>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     {selfTrip ? (
                         <TextField
                             fullWidth
@@ -296,7 +296,7 @@ function TripForm({
                         />
                     )}
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="company"
@@ -327,17 +327,18 @@ function TripForm({
                         )}
                     </TextField>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         id="tripDate"
-                        label="Date of trip (DD-MM-YYYY)"
+                        // label={`Date of trip ${moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}`}
+                        label={`Date of trip ${formik.values.tripDate}`}
                         name="tripDate"
                         type="date"
                         fullWidth
-                        // defaultValue={formik.values.tripDate}
-                        defaultValue={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
-                        // value={formik.values.tripDate}
-                        value={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
+                        defaultValue={formik.values.tripDate}
+                        // defaultValue={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
+                        value={formik.values.tripDate}
+                        // value={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
                         onChange={formik.handleChange}
                         variant="outlined"
                         InputLabelProps={{
@@ -346,7 +347,7 @@ function TripForm({
                         required={!trip}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="lrNo"
@@ -358,7 +359,7 @@ function TripForm({
                         helperText={formik.touched.lrNo && formik.errors.lrNo}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     {selfTrip ? (
                         <TextField
                             fullWidth
@@ -402,7 +403,7 @@ function TripForm({
                         />
                     )}
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="pickup"
@@ -414,7 +415,7 @@ function TripForm({
                         helperText={formik.touched.pickup && formik.errors.pickup}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="dropup"
@@ -426,7 +427,7 @@ function TripForm({
                         helperText={formik.touched.dropup && formik.errors.dropup}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="advanceToDriver"
@@ -439,7 +440,7 @@ function TripForm({
                     />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="fuelCharge"
@@ -492,7 +493,7 @@ function TripForm({
                     )}
                 </Grid>
                 {!customExtraChargeCheck && (
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             id="extraCharge"
@@ -528,7 +529,7 @@ function TripForm({
                         </TextField>
                     </Grid>
                 )}
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="challanNo"
@@ -541,7 +542,7 @@ function TripForm({
                     />
                 </Grid>
                 {trip && (
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             id="billNo"
@@ -554,7 +555,7 @@ function TripForm({
                         />
                     </Grid>
                 )}
-                {/* <Grid item xs={6}>
+                {/* <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="advanceForCompany"
@@ -566,7 +567,7 @@ function TripForm({
                         helperText={formik.touched.advanceForCompany && formik.errors.advanceForCompany}
                     />
                 </Grid> */}
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="totalPayment"
@@ -579,7 +580,7 @@ function TripForm({
                     />
                 </Grid>
                 {!selfTrip && (
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             id="paymentReceived"
@@ -593,7 +594,7 @@ function TripForm({
                     </Grid>
                 )}
                 {!selfTrip && (
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             id="paymentToTransporter"
@@ -607,7 +608,7 @@ function TripForm({
                     </Grid>
                 )}
 
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     {selfTrip ? (
                         <TextField
                             fullWidth
@@ -651,7 +652,7 @@ function TripForm({
                         />
                     )}
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="materialWeight"
@@ -666,7 +667,7 @@ function TripForm({
                         }}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="truckModel"
@@ -678,7 +679,7 @@ function TripForm({
                         helperText={formik.touched.truckModel && formik.errors.truckModel}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="agent"
@@ -690,7 +691,7 @@ function TripForm({
                         helperText={formik.touched.agent && formik.errors.agent}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="commission"
@@ -702,7 +703,7 @@ function TripForm({
                         helperText={formik.touched.commission && formik.errors.commission}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="driverExtraCharge"
@@ -714,7 +715,7 @@ function TripForm({
                         helperText={formik.touched.driverExtraCharge && formik.errors.driverExtraCharge}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="driverBhatta"
@@ -726,7 +727,7 @@ function TripForm({
                         helperText={formik.touched.driverBhatta && formik.errors.driverBhatta}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
                         id="lrCharges"
@@ -739,7 +740,7 @@ function TripForm({
                         type="number"
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                     <Box>
                         <label for="challanImages">Upload challan images</label>
                         <TextField
@@ -757,7 +758,7 @@ function TripForm({
                     </Box>
                 </Grid>
                 {trip?.challanImages.length ? (
-                    <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center' }}>
                         <Box display={'flex'} width="100%">
                             <Button onClick={() => setImagesOpen(true)} color="secondary" fullWidth variant="outlined">
                                 View Challan

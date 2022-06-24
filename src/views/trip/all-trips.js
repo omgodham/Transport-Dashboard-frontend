@@ -275,12 +275,14 @@ function AllTrips() {
                 setAlertMessage('Trip Updated successfully');
                 setSuccessSnack(true);
                 setShowBackdrop(false);
+                setShowDialog(false);
             })
             .catch((error) => {
                 setSavingTrip(false);
                 setAlertMessage('Something went wrong');
                 setErrorSnack(true);
                 setShowBackdrop(false);
+                setShowDialog(false);
             });
     };
 
@@ -375,71 +377,80 @@ function AllTrips() {
                 </Typography>
             </Box>
             <Divider sx={{ mb: 2 }}></Divider>
-            <Grid container alignItems={'center'} className={classes.GridCont}>
-                <Grid xs={3} display="flex">
-                    <Box sx={{ width: '250px', mr: 1 }}>
-                        <TextField label="Select Date Range" select fullWidth>
-                            <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
-                                Today
-                            </MenuItem>
-                            <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
-                                Yesterday
-                            </MenuItem>
-                            <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
-                                Last 7 days
-                            </MenuItem>
-                            <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
-                                Last 30 days
-                            </MenuItem>
-                            <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
-                                Last month
-                            </MenuItem>
-                            {showDateSelect && (
-                                <Box sx={{ m: 2 }} alignItems="center" justifyContent={'center'} display="flex">
-                                    <TextField
-                                        id="date"
-                                        label="Start Date"
-                                        type="date"
-                                        defaultValue={startDate.toISOString().split('T')[0]}
-                                        value={startDate.toISOString().split('T')[0]}
-                                        onChange={(e) => setStartDate(new Date(e.target.value))}
-                                        className={classes.textField}
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}
-                                        size="small"
-                                        style={{ marginRight: ' 10px' }}
-                                    />
-                                    <TextField
-                                        id="date"
-                                        label="End Date"
-                                        type="date"
-                                        value={endDate.toISOString().split('T')[0]}
-                                        defaultValue={endDate.toISOString().split('T')[0]}
-                                        onChange={(e) => setEndDate(new Date(e.target.value))}
-                                        className={classes.textField}
-                                        InputLabelProps={{
-                                            shrink: true
-                                        }}
-                                        size="small"
-                                        style={{ marginRight: ' 10px' }}
-                                    />
-                                    <Button className={classes.addBtn} size="small" variant="contained" onClick={() => getAllTrips()}>
-                                        Apply
-                                    </Button>
-                                </Box>
-                            )}
-                        </TextField>
-                    </Box>
-
-                    <Box sx={{ width: '150px' }}>
-                        <TextField label="Challan Status" select fullWidth onChange={(e) => setChallanFilter(e.target.value)}>
-                            <MenuItem value="added">Added</MenuItem>
-                            <MenuItem value="notAdded">Not Added</MenuItem>
-                        </TextField>
-                    </Box>
+            <Grid spacing={1} container alignItems={'center'} className={classes.GridCont}>
+                <Grid item xs={12} md={3} display="flex">
+                    <Grid spacing={1} container>
+                        <Grid item xs={6}>
+                            <Box className={classes.dateBox}>
+                                <TextField label="Select Date Range" select fullWidth>
+                                    <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
+                                        Today
+                                    </MenuItem>
+                                    <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
+                                        Yesterday
+                                    </MenuItem>
+                                    <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
+                                        Last 7 days
+                                    </MenuItem>
+                                    <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
+                                        Last 30 days
+                                    </MenuItem>
+                                    <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
+                                        Last month
+                                    </MenuItem>
+                                    {showDateSelect && (
+                                        <Box sx={{ m: 2 }} alignItems="center" justifyContent={'center'} display="flex">
+                                            <TextField
+                                                id="date"
+                                                label="Start Date"
+                                                type="date"
+                                                defaultValue={startDate.toISOString().split('T')[0]}
+                                                value={startDate.toISOString().split('T')[0]}
+                                                onChange={(e) => setStartDate(new Date(e.target.value))}
+                                                className={classes.textField}
+                                                InputLabelProps={{
+                                                    shrink: true
+                                                }}
+                                                size="small"
+                                                style={{ marginRight: ' 10px' }}
+                                            />
+                                            <TextField
+                                                id="date"
+                                                label="End Date"
+                                                type="date"
+                                                value={endDate.toISOString().split('T')[0]}
+                                                defaultValue={endDate.toISOString().split('T')[0]}
+                                                onChange={(e) => setEndDate(new Date(e.target.value))}
+                                                className={classes.textField}
+                                                InputLabelProps={{
+                                                    shrink: true
+                                                }}
+                                                size="small"
+                                                style={{ marginRight: ' 10px' }}
+                                            />
+                                            <Button
+                                                className={classes.addBtn}
+                                                size="small"
+                                                variant="contained"
+                                                onClick={() => getAllTrips()}
+                                            >
+                                                Apply
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </TextField>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Box sx={{}} className={classes.challanBox}>
+                                <TextField label="Challan Status" select fullWidth onChange={(e) => setChallanFilter(e.target.value)}>
+                                    <MenuItem value="added">Added</MenuItem>
+                                    <MenuItem value="notAdded">Not Added</MenuItem>
+                                </TextField>
+                            </Box>
+                        </Grid>
+                    </Grid>
                 </Grid>
-                {/* <Grid container item xs={3}></Grid> */}
                 <Grid item xs={6} container justifyContent={'center'}>
                     <FormControl variant="outlined">
                         <InputLabel htmlFor="outlined-adornment-password">Search by LR No.</InputLabel>
@@ -465,7 +476,7 @@ function AllTrips() {
                         />
                     </FormControl>
                 </Grid>
-                <Grid item container xs={3} justifyContent={'right'}>
+                <Grid item container xs={6} md={3} justifyContent={'right'}>
                     <Box className={classes.btnCont}>
                         <Button
                             className={classes.addBtn}
@@ -494,8 +505,8 @@ function AllTrips() {
                             trip._id != updatingTrip ? (
                                 <>
                                     <Grid item xs={12} className={classes.tripCont}>
-                                        <Grid container>
-                                            <Grid item className={classes.tripItems} xs={3}>
+                                        <Grid container spacing={2}>
+                                            <Grid item className={classes.tripItems} md={3}>
                                                 <Typography variant="h5">
                                                     Customer -{' '}
                                                     {trip.selfTrip
@@ -503,12 +514,12 @@ function AllTrips() {
                                                         : trip.customerName}
                                                 </Typography>
                                             </Grid>
-                                            <Grid item className={classes.tripItems} xs={3}>
+                                            <Grid item className={classes.tripItems} md={3}>
                                                 <Typography variant="h5">
                                                     {trip.pickup} - to - {trip.dropup}
                                                 </Typography>
                                             </Grid>
-                                            <Grid item className={classes.tripItems} xs={3}>
+                                            <Grid item className={classes.tripItems} md={3}>
                                                 {/* <Typography variant="h5">
                                                     Vehicle -{' '}
                                                     {trip.selfTrip ? vehicles.find((o) => o._id == trip.vehicle)?.name : trip.vehicleNo}
@@ -521,8 +532,13 @@ function AllTrips() {
                                                         <Typography style={{ color: 'maroon' }}>Bill Not Paid</Typography>
                                                     ))}
                                             </Grid>
-                                            <Grid item className={classes.tripItems} xs={3}>
-                                                <Box width={'100%'} display={'flex'} justifyContent="space-around" alignItems={'center'}>
+                                            <Grid item className={classes.tripItems} sx={{ width: '100%' }} md={3}>
+                                                <Box
+                                                    sx={{ width: '100%' }}
+                                                    display={'flex'}
+                                                    justifyContent="space-around"
+                                                    alignItems={'center'}
+                                                >
                                                     <Button
                                                         className={classes.submitBtn}
                                                         variant="outlined"
@@ -536,14 +552,16 @@ function AllTrips() {
                                                     >
                                                         {trip.selfTrip ? 'Generate Bill' : 'Generate Voucher'}
                                                     </Button>
-                                                    <TripActions
-                                                        setActiveTrip={setActiveTrip}
-                                                        setShowDeleteWarn={setShowDeleteWarn}
-                                                        setShowDetails={setShowDetails}
-                                                        setShowDialog={setShowDialog}
-                                                        trip={trip}
-                                                        getAllTrips={getAllTrips}
-                                                    />
+                                                    <Box sx={{ ml: 'auto' }}>
+                                                        <TripActions
+                                                            setActiveTrip={setActiveTrip}
+                                                            setShowDeleteWarn={setShowDeleteWarn}
+                                                            setShowDetails={setShowDetails}
+                                                            setShowDialog={setShowDialog}
+                                                            trip={trip}
+                                                            getAllTrips={getAllTrips}
+                                                        />
+                                                    </Box>
                                                 </Box>
                                             </Grid>
                                         </Grid>
