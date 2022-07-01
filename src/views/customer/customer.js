@@ -77,7 +77,14 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '10px',
-        boxShadow: ' rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;'
+        boxShadow: ' rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;',
+
+        [theme.breakpoints.up('sm')]: {
+            padding: '15px 20px'
+        },
+        [theme.breakpoints.up('xs')]: {
+            padding: '10px 5px'
+        }
     },
     customerItems: {
         display: 'flex',
@@ -271,12 +278,9 @@ function Customer() {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <Grid container>
-                                        <Grid className={classes.customerItems} item xs={5}>
+                                        <Grid className={classes.customerItems} item>
                                             <Typography variant="h5">{customer.name}</Typography>
                                         </Grid>
-                                        {/* <Grid className={classes.customerItems} item xs={4}>
-                                            <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
-                                        </Grid> */}
                                     </Grid>
                                 </Grid>
                                 <Grid className={classes.customerItems} item sm={3}>
