@@ -260,49 +260,47 @@ function Customer() {
                 <Box sx={{ p: 2 }}>
                     {customers?.length ? (
                         customers.map((customer) => (
-                            <Box>
-                                <Grid container className={classes.customerCont}>
-                                    <Grid
-                                        item
-                                        xs={9}
-                                        onClick={() => {
-                                            setActiveCust(customer);
-                                            setOpen(true);
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <Grid container>
-                                            <Grid className={classes.customerItems} item xs={5}>
-                                                <Typography variant="h5">{customer.name}</Typography>
-                                            </Grid>
-                                            <Grid className={classes.customerItems} item xs={4}>
-                                                <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
-                                            </Grid>
+                            <Grid container spacing={1} className={classes.customerCont}>
+                                <Grid
+                                    item
+                                    sm={9}
+                                    onClick={() => {
+                                        setActiveCust(customer);
+                                        setOpen(true);
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <Grid container>
+                                        <Grid className={classes.customerItems} item xs={5}>
+                                            <Typography variant="h5">{customer.name}</Typography>
                                         </Grid>
+                                        {/* <Grid className={classes.customerItems} item xs={4}>
+                                            <Typography variant="h6">Phone NO. - {customer.contactInfo?.phoneNo}</Typography>
+                                        </Grid> */}
                                     </Grid>
-                                    <Grid className={classes.customerItems} item xs={3}>
-                                        <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
-                                            <Box onClick={() => handleDelete(customer._id)} className={classes.editIconBox}>
-                                                <DeleteIcon className={classes.icons} />
-                                            </Box>
-                                            <Button
-                                                onClick={() => {
-                                                    setActiveCust(customer);
-                                                    setAskDate(true);
-                                                }}
-                                                className={classes.addBtn}
-                                                variant="outlined"
-                                                color="secondary"
-                                            >
-                                                GENERATE BILL
-                                            </Button>
+                                </Grid>
+                                <Grid className={classes.customerItems} item sm={3}>
+                                    <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
+                                        <Box onClick={() => handleDelete(customer._id)} className={classes.editIconBox}>
+                                            <DeleteIcon className={classes.icons} />
                                         </Box>
-                                    </Grid>
-                                    {/* <Grid className={classes.customerItems} item xs={4}>
+                                        <Button
+                                            onClick={() => {
+                                                setActiveCust(customer);
+                                                setAskDate(true);
+                                            }}
+                                            className={classes.addBtn}
+                                            variant="outlined"
+                                            color="secondary"
+                                        >
+                                            GENERATE BILL
+                                        </Button>
+                                    </Box>
+                                </Grid>
+                                {/* <Grid className={classes.customerItems} item xs={4}>
                                         <Button onClick={() => generateBill(customer._id)}>GENERATE BILL</Button>
                                     </Grid> */}
-                                </Grid>
-                            </Box>
+                            </Grid>
                         ))
                     ) : progress == 100 ? (
                         <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>

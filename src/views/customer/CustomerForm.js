@@ -7,6 +7,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
     Grid,
     Snackbar,
     TextField,
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     subBtnCont: {
         display: 'flex',
         margin: '20px auto',
-        width: '300px'
+        width: 'fit-content'
     },
     subBtn: {
         backgroundColor: theme.palette.secondary.dark,
@@ -152,12 +153,13 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
 
     return (
         <div className={classes.formCont}>
-            <Typography variant="h2" style={{ textAlign: 'center', margin: '20px auto' }}>
+            <Typography variant="h3" style={{ textAlign: 'center', margin: ' auto' }}>
                 CUTOMER DETAILS
             </Typography>
+            <Divider style={{ margin: '10px auto 20px' }} />
             <form onSubmit={formik.handleSubmit}>
                 <Grid container spacing={2}>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="name"
@@ -170,7 +172,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.name && formik.errors.name}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="ownerName"
@@ -183,7 +185,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.ownerName && formik.errors.ownerName}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="phone"
@@ -195,7 +197,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.phone && formik.errors.phone}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="email"
@@ -207,7 +209,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.email && formik.errors.email}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="gstNo"
@@ -219,7 +221,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.gstNo && formik.errors.gstNo}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="address"
@@ -231,7 +233,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             helperText={formik.touched.address && formik.errors.address}
                         />
                     </Grid>
-                    <Grid item xs={6} className={classes.formItems}>
+                    <Grid item xs={12} sm={6} className={classes.formItems}>
                         <TextField
                             fullWidth
                             id="state"
@@ -244,7 +246,7 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                         />
                     </Grid>
                     {activeCust && (
-                        <Grid item xs={6} className={classes.formItems}>
+                        <Grid item xs={12} className={classes.formItems}>
                             <Box className={classes.subBtnCont}>
                                 <Button className={classes.subBtn} variant="contained" onClick={() => setPaymentDetailsOpen(true)}>
                                     SHOW PAYMENT DETAILS
@@ -252,11 +254,13 @@ function CustomerForm({ getAllCustomers, setOpen, setAlertMsg, setSuccessSnack, 
                             </Box>
                         </Grid>
                     )}
-                    <Box className={classes.subBtnCont}>
-                        <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
-                            SAVE
-                        </Button>
-                    </Box>
+                    <Grid item xs={12} className={classes.formItems}>
+                        <Box className={classes.subBtnCont}>
+                            <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
+                                SAVE
+                            </Button>
+                        </Box>
+                    </Grid>
                 </Grid>
             </form>
             <Dialog open={paymentDetailsOpen} onClose={() => setPaymentDetailsOpen(false)}>
