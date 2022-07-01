@@ -37,6 +37,8 @@ import noData from '../../images/noData.png';
 import Voucher from './Voucher';
 import { MoreVert } from '@material-ui/icons';
 import TripActions from './TripActions';
+import moment from 'moment';
+
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
@@ -508,30 +510,23 @@ function AllTrips() {
                                         <Grid container spacing={2}>
                                             <Grid item className={classes.tripItems} md={3}>
                                                 <Typography variant="h5">
-                                                    Customer -{' '}
-                                                    {trip.selfTrip
-                                                        ? customers.find((o) => o._id == trip.customer)?.name
-                                                        : trip.customerName}
+                                                    {trip.selfTrip ? `Bill No. ${trip.billNo}` : `Voucher No. ${trip.paymentVoucherNumber}`}
                                                 </Typography>
                                             </Grid>
-                                            <Grid item className={classes.tripItems} md={3}>
-                                                <Typography variant="h5">
-                                                    {trip.pickup} - to - {trip.dropup}
-                                                </Typography>
+                                            <Grid item className={classes.tripItems} xs={12} md={3}>
+                                                <Typography variant="h6">{moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}</Typography>
                                             </Grid>
-                                            <Grid item className={classes.tripItems} md={3}>
-                                                {/* <Typography variant="h5">
-                                                    Vehicle -{' '}
-                                                    {trip.selfTrip ? vehicles.find((o) => o._id == trip.vehicle)?.name : trip.vehicleNo}
-
-                                                </Typography> */}
-                                                {!trip.selfTrip &&
-                                                    (trip.billPaid ? (
+                                            {!trip.selfTrip &&
+                                                (trip.billPaid ? (
+                                                    <Grid item className={classes.tripItems} md={3}>
                                                         <Typography style={{ color: 'green' }}>Bill Paid</Typography>
-                                                    ) : (
+                                                    </Grid>
+                                                ) : (
+                                                    <Grid item className={classes.tripItems} md={3}>
                                                         <Typography style={{ color: 'maroon' }}>Bill Not Paid</Typography>
-                                                    ))}
-                                            </Grid>
+                                                    </Grid>
+                                                ))}
+
                                             <Grid item className={classes.tripItems} sx={{ width: '100%' }} md={3}>
                                                 <Box
                                                     sx={{ width: '100%' }}

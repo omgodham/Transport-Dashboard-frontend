@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: theme.palette.secondary[800]
         }
     },
-    customerCont: {
+    driverCont: {
         padding: '10px 20px',
         margin: '20px auto',
         // border: '1px solid grey',
@@ -226,7 +226,7 @@ function Driver() {
                     {vehicles?.length ? (
                         vehicles.map((driver) => {
                             return (
-                                <Box className={classes.customerCont}>
+                                <Box className={classes.driverCont}>
                                     <Grid container>
                                         <Grid className={classes.customerItems} item xs={4}>
                                             <Typography variant="h5">{driver.name}</Typography>
