@@ -38,6 +38,7 @@ import Voucher from './Voucher';
 import { MoreVert } from '@material-ui/icons';
 import TripActions from './TripActions';
 import moment from 'moment';
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -101,12 +102,13 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.secondary.dark,
         '&:hover': {
             backgroundColor: theme.palette.secondary[800]
-        }
+        },
+        color: 'white'
     },
     btnCont: {
-        // position: 'absolute',
-        // top: '10px',
-        // right: '20px'
+        position: 'absolute',
+        top: '13px',
+        right: '20px'
     },
     tripBlock: {
         display: 'flex',
@@ -135,7 +137,11 @@ const useStyles = makeStyles((theme) => ({
     },
     mainHeading: {
         // fontSize: '2rem',
-        color: theme.palette.grey[600]
+        textAlign: 'left',
+        color: theme.palette.grey[600],
+        [theme.breakpoints.up('sm')]: {
+            textAlign: 'center'
+        }
     },
     editIconBox: {
         border: '1px solid #dc2f02',
@@ -288,16 +294,16 @@ function AllTrips() {
             });
     };
 
-    const handleSearch = () => {
-        if (searchInput)
-            Axios.get(`/trip/get-trip-by-lr/${searchInput}`)
+    const handleSearch = (type) => {
+        if (searchInput) {
+            Axios.get(`/trip/search-trip/${searchInput}`)
                 .then((response) => {
                     setTrips(response.data);
                 })
                 .catch((error) => {
                     console.log(error);
                 });
-        else getAllTrips();
+        } else getAllTrips();
     };
 
     const setDates = (days, month, number) => {
@@ -371,13 +377,33 @@ function AllTrips() {
             });
     };
 
+    // isMobile && alert('mohi  ');
+
     return (
         <div className={classes.root}>
-            <Box sx={{ mb: 2 }}>
-                <Typography className={classes.mainHeading} textAlign={'center'} variant="h2">
+            <Box sx={{ mb: 2, mt: 1 }} alignItems="center">
+                <Typography className={classes.mainHeading} variant="h3">
                     ALL TRIPS
                 </Typography>
+                <Box className={classes.btnCont}>
+                    {!isMobile ? (
+                        <Button
+                            className={classes.addBtn}
+                            onClick={handleClick}
+                            variant="contained"
+                            startIcon={<AddCircleOutlineIcon />}
+                            size="medium"
+                        >
+                            TRIP
+                        </Button>
+                    ) : (
+                        <IconButton className={classes.addBtn} onClick={handleClick} variant="outlined" size="small">
+                            <AddCircleOutlineIcon />
+                        </IconButton>
+                    )}
+                </Box>
             </Box>
+
             <Divider sx={{ mb: 2 }}></Divider>
             <Grid spacing={1} container alignItems={'center'} className={classes.GridCont}>
                 <Grid item xs={12} md={3} display="flex">
@@ -453,12 +479,12 @@ function AllTrips() {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={6} container justifyContent={'center'}>
-                    <FormControl variant="outlined">
-                        <InputLabel htmlFor="outlined-adornment-password">Search by LR No.</InputLabel>
+                <Grid item xs={12} sm={6} container justifyContent={'center'}>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
                         <OutlinedInput
                             id="outlined-adornment-password"
-                            label="Search by LR No."
+                            label="Search by Bill/Voucher/Lr No."
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             endAdornment={
@@ -478,19 +504,6 @@ function AllTrips() {
                         />
                     </FormControl>
                 </Grid>
-                <Grid item container xs={6} md={3} justifyContent={'right'}>
-                    <Box className={classes.btnCont}>
-                        <Button
-                            className={classes.addBtn}
-                            onClick={handleClick}
-                            variant="contained"
-                            startIcon={<AddCircleOutlineIcon />}
-                            size="medium"
-                        >
-                            TRIP
-                        </Button>
-                    </Box>
-                </Grid>
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
             <Grid container justifyContent="center">
@@ -507,56 +520,57 @@ function AllTrips() {
                             trip._id != updatingTrip ? (
                                 <>
                                     <Grid item xs={12} className={classes.tripCont}>
-                                        <Grid container spacing={2}>
-                                            <Grid item className={classes.tripItems} md={3}>
-                                                <Typography variant="h5">
-                                                    {trip.selfTrip ? `Bill No. ${trip.billNo}` : `Voucher No. ${trip.paymentVoucherNumber}`}
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item className={classes.tripItems} xs={12} md={3}>
-                                                <Typography variant="h6">{moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}</Typography>
-                                            </Grid>
-                                            {!trip.selfTrip &&
-                                                (trip.billPaid ? (
+                                        <Grid container>
+                                            <Grid item xs={11}>
+                                                <Grid container spacing={1}>
                                                     <Grid item className={classes.tripItems} md={3}>
-                                                        <Typography style={{ color: 'green' }}>Bill Paid</Typography>
+                                                        <Typography variant="h5" fontSize={15}>
+                                                            {trip.selfTrip
+                                                                ? `Bill No. ${trip.billNo}`
+                                                                : `Voucher No. ${trip.paymentVoucherNumber}`}
+                                                        </Typography>
                                                     </Grid>
-                                                ) : (
-                                                    <Grid item className={classes.tripItems} md={3}>
-                                                        <Typography style={{ color: 'maroon' }}>Bill Not Paid</Typography>
+                                                    <Grid item className={classes.tripItems} xs={12} md={3}>
+                                                        <Typography variant="h6">
+                                                            {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
+                                                        </Typography>
                                                     </Grid>
-                                                ))}
-
-                                            <Grid item className={classes.tripItems} sx={{ width: '100%' }} md={3}>
-                                                <Box
-                                                    sx={{ width: '100%' }}
-                                                    display={'flex'}
-                                                    justifyContent="space-around"
-                                                    alignItems={'center'}
-                                                >
-                                                    <Button
-                                                        className={classes.submitBtn}
-                                                        variant="outlined"
-                                                        fullWidth
-                                                        style={{ width: '150px' }}
-                                                        color="secondary"
-                                                        onClick={() => {
-                                                            setShowBill(true);
-                                                            setActiveTrip(trip);
-                                                        }}
-                                                    >
-                                                        {trip.selfTrip ? 'Generate Bill' : 'Generate Voucher'}
-                                                    </Button>
-                                                    <Box sx={{ ml: 'auto' }}>
-                                                        <TripActions
-                                                            setActiveTrip={setActiveTrip}
-                                                            setShowDeleteWarn={setShowDeleteWarn}
-                                                            setShowDetails={setShowDetails}
-                                                            setShowDialog={setShowDialog}
-                                                            trip={trip}
-                                                            getAllTrips={getAllTrips}
-                                                        />
-                                                    </Box>
+                                                    <Grid item className={classes.tripItems} xs={12}>
+                                                        <Typography variant="h5" fontSize={13}>
+                                                            Customer -{' '}
+                                                            {trip.selfTrip
+                                                                ? customers.find((o) => o._id == trip.customer)?.name
+                                                                : trip.customerName}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid item className={classes.tripItems} xs={12}>
+                                                        <Typography variant="h6" fontSize={12}>
+                                                            {trip.pickup} - to - {trip.dropup}
+                                                        </Typography>
+                                                    </Grid>
+                                                    {!trip.selfTrip &&
+                                                        (trip.billPaid ? (
+                                                            <Grid item className={classes.tripItems} md={3}>
+                                                                <Typography style={{ color: 'green' }}>Bill Paid</Typography>
+                                                            </Grid>
+                                                        ) : (
+                                                            <Grid item className={classes.tripItems} md={3}>
+                                                                <Typography style={{ color: 'maroon' }}>Bill Not Paid</Typography>
+                                                            </Grid>
+                                                        ))}
+                                                </Grid>
+                                            </Grid>
+                                            <Grid item xs={1}>
+                                                <Box sx={{ ml: 'auto' }}>
+                                                    <TripActions
+                                                        setActiveTrip={setActiveTrip}
+                                                        setShowDeleteWarn={setShowDeleteWarn}
+                                                        setShowDetails={setShowDetails}
+                                                        setShowDialog={setShowDialog}
+                                                        trip={trip}
+                                                        getAllTrips={getAllTrips}
+                                                        setShowBill={setShowBill}
+                                                    />
                                                 </Box>
                                             </Grid>
                                         </Grid>

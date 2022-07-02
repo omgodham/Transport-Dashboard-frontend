@@ -13,7 +13,9 @@ import {
     TextField,
     Typography,
     CircularProgress,
-    Skeleton
+    Skeleton,
+    FormControlLabel,
+    Checkbox
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import React, { useState, useEffect } from 'react';
@@ -84,6 +86,7 @@ function TripForm({
     const [chargeProgress, setChargeProgress] = useState(0);
     const [companies, setCompanies] = useState([]);
     const [companyProgress, setCompanyProgress] = useState(0);
+    const [isCustomVehicle, setIsCustomVehicle] = useState();
 
     useEffect(() => {
         if (selfTrip) {
@@ -212,7 +215,8 @@ function TripForm({
             billNo: trip ? trip.billNo : '',
             selfTrip: trip ? trip.selfTrip : selfTrip,
             driverName: trip ? trip.driverName : '',
-            lrCharges: trip ? trip.lrCharges : 100
+            lrCharges: trip ? trip.lrCharges : 100,
+            pickupCompany: trip ? trip.pickupCompany : ''
         },
 
         validationSchema: validationSchema,
@@ -359,8 +363,20 @@ function TripForm({
                         helperText={formik.touched.lrNo && formik.errors.lrNo}
                     />
                 </Grid>
-                <Grid item xs={12} md={6}>
-                    {selfTrip ? (
+
+                <Grid item xs={12}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={isCustomVehicle}
+                                onChange={(e) => setIsCustomVehicle(e.target.checked)}
+                                name="checkedB"
+                                color="primary"
+                            />
+                        }
+                        label="Custom Vehicle"
+                    />
+                    {selfTrip && !isCustomVehicle ? (
                         <TextField
                             fullWidth
                             id="vehicle"
@@ -377,8 +393,8 @@ function TripForm({
                                 vehicles.map((vehicle) => {
                                     return <MenuItem value={vehicle._id}>{vehicle.number}</MenuItem>;
                                 })
-                            ) : driverProgress == 100 ? (
-                                <MenuItem value="none">Drivers not available</MenuItem>
+                            ) : vehicleProgress == 100 ? (
+                                <MenuItem value="none">Vehicles not available</MenuItem>
                             ) : (
                                 <>
                                     <MenuItem value="none">
@@ -430,6 +446,18 @@ function TripForm({
                 <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
+                        id="pickupCompany"
+                        name="pickupCompany"
+                        label="Pickup Company "
+                        value={formik.values.pickupCompany}
+                        onChange={formik.handleChange}
+                        error={formik.touched.pickupCompany && Boolean(formik.errors.pickupCompany)}
+                        helperText={formik.touched.pickupCompany && formik.errors.pickupCompany}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        fullWidth
                         id="advanceToDriver"
                         name="advanceToDriver"
                         label="Advance to driver"
@@ -454,16 +482,20 @@ function TripForm({
                 </Grid>
 
                 <Grid item xs={12}>
-                    {' '}
-                    <input
-                        type="checkbox"
-                        id="customExtraChargeCheck"
-                        checked={customExtraChargeCheck}
-                        onChange={(e) => {
-                            setCustomExtraChargeCheck(e.target.checked);
-                        }}
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                id="customExtraChargeCheck"
+                                checked={customExtraChargeCheck}
+                                onChange={(e) => {
+                                    setCustomExtraChargeCheck(e.target.checked);
+                                }}
+                                name="checkedB"
+                                color="primary"
+                            />
+                        }
+                        label="Custom Extra Charges"
                     />
-                    <label for="customExtraChargeCheck">Custom extra charges</label>
                     {customExtraChargeCheck && (
                         <Grid item xs={12}>
                             <TextField

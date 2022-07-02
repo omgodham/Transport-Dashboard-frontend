@@ -99,7 +99,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
         if (trips?.length) {
             let tempEarning = 0;
             trips.map((trip) => {
-                tempEarning += trip.totalPayment ? trip.totalPayment : 0 + trip.extraCharges ? trip.extraCharges : 0;
+                tempEarning += (trip.totalPayment ? trip.totalPayment : 0) + (trip.extraCharges ? trip.extraCharges : 0) + trip.lrCharges;
             });
             setTotalEarning(tempEarning);
 
@@ -203,7 +203,7 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                     <Box display={'flex'} justifyContent="space-between">
                                         <Box>
                                             <Typography variant="h5" fontSize={'18px'}>
-                                                TO M/S -{' '}
+                                                Bill To -{' '}
                                                 {trips.length && customers.length ? (
                                                     customers.map((customer) => customer._id == trips[0].customer && customer.name)
                                                 ) : (
@@ -215,6 +215,14 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                     customers.map(
                                                         (customer) => customer._id == trips[0].customer && customer.address.addressLine1
                                                     )
+                                                ) : (
+                                                    <Skeleton />
+                                                )}
+                                            </Typography>
+                                            <Typography>
+                                                GST No. -{' '}
+                                                {trips.length && customers.length ? (
+                                                    customers.map((customer) => customer._id == trips[0].customer && customer.gstNo)
                                                 ) : (
                                                     <Skeleton />
                                                 )}
@@ -255,6 +263,9 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                         Amount
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
+                                                        LR Charges
+                                                    </TableCell>
+                                                    <TableCell align="right" className={classes.tripItem}>
                                                         Extra Charges
                                                     </TableCell>
                                                 </TableRow>
@@ -272,7 +283,9 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                             {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="right">
-                                                            {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)}
+                                                            {trip.vehicle
+                                                                ? vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)
+                                                                : trip.vehicleNo}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="right">
                                                             {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.model)}
@@ -290,7 +303,10 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                             {trip.dropup}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="right">
-                                                            {trip.totalPayment}
+                                                            Rs. {trip.totalPayment}
+                                                        </TableCell>
+                                                        <TableCell className={classes.tripItem} align="right">
+                                                            RS. {trip.lrCharges}
                                                         </TableCell>
                                                         <TableCell className={classes.tripItem} align="center">
                                                             {trip.extraCharges ? trip.extraCharges : '-'}

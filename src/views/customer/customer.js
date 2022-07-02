@@ -162,6 +162,7 @@ function Customer() {
     const [progress, setProgress] = useState(0);
     const [companies, setCompanies] = useState([]);
     const [companyProgress, setCompanyProgress] = useState(0);
+    const [confirmDelete, setConfirmDelete] = useState();
 
     const getAllCustomers = () => {
         Axios.get('/customer/get-all-customers', {
@@ -193,8 +194,8 @@ function Customer() {
             .catch((error) => console.log(error));
     }, []);
 
-    const handleDelete = (id) => {
-        Axios.delete(`customer/delete-customer/${id}`)
+    const handleDelete = () => {
+        Axios.delete(`customer/delete-customer/${activeCust._id}`)
             .then((response) => {
                 getAllCustomers();
                 setAlertMsg('Customer deleted successfully');
@@ -285,7 +286,14 @@ function Customer() {
                                 </Grid>
                                 <Grid className={classes.customerItems} item sm={3}>
                                     <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
-                                        <Box onClick={() => handleDelete(customer._id)} className={classes.editIconBox}>
+                                        <Box
+                                            onClick={() => {
+                                                // handleDelete(customer._id);
+                                                setActiveCust(customer);
+                                                setConfirmDelete(true);
+                                            }}
+                                            className={classes.editIconBox}
+                                        >
                                             <DeleteIcon className={classes.icons} />
                                         </Box>
                                         <Button
@@ -345,6 +353,39 @@ function Customer() {
                     />
                     <CloseIcon style={{ position: 'absolute', top: '20px', right: '20px', cursor: 'pointer' }} onClick={handleClose} />
                 </Box>
+            </Dialog>
+
+            <Dialog
+                open={confirmDelete}
+                onClose={() => {
+                    setConfirmDelete(false);
+                    setActiveCust();
+                }}
+            >
+                <DialogTitle>
+                    <Box sx={{ position: 'relative' }}>
+                        <Typography variant="h6" fontSize={17}>
+                            Do you want to delete customer ?
+                        </Typography>
+                    </Box>
+                </DialogTitle>
+
+                <DialogActions>
+                    <Button
+                        onClick={() => {
+                            setConfirmDelete(false);
+                            setActiveCust();
+                        }}
+                        variant="outlined"
+                        color="secondary"
+                    >
+                        {' '}
+                        Cancel
+                    </Button>
+                    <Button onClick={() => handleDelete()} variant="contained" color="secondary">
+                        Delete
+                    </Button>
+                </DialogActions>
             </Dialog>
 
             <Dialog maxWidth="lg" open={askDate}>
