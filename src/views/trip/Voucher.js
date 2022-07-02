@@ -323,24 +323,26 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
                     </Grid>
                     <Grid container sx={{ height: '300px' }}>
                         <Grid item xs={6}>
-                            <Box className={classes.gridInnerBox} sx={{ height: '300px' }}></Box>
+                            <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
+                                <Typography>Pickup From - {trip.pickupCompany}</Typography>
+                            </Box>
                         </Grid>
                         <Grid item xs={6}>
                             <Grid display="flex">
                                 <Grid xs={7}>
                                     <Box className={classes.gridInnerBox} textAlign="left" sx={{ height: '300px' }}>
-                                        <Box sx={{ m: 1 }}>Freight</Box>
-                                        <Box sx={{ m: 1 }}>Advance</Box>
-                                        <Box sx={{ m: 1 }}>{trip.extraChargeDescription}</Box>
-                                        <Box sx={{ m: 1 }}>LR Charges</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>Freight</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>Advance</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>{trip.extraChargeDescription}</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>LR Charges</Box>
                                     </Box>
                                 </Grid>
                                 <Grid xs={5}>
                                     <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.totalPayment}</Box>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.paymentReceived}</Box>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.extraCharge}</Box>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.lrCharges}</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>Rs. {trip.totalPayment}</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>Rs. {trip.paymentReceived}</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>Rs. {trip.extraCharge}</Box>
+                                        <Box sx={{ m: 1, minHeight: '20px' }}>Rs. {trip.lrCharges}</Box>
                                     </Box>
                                 </Grid>
                             </Grid>

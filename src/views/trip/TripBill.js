@@ -222,6 +222,14 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                         <Skeleton />
                                     )}
                                 </Typography>
+                                <Typography variant="h5">
+                                    GST No -
+                                    {customers.length ? (
+                                        customers.map((customer) => customer._id == trip.customer && customer.gstNo)
+                                    ) : (
+                                        <Skeleton />
+                                    )}
+                                </Typography>
                             </Grid>
                         </Grid>
                     </Box>
@@ -236,7 +244,9 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                         Vehicle No.
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)}
+                                        {trip.vehicle
+                                            ? vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)
+                                            : trip.vehicleNo}
                                     </TableCell>
                                     <TableCell className={classes.tripItem}>Trip Date</TableCell>
                                     <TableCell className={classes.tripItem} component="th" scope="row" align="center">
