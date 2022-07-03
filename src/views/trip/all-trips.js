@@ -39,6 +39,7 @@ import { MoreVert } from '@material-ui/icons';
 import TripActions from './TripActions';
 import moment from 'moment';
 import { isMobile } from 'react-device-detect';
+import { getTripsDepenedingOnTheChallanAddition } from './helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -330,20 +331,26 @@ function AllTrips() {
 
     const setDriverFilter = (driver) => {};
 
-    const setChallanFilter = (status) => {
-        let tempTrips = tripsCopy;
-
-        if (status == 'added') {
-            tempTrips = tempTrips.filter(function (trip) {
-                return trip.challanImages.length > 0;
-            });
-        } else {
-            tempTrips = tempTrips.filter(function (trip) {
-                return trip.challanImages.length == 0;
-            });
+    const setChallanFilter = async (status) => {
+        try {
+            let tempTrips = await getTripsDepenedingOnTheChallanAddition(startDate, endDate, status);
+            setTrips(tempTrips);
+        } catch (error) {
+            setAlertMessage('Something went wrong');
+            setErrorSnack(true);
         }
 
-        setTrips(tempTrips);
+        // let tempTrips = tripsCopy;
+        // if (status == 'added') {
+        //     tempTrips = tempTrips.filter(function (trip) {
+        //         return trip.challanImages.length > 0;
+        //     });
+        // } else {
+        //     tempTrips = tempTrips.filter(function (trip) {
+        //         return trip.challanImages.length == 0;
+        //     });
+        // }
+        // setTrips(tempTrips);
     };
 
     const handleClick = (event) => {
@@ -645,7 +652,7 @@ function AllTrips() {
                     <ChallanImages
                         updateTrip={updateTrip}
                         trip={showDetails}
-                        challanImages={showDetails?.challanImages}
+                        // challanImages={showDetails?.challanImages}
                         setImagesOpen={setImagesOpen}
                         setShowBackdrop={setShowBackdrop}
                     />

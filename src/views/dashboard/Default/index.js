@@ -23,14 +23,11 @@ const Dashboard = () => {
     const [errorSnack, setErrorSnack] = useState();
     const [trips, setTrips] = useState();
     useEffect(() => {
-        console.log('here we come');
-
         var d = new Date(2012, 7, 25);
         d.setFullYear(d.getFullYear() - 99);
 
         Axios.post('/trip/get-all-trips', { startDate: d, endDate: new Date() })
             .then((data) => {
-                console.log(data.data);
                 setTrips(data.data);
                 setLoading(false);
             })

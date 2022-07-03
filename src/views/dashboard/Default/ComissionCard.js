@@ -131,7 +131,6 @@ const ComissionCard = ({ isLoading, trips }) => {
         setAnchorEl(null);
     };
 
-    console.log(trips, 'trips');
     return (
         <React.Fragment>
             {isLoading ? (

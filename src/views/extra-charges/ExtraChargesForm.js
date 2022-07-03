@@ -95,7 +95,6 @@ function ExtraChargesForm({
     getAllExtraCharges,
     setActiveCharge
 }) {
-    console.log(activeCharge);
     const classes = useStyles();
     const validationSchema = yup.object({
         type: yup.string('Please enter Charge Type.').required('Charge type is required'),

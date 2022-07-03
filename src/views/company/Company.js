@@ -109,7 +109,6 @@ function Company() {
         })
             .then((response) => {
                 setExtraCharges(response.data);
-                console.log(response.data);
             })
             .catch((error) => console.log(error));
     };
@@ -155,7 +154,6 @@ function Company() {
                 <Box sx={{ p: 2 }}>
                     {extraCharges?.length ? (
                         extraCharges.map((extraCharge) => {
-                            console.log(extraCharge);
                             return (
                                 <Box className={classes.customerCont}>
                                     <Grid container>

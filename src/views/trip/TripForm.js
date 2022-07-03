@@ -789,7 +789,8 @@ function TripForm({
                         />
                     </Box>
                 </Grid>
-                {trip?.challanImages.length ? (
+                {/* {trip?.challanImages.length ? ( */}
+                {trip && (
                     <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center' }}>
                         <Box display={'flex'} width="100%">
                             <Button onClick={() => setImagesOpen(true)} color="secondary" fullWidth variant="outlined">
@@ -797,9 +798,10 @@ function TripForm({
                             </Button>
                         </Box>
                     </Grid>
-                ) : (
-                    ''
                 )}
+                {/* ) : (
+                    ''
+                )} */}
             </Grid>
             <Box className={classes.wrapperLoading} style={{ marginTop: '20px' }}>
                 <Button className={classes.submitBtn} disabled={savingTrip} variant="contained" fullWidth type="submit">
