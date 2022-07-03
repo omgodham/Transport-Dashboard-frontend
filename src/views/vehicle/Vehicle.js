@@ -241,7 +241,6 @@ function Vehicle() {
         );
     };
 
-    console.log('BBB', currentVehicle?.maintenance);
     return (
         <div className={classes.root}>
             <Box>

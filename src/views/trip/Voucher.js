@@ -139,8 +139,6 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
         setTotalPayment(trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived);
     }, [trip]);
 
-    console.log(trip);
-
     return (
         <Box>
             <Box ref={componentRef} sx={{ m: 3 }} className={classes.root}>

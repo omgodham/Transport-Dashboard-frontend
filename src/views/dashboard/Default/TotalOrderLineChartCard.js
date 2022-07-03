@@ -112,8 +112,6 @@ const TotalOrderLineChartCard = ({ isLoading, trips }) => {
             let tempEarning = 0;
             trips.map((trip) => {
                 tempEarning += trip.advanceToDriver ? trip.advanceToDriver : 0 + trip.fuelCharge ? trip.fuelCharge : 0;
-                console.log(tempEarning, 'earning');
-                console.log(tempEarning, 'tempearning');
             });
 
             tempEarning = tempEarning.toString();
