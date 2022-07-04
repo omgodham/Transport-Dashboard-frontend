@@ -131,17 +131,14 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
         Axios.get('/company/get-all-companies')
             .then((response) => {
                 setCompanies(response.data);
-            })
-            .catch((error) => console.log(error));
-        Axios.get('/company/get-all-companies')
-            .then((response) => {
-                setCompanies(response.data);
+                console.log(response);
             })
             .catch((error) => console.log(error));
     }, []);
 
     useEffect(() => {
         setTotalPayment(trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived);
+        console.log(trip);
     }, [trip]);
 
     return (
@@ -156,7 +153,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         </Grid>
                         <Grid item xs={9} display="flex" alignItems="right" alignContent={'right'} justifyContent="right">
                             <Box width={'fit-content'} minWidth={'200px'}>
-                                <Typography variant="h2" textAlign={'left'}>
+                                <Typography variant="h4" textAlign={'left'}>
                                     {trip && companies.length ? (
                                         companies.map((company) => company._id == trip.company && company.name)
                                     ) : (
@@ -201,11 +198,11 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                     </Box>
                     <Box sx={{ mt: 2 }}>
                         <Grid container>
-                            <Grid item xs={5}>
-                                <Typography variant="h5" fontSize={'18px'}>
+                            <Grid item xs={7}>
+                                <Typography variant="h6" fontSize={'13px'}>
                                     Bill To
                                 </Typography>
-                                <Typography variant="h5" fontSize={'18px'}>
+                                <Typography variant="h6" fontSize={'13px'}>
                                     TO M/S -{' '}
                                     {customers.length ? (
                                         customers.map((customer) => customer._id == trip.customer && customer.name)
@@ -213,14 +210,14 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                         <Skeleton />
                                     )}
                                 </Typography>
-                                <Typography>
+                                <Typography variant="body2">
                                     {customers.length ? (
                                         customers.map((customer) => customer._id == trip.customer && customer.address.addressLine1)
                                     ) : (
                                         <Skeleton />
                                     )}
                                 </Typography>
-                                <Typography variant="h5">
+                                <Typography variant="body2">
                                     GST No -
                                     {customers.length ? (
                                         customers.map((customer) => customer._id == trip.customer && customer.gstNo)
@@ -239,79 +236,85 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             <TableBody className={classes.tableBody} display="flex" alignItems="right" justifyContent="right">
                                 <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        Vehicle No.
+                                        <Typography variant="body2"> Vehicle No.</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.vehicle
-                                            ? vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)
-                                            : trip.vehicleNo}
+                                        <Typography variant="body2">
+                                            {' '}
+                                            {trip.vehicle
+                                                ? vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)
+                                                : trip.vehicleNo}
+                                        </Typography>
                                     </TableCell>
-                                    <TableCell className={classes.tripItem}>Trip Date</TableCell>
+                                    <TableCell className={classes.tripItem}>
+                                        {' '}
+                                        <Typography variant="body2"> Trip Date</Typography>
+                                    </TableCell>
                                     <TableCell className={classes.tripItem} component="th" scope="row" align="center">
-                                        {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
+                                        <Typography variant="body2"> {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        Freight
+                                        <Typography variant='body2'> Freight</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        Rs. {trip.totalPayment}
+                                        <Typography variant='body2'> Rs. {trip.totalPayment}</Typography>
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        Extra Charges
+                                        <Typography variant='body2'> Extra Charges</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        Rs. {trip.extraCharges ? trip.extraCharges : '-'}
+                                        <Typography variant='body2'> Rs. {trip.extraCharges ? trip.extraCharges : '-'}</Typography>
                                     </TableCell>
                                 </TableRow> */}
 
                                 <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        Challan
+                                        <Typography variant="body2"> Challan</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.challanNo}
+                                        <Typography variant="body2"> {trip.challanNo}</Typography>
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        LR Number
+                                        <Typography variant="body2"> LR Number</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.lrNo}
+                                        <Typography variant="body2"> {trip.lrNo}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        From
+                                        <Typography variant='body2'> From</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.pickup}
+                                        <Typography variant='body2'> {trip.pickup}</Typography>
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        To
+                                        <Typography variant='body2'> To</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.dropup}
+                                        <Typography variant='body2'> {trip.dropup}</Typography>
                                     </TableCell>
                                 </TableRow> */}
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        Amount
+                                        <Typography variant='body2'> Amount</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.totalPayment}
+                                        <Typography variant='body2'> {trip.totalPayment}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        Extra Charges
+                                        <Typography variant='body2'> Extra Charges</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        {trip.extraCharges ? trip.extraCharges : '-'}
+                                        <Typography variant='body2'> {trip.extraCharges ? trip.extraCharges : '-'}</Typography>
                                     </TableCell>
                                 </TableRow> */}
 
@@ -331,69 +334,106 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             <TableBody>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        Weight
+                                        <Typography variant="body2"> Weight</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        {trip.materialWeight} KG
+                                        <Typography variant="body2"> {trip.materialWeight} KG</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        Vehicle Model
+                                        <Typography variant="body2"> Vehicle Model</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        {trip.truckModel}
+                                        <Typography variant="body2"> {trip.truckModel}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        From
+                                        <Typography variant="body2"> From</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        {trip.pickup}
+                                        <Typography variant="body2"> {trip.pickup}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        To
+                                        <Typography variant="body2"> To</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        {trip.dropup}
+                                        <Typography variant="body2"> {trip.dropup}</Typography>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </Box>
-                <Box sx={{ mt: 3, minHeight: '300px' }}>
+                <Box sx={{ mt: 3, minHeight: '200px' }}>
                     <Grid container>
                         <Grid item xs={6}>
-                            <Box className={classes.gridBox}>Description</Box>
+                            <Box className={classes.gridBox}>
+                                <Typography>Description</Typography>
+                            </Box>
                         </Grid>
                         <Grid item xs={6}>
-                            <Box className={classes.gridBox}>Amount</Box>
+                            <Box className={classes.gridBox}>
+                                <Typography>Amount</Typography>
+                            </Box>
                         </Grid>
                     </Grid>
-                    <Grid container sx={{ height: '300px' }}>
+                    <Grid container sx={{ height: '200px' }}>
                         <Grid item xs={6}>
-                            <Box className={classes.gridInnerBox} sx={{ height: '300px' }}></Box>
+                            <Box className={classes.gridInnerBox} sx={{ height: '200px' }}>
+                                <Box sx={{ p: 1 }}>
+                                    <Grid container>
+                                        <Grid item xs={4}>
+                                            <Typography textAlign={'left'} variant="body2">
+                                                {' '}
+                                                Pickup From -{' '}
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item xs={8}>
+                                            <Typography textAlign={'left'} variant="body2">
+                                                {' '}
+                                                {trip.pickupCompany}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Box>
                         </Grid>
                         <Grid item xs={6}>
                             <Grid display="flex">
                                 <Grid xs={7}>
-                                    <Box className={classes.gridInnerBox} textAlign="left" sx={{ height: '300px' }}>
-                                        <Box sx={{ m: 1 }}>Freight</Box>
-                                        <Box sx={{ m: 1 }}>Advance</Box>
-                                        <Box sx={{ m: 1 }}>{trip.extraChargeDescription}</Box>
-                                        <Box sx={{ m: 1 }}>LR Charges</Box>
+                                    <Box className={classes.gridInnerBox} textAlign="left" sx={{ height: '200px' }}>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2"> Freight</Typography>
+                                        </Box>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2"> Advance</Typography>
+                                        </Box>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2">{trip.extraChargeDescription}</Typography>
+                                        </Box>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2">LR Charges</Typography>
+                                        </Box>
                                     </Box>
                                 </Grid>
                                 <Grid xs={5}>
-                                    <Box className={classes.gridInnerBox} sx={{ height: '300px' }}>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.totalPayment}</Box>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.paymentReceived}</Box>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.extraCharge}</Box>
-                                        <Box sx={{ m: 1 }}>Rs. {trip.lrCharges}</Box>
+                                    <Box className={classes.gridInnerBox} sx={{ height: '200px' }}>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2">Rs. {trip.totalPayment}</Typography>
+                                        </Box>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2">Rs. {trip.paymentReceived}</Typography>
+                                        </Box>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2">Rs. {trip.extraCharge}</Typography>
+                                        </Box>
+                                        <Box sx={{ m: 1, minHeight: '10px' }}>
+                                            <Typography variant="body2">Rs. {trip.lrCharges}</Typography>
+                                        </Box>
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -407,12 +447,12 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                     <Grid container>
                                         <Grid item>
                                             <Box sx={{ p: 1 }}>
-                                                <Typography variant="h5">Grand Total - </Typography>
+                                                <Typography variant="h6">Grand Total - </Typography>
                                             </Box>
                                         </Grid>
                                         <Grid item>
                                             <Box sx={{ p: 1 }}>
-                                                <Typography variant="h5">
+                                                <Typography variant="h6">
                                                     Rs. {trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived}
                                                 </Typography>
                                             </Box>
@@ -426,12 +466,12 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             <Grid container>
                                 <Grid item>
                                     <Box sx={{ p: 1 }}>
-                                        <Typography variant="h5">In Words - </Typography>
+                                        <Typography variant="h6">In Words - </Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item>
                                     <Box sx={{ p: 1 }}>
-                                        <Typography variant="h6" style={{ fontSize: '14px' }}>
+                                        <Typography variant="h6">
                                             {' '}
                                             {totalPayment && toWords.convert(totalPayment, { currency: true })}
                                         </Typography>
@@ -442,16 +482,19 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                         <Divider />
                     </Box>
                 </Box>
-                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 17 }}>
+                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 12 }}>
                     <Grid container spacing={5} display={'flex'}>
                         <Grid item alignItems="center">
                             <Typography textAlign={'center'}>
-                                {trip.length && companies.length ? (
+                                {trip && companies.length ? (
                                     companies.map((company) => company._id == trip.company && company.name)
                                 ) : (
                                     <Skeleton />
                                 )}
                             </Typography>
+                            <Box sx={{ mt: 3 }}>
+                                <Typography>Properties</Typography>
+                            </Box>
                         </Grid>
                         {/* <Grid item alignItems="center">
                             <Typography textAlign={'center'}>RECEIVED</Typography>
