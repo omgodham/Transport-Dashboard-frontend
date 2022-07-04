@@ -175,7 +175,7 @@ function TripForm({
         dropup: yup.string('Select DropUp Locaiton'),
         pickup: yup.string('Select Pickup Location'),
         // tripDate: yup.string('Select Date').required('Date is required'),
-        materialWeight: yup.string('Enter load in KG'),
+        // materialWeight: yup.string('Enter load in KG'),
         fuelCharge: yup.string('Enter disel charge'),
         // driverExtraCharge: yup.string("Enter Driver's extra charges").required('Driver extra charge is required'),
         // agent: yup.string('Enter agent name').required('Agent name is required'),
