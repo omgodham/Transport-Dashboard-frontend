@@ -25,7 +25,10 @@ import Axios from '../../axios';
 import FileBase64 from 'react-file-base64';
 import Compressor from 'compressorjs';
 import moment from 'moment';
-
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import storage from '../../firebase';
+import async from 'async';
+import { getTrip } from './helpers';
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
@@ -67,12 +70,13 @@ function TripForm({
     addingTrip,
     setAddingTrip,
     selfTrip,
-    setSelfTrip
+    setSelfTrip,
+    setAlertMessage,
+    setErrorSnack
 }) {
     const classes = useStyles();
-    const [alertMessage, setAlertMessage] = useState();
-    const [successSnack, setSuccessSnack] = useState();
-    const [errorSnack, setErrorSnack] = useState();
+    // const [alertMessage, setAlertMessage] = useState();
+    // const [errorSnack, setErrorSnack] = useState();
     const [vehicles, setVehicles] = useState([]);
     const [drivers, setDrivers] = useState([]);
     const [customers, setCustomers] = useState([]);
@@ -87,6 +91,8 @@ function TripForm({
     const [companies, setCompanies] = useState([]);
     const [companyProgress, setCompanyProgress] = useState(0);
     const [isCustomVehicle, setIsCustomVehicle] = useState();
+    const [tempSelectedImages, setTempSelectedImages] = useState([]);
+    const [previousChallanImages, setPreviousChallanImages] = useState([]);
 
     useEffect(() => {
         if (selfTrip) {
@@ -157,6 +163,17 @@ function TripForm({
                 setCompanies(response.data);
             })
             .catch((error) => console.log(error));
+
+        const fetchTrip = async () => {
+            try {
+                let tempTrip = await getTrip(trip._id);
+                setPreviousChallanImages(tempTrip.challanImages);
+            } catch (error) {
+                setAlertMessage(error.message);
+                setErrorSnack(true);
+            }
+        };
+        if (trip) return fetchTrip();
     }, [trip, selfTrip]);
 
     useEffect(() => {
@@ -220,37 +237,84 @@ function TripForm({
         },
 
         validationSchema: validationSchema,
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             setSavingTrip(true);
             let tempValues = values;
-            tempValues.tripDate = new Date(values.tripDate);
-            let tempExtraCharge = extraCharges.find((item) => item.amount == tempValues.extraCharge);
-            if (tempExtraCharge && !customExtraChargeCheck) {
-                tempValues.extraChargeDescription = tempExtraCharge.type;
-            }
-            if (trip) updateTrip(tempValues, trip._id, false);
-            else {
-                setAddingTrip(true);
-                addTrip(tempValues);
+            let tempChallanImages = previousChallanImages ? previousChallanImages : [];
+            if (tempSelectedImages.length) {
+                async.series([
+                    function (callback) {
+                        //uploading challan images to the firebase storage
+                        for (const value of tempSelectedImages) {
+                            const fileName = new Date().getTime() + value.name;
+                            const storageRef = ref(storage, `/challanImages/${tempValues.tripDate}/${fileName}`);
+                            const uploadTask = uploadBytesResumable(storageRef, value);
+                            uploadTask.on(
+                                'state_changed',
+                                (snapshot) => {
+                                    const uploaded = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                                    // setProgress(uploaded);
+                                },
+                                (error) => {
+                                    setAlertMessage(error.message);
+                                    setErrorSnack(true);
+                                    return '';
+                                },
+                                () => {
+                                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                                        tempChallanImages.push(url);
+                                    });
+                                }
+                            );
+                        }
+
+                        setTimeout(() => {
+                            callback(null, 1);
+                        }, 7000);
+                    },
+                    function (callback) {
+                        tempValues.challanImages = tempChallanImages;
+                        tempValues.tripDate = new Date(values.tripDate);
+                        let tempExtraCharge = extraCharges.find((item) => item.amount == tempValues.extraCharge);
+                        if (tempExtraCharge && !customExtraChargeCheck) {
+                            tempValues.extraChargeDescription = tempExtraCharge.type;
+                        }
+                        if (trip) updateTrip(tempValues, trip._id, false);
+                        else {
+                            setAddingTrip(true);
+                            addTrip(tempValues);
+                        }
+                        callback(null, 2);
+                    }
+                ]);
+            } else {
+                tempValues.tripDate = new Date(values.tripDate);
+                let tempExtraCharge = extraCharges.find((item) => item.amount == tempValues.extraCharge);
+                if (tempExtraCharge && !customExtraChargeCheck) {
+                    tempValues.extraChargeDescription = tempExtraCharge.type;
+                }
+                if (trip) updateTrip(tempValues, trip._id, false);
+                else {
+                    setAddingTrip(true);
+                    addTrip(tempValues);
+                }
             }
         }
     });
 
     const handleImageCompressionAndConversion = (files) => {
         let reader = new FileReader();
-        let temp = [...formik.values.challanImages];
+        let temp = formik.values.challanImages ? [...formik.values.challanImages] : [];
         for (const file of files) {
             new Compressor(file, {
-                quality: 0.6,
+                quality: 0.5,
                 success(result) {
                     reader.readAsDataURL(result);
-                    reader.onload = function () {
-                        temp.push(reader.result);
-                    };
+                    temp.push(result);
                 }
             });
         }
-        formik.setFieldValue('challanImages', temp);
+        setTempSelectedImages(temp);
     };
 
     return (
@@ -547,7 +611,7 @@ function TripForm({
                                     );
                                 })
                             ) : chargeProgress == 100 ? (
-                                <MenuItem value="none">Charges not available</MenuItem>
+                                <MenuItem value={0}>Charges not available</MenuItem>
                             ) : (
                                 <>
                                     <MenuItem value="none">

@@ -151,7 +151,6 @@ function ExtraCharges() {
                 <Box sx={{ p: 2 }}>
                     {extraCharges?.length ? (
                         extraCharges.map((extraCharge) => {
-                            console.log(extraCharge);
                             return (
                                 <Box className={classes.customerCont}>
                                     <Grid container>
