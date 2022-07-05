@@ -284,7 +284,6 @@ function AllTrips() {
                 setAlertMessage('Trip Updated successfully');
                 setSuccessSnack(true);
                 setShowBackdrop(false);
-                setShowDialog(false);
             })
             .catch((error) => {
                 setSavingTrip(false);
@@ -339,18 +338,6 @@ function AllTrips() {
             setAlertMessage('Something went wrong');
             setErrorSnack(true);
         }
-
-        // let tempTrips = tripsCopy;
-        // if (status == 'added') {
-        //     tempTrips = tempTrips.filter(function (trip) {
-        //         return trip.challanImages.length > 0;
-        //     });
-        // } else {
-        //     tempTrips = tempTrips.filter(function (trip) {
-        //         return trip.challanImages.length == 0;
-        //     });
-        // }
-        // setTrips(tempTrips);
     };
 
     const handleClick = (event) => {
@@ -625,6 +612,8 @@ function AllTrips() {
                         setAddingTrip={setAddingTrip}
                         selfTrip={selfTrip}
                         setSelfTrip={setSelfTrip}
+                        setAlertMessage={setAlertMessage}
+                        setErrorSnack={setErrorSnack}
                     />
                 </Box>
             </Dialog>
@@ -655,6 +644,8 @@ function AllTrips() {
                         // challanImages={showDetails?.challanImages}
                         setImagesOpen={setImagesOpen}
                         setShowBackdrop={setShowBackdrop}
+                        setAlertMessage={setAlertMessage}
+                        setErrorSnack={setErrorSnack}
                     />
                 </Box>
             </Dialog>

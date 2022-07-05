@@ -5,6 +5,9 @@ import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import ReactToPrint from 'react-to-print';
 import { getTrip } from './helpers';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import storage from '../../firebase';
+
 const useStyles = makeStyles((theme) => ({
     root1: {
         position: 'absolute',
@@ -20,13 +23,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function ChallanImages({ updateTrip, setImagesOpen, trip, setShowBackdrop }) {
+export default function ChallanImages({ updateTrip, setImagesOpen, trip, setShowBackdrop, setAlertMessage, setErrorSnack }) {
     const classes = useStyles();
     const [challanImages, setChallanImages] = useState([]);
     const [imagesLoaded, setImagesLoaded] = useState(false);
 
     const handleDelete = (index) => {
-        updateTrip({ challanImages: challanImages.filter((item, thisIndex) => thisIndex !== index) }, trip._id, false);
+        //deletion of file from firebase storage
+        var fileRef = ref(storage, challanImages[index]);
+        deleteObject(fileRef)
+            .then(() => {
+                //deleting url from the db only if image gets delete from the firebase storage
+                updateTrip({ challanImages: challanImages.filter((item, thisIndex) => thisIndex !== index) }, trip._id, false);
+            })
+            .catch((error) => {
+                setAlertMessage(error.message);
+                setErrorSnack(true);
+            });
     };
 
     const imagesRef = useRef();
@@ -62,9 +75,13 @@ export default function ChallanImages({ updateTrip, setImagesOpen, trip, setShow
                     : challanImages?.length === 0 && !imagesLoaded && <Typography variant="h2">There are no challans added</Typography>}
                 {imagesLoaded && <CircularProgress color="inherit" />}
             </Box>
-            <Box style={{ textAlign: 'center', paddingBottom: '20px' }}>
-                <ReactToPrint trigger={() => <Button variant="contained">Print</Button>} content={() => imagesRef.current} />
-            </Box>
+            {challanImages?.length && !imagesLoaded ? (
+                <Box style={{ textAlign: 'center', paddingBottom: '20px' }}>
+                    <ReactToPrint trigger={() => <Button variant="contained">Print</Button>} content={() => imagesRef.current} />
+                </Box>
+            ) : (
+                ''
+            )}
         </Box>
     );
 }
