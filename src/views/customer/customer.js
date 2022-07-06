@@ -24,7 +24,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CustomerForm from './CustomerForm';
-import Bill from './Bill';
+import CustomerBill from './CustomerBill';
 import CloseIcon from '@material-ui/icons/Close';
 import noData from '../../images/noData.png';
 
@@ -163,6 +163,7 @@ function Customer() {
     const [companies, setCompanies] = useState([]);
     const [companyProgress, setCompanyProgress] = useState(0);
     const [confirmDelete, setConfirmDelete] = useState();
+    const [generatedBill, setGeneratedBill] = useState();
 
     const getAllCustomers = () => {
         Axios.get('/customer/get-all-customers', {
@@ -215,12 +216,40 @@ function Customer() {
     const generateBill = (startDate, endDate, company) => {
         Axios.post(`/trip/get-trip-by-customer/${activeCust._id}`, { startDate, endDate, company })
             .then((response) => {
-                setTrips(response.data);
-                setBillBtnLoading(false);
-                setShowBill(true);
-                setAskDate(false);
+                if (response.data.length) {
+                    let tempTrips = [];
+                    response.data.map((trip) => tempTrips.push(trip._id));
+                    let tempCompany = companies.find((company) => company._id == response.data[0].company);
+                    console.log(response.data);
+                    console.log(companies);
+                    let data = {
+                        startDate: startDate,
+                        endDate: endDate,
+                        trips: tempTrips,
+                        customer: activeCust._id,
+                        company: tempCompany._id
+                    };
+
+                    Axios.post('/bill/generate-bill', { data }).then((resData) => {
+                        setBillBtnLoading(false);
+                        setAskDate(false);
+                        setAlertMsg('Bill generated check it in bill tab');
+                        setSuccessSnack(true);
+                    });
+                } else {
+                    setBillBtnLoading(false);
+                    setAskDate(false);
+                    setAlertMsg('No trips availble in selected date range');
+                    setErrorSnack(true);
+                }
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                setBillBtnLoading(false);
+                setAskDate(false);
+                setAlertMsg('Something went wrong');
+                // setAlertMsg(error.message);
+                setErrorSnack(true);
+            });
     };
 
     const validationSchema = yup.object({
@@ -251,7 +280,7 @@ function Customer() {
         <div className={classes.root}>
             <Box>
                 <Typography textAlign={'center'} variant="h2">
-                    CUSOTMERS
+                    CUSTOMERS
                 </Typography>
                 <Box className={classes.btnCont}>
                     <Button
@@ -462,6 +491,18 @@ function Customer() {
                                         helperText={formik.touched.endDate && formik.errors.endDate}
                                     />
                                 </Grid>
+                                {/* <Grid item xs={6}>
+                                    <TextField
+                                        fullWidth
+                                        id="billNo"
+                                        name="billNo"
+                                        label="Bill Number"
+                                        value={formik.values.billNo}
+                                        onChange={formik.handleChange}
+                                        error={formik.touched.billNo && Boolean(formik.errors.billNo)}
+                                        helperText={formik.touched.billNo && formik.errors.billNo}
+                                    />
+                                </Grid> */}
                             </Grid>
 
                             <Box className={classes.wrapperLoading}>
@@ -473,7 +514,7 @@ function Customer() {
                                     color="secondary"
                                     variant="contained"
                                 >
-                                    SHOW BILL
+                                    GENERATE BILL
                                 </Button>
                                 {billBtnLoading && <CircularProgress size={24} className={classes.buttonProgress} />}
                             </Box>
@@ -483,7 +524,7 @@ function Customer() {
             </Dialog>
 
             <Dialog maxWidth="lg" open={showBill}>
-                <Bill trips={trips} setAlertMsg={setAlertMsg} setShowBill={setShowBill} setErrorSnack={setErrorSnack} />
+                <CustomerBill trips={trips} setAlertMsg={setAlertMsg} setShowBill={setShowBill} setErrorSnack={setErrorSnack} />
             </Dialog>
 
             <Snackbar open={successSnack} autoHideDuration={4000} onClose={() => setSuccessSnack(false)}>
