@@ -511,7 +511,7 @@ function AllTrips() {
                         .sort(function compare(a, b) {
                             var dateA = new Date(a.tripDate);
                             var dateB = new Date(b.tripDate);
-                            return dateA - dateB;
+                            return dateB - dateA;
                         })
                         .map((trip) =>
                             trip._id != updatingTrip ? (

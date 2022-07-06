@@ -67,6 +67,14 @@ export const utilities = {
             url: '/company',
             icon: icons['StoreIcon'],
             breadcrumbs: false
+        },
+        {
+            id: 'bill',
+            title: 'Bill',
+            type: 'item',
+            url: '/bill',
+            icon: icons['StoreIcon'],
+            breadcrumbs: false
         }
     ]
 };
