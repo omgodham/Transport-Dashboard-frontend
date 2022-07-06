@@ -1,21 +1,7 @@
-import {
-    Alert,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Divider,
-    Grid,
-    Snackbar,
-    TextField,
-    Typography
-} from '@material-ui/core';
+import { Box, Button, Dialog, DialogContent, DialogTitle, Divider, Grid, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React, { useState } from 'react';
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import * as yup from 'yup';
 import Axios from '../../axios';
 import PaymentDetails from './PaymentDetails';

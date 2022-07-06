@@ -131,14 +131,12 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
         Axios.get('/company/get-all-companies')
             .then((response) => {
                 setCompanies(response.data);
-                console.log(response);
             })
             .catch((error) => console.log(error));
     }, []);
 
     useEffect(() => {
         setTotalPayment(trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived);
-        console.log(trip);
     }, [trip]);
 
     return (

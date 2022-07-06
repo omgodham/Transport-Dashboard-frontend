@@ -66,11 +66,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     customerCont: {
-        // padding: '10px 20px',
-        // margin: '20px auto',
-        // border: '1px solid grey',
-        // borderRadius: '10px'
-        // height: '60px',
         margin: '15px auto',
         padding: '15px 20px',
         display: 'flex',
@@ -99,12 +94,7 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         color: '#9d0208'
     },
-    addBtn: {
-        // backgroundColor: theme.palette.secondary.dark,
-        // '&:hover': {
-        //     backgroundColor: theme.palette.secondary[800]
-        // }
-    },
+    addBtn: {},
     closeIcon: {
         position: 'absolute',
         top: '10px',
@@ -153,10 +143,8 @@ function Customer() {
     const [trips, setTrips] = useState();
     const [showBill, setShowBill] = useState();
     const d = new Date();
-    // const [endDate, setEndDate] = useState(new Date());
     const [tempEndDate, setTempEndDate] = useState(new Date());
     d.setMonth(d.getMonth() - 1);
-    // const [startDate, setStartDate] = useState(d);
     const [askDate, setAskDate] = useState();
     const [billBtnLoading, setBillBtnLoading] = useState();
     const [progress, setProgress] = useState(0);

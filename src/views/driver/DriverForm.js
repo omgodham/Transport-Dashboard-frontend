@@ -1,31 +1,13 @@
-import {
-    Alert,
-    Box,
-    Button,
-    CircularProgress,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Divider,
-    Grid,
-    InputAdornment,
-    Snackbar,
-    TextField,
-    Typography
-} from '@material-ui/core';
+import { Box, Button, CircularProgress, Dialog, Divider, Grid, InputAdornment, TextField, Typography } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/styles';
-import React, { useState } from 'react';
+import Compressor from 'compressorjs';
 import { useFormik } from 'formik';
+import { useState } from 'react';
 import * as yup from 'yup';
 import Axios from '../../axios';
-import CloseIcon from '@material-ui/icons/Close';
 import SalaryDetails from './SalaryDetails';
-import Compressor from 'compressorjs';
-import { Link } from 'react-router-dom';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CreateIcon from '@material-ui/icons/Create';
 
 const useStyles = makeStyles((theme) => ({
     root: {

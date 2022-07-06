@@ -3,31 +3,29 @@ import {
     Button,
     Divider,
     Grid,
-    Typography,
-    TableCell,
-    TableRow,
-    TableHead,
+    Skeleton,
     Table,
-    TableContainer,
     TableBody,
-    Paper,
-    Skeleton
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import PrintIcon from '@material-ui/icons/Print';
 import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useRef, useState } from 'react';
+import moment from 'moment';
+import { useEffect, useRef, useState } from 'react';
 import ReactToPrint from 'react-to-print';
+import { ToWords } from 'to-words';
 import Axios from '../../axios';
 import logo from '../../images/logo.png';
-import PrintIcon from '@material-ui/icons/Print';
-import CloseIcon from '@material-ui/icons/Close';
-import { ToWords } from 'to-words';
-import moment from 'moment';
 import noData from '../../images/noData.png';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         padding: '10px',
-        // border: '1px solid black',
         margin: '20px',
         minWidth: '400px',
         minHeight: '400px',
@@ -38,16 +36,10 @@ const useStyles = makeStyles((theme) => ({
     trip: {
         padding: '5px',
         border: '1px solid black'
-        // minWidth: '600px    '
     },
     tripItem: {
-        // display: 'flex',
-        // width: 'fit-content',
         padding: '7px',
         border: '1px solid black'
-        // flexDirection: 'column'
-        // margin: '0 5px',
-        // borderRight: '1px solid black'
     },
     tableContainer: {
         border: '1px solid black'

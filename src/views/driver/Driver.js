@@ -5,31 +5,26 @@ import {
     Button,
     CircularProgress,
     Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
     Divider,
     Grid,
-    InputAdornment,
     Popover,
     Skeleton,
     Snackbar,
     TextField,
     Typography
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Axios from '../../axios';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DriverForm from './DriverForm';
-import CreateIcon from '@material-ui/icons/Create';
-import DriverTrips from './DriverTrips';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
 import CloseIcon from '@material-ui/icons/Close';
+import CreateIcon from '@material-ui/icons/Create';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from '@material-ui/styles';
+import { useFormik } from 'formik';
+import { useEffect, useState } from 'react';
+import * as yup from 'yup';
+import Axios from '../../axios';
 import noData from '../../images/noData.png';
+import DriverForm from './DriverForm';
+import DriverTrips from './DriverTrips';
 
 const useStyles = makeStyles((theme) => ({
     root: {
