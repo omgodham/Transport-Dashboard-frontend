@@ -508,8 +508,11 @@ function AllTrips() {
                 )}
                 {trips.length ? (
                     trips
-                        .slice(0)
-                        .reverse()
+                        .sort(function compare(a, b) {
+                            var dateA = new Date(a.tripDate);
+                            var dateB = new Date(b.tripDate);
+                            return dateA - dateB;
+                        })
                         .map((trip) =>
                             trip._id != updatingTrip ? (
                                 <>

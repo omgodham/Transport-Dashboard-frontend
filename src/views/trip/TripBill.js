@@ -386,13 +386,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             <Box className={classes.gridInnerBox} sx={{ height: '200px' }}>
                                 <Box sx={{ p: 1 }}>
                                     <Grid container>
-                                        <Grid item xs={4}>
-                                            <Typography textAlign={'left'} variant="body2">
-                                                {' '}
-                                                Pickup From -{' '}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={8}>
+                                        <Grid item>
                                             <Typography textAlign={'left'} variant="body2">
                                                 {' '}
                                                 {trip.pickupCompany}

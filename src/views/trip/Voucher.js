@@ -333,13 +333,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
                             <Box className={classes.gridInnerBox} sx={{ height: '200px' }}>
                                 <Box sx={{ p: 1 }}>
                                     <Grid container>
-                                        <Grid item xs={4}>
-                                            <Typography variant="body2" textAlign={'left'}>
-                                                {' '}
-                                                Pickup From -{' '}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={8}>
+                                        <Grid item>
                                             <Typography variant="body2" textAlign={'left'}>
                                                 {' '}
                                                 {trip.pickupCompany}
