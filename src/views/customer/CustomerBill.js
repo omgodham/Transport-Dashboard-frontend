@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
+function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
     const classes = useStyles();
     const componentRef = useRef();
     const [vehicles, setVehicles] = useState([]);
@@ -83,9 +83,11 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
     const [customers, setCustomers] = useState([]);
     const [totalEarning, setTotalEarning] = useState();
     const [totalEarningWithComma, setTotalEarningWithComma] = useState();
-    const company = trips[0]?.company;
+    // const company = trips[0]?.company;
     const toWords = new ToWords();
     const [companies, setCompanies] = useState([]);
+    const [trips, setTrips] = useState([]);
+    const [tripProgress, setTripsProgress] = useState(0);
 
     useEffect(() => {
         if (trips?.length) {
@@ -141,6 +143,22 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
         }
     }, [trips]);
 
+    useEffect(() => {
+        Axios.post(
+            '/trip/get-trips-by-ids',
+            { trips: bill.trips },
+            {
+                onDownloadProgress: (progressEvent) => {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setTripsProgress(percentCompleted);
+                }
+            }
+        ).then((response) => {
+            console.log(response);
+            setTrips(response.data);
+        });
+    }, []);
+
     return (
         <div>
             <div className={classes.root}>
@@ -192,37 +210,45 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                         </Grid>
                                     </Grid>
                                     <Divider sx={{ my: 2, height: '2px', backgroundColor: 'black' }}></Divider>
+
                                     <Box display={'flex'} justifyContent="space-between">
-                                        <Box>
-                                            <Typography variant="h5" fontSize={'18px'}>
-                                                Bill To -{' '}
-                                                {trips.length && customers.length ? (
-                                                    customers.map((customer) => customer._id == trips[0].customer && customer.name)
-                                                ) : (
-                                                    <Skeleton />
-                                                )}
-                                            </Typography>
-                                            <Typography>
-                                                {trips.length && customers.length ? (
-                                                    customers.map(
-                                                        (customer) => customer._id == trips[0].customer && customer.address.addressLine1
-                                                    )
-                                                ) : (
-                                                    <Skeleton />
-                                                )}
-                                            </Typography>
-                                            <Typography>
-                                                GST No. -{' '}
-                                                {trips.length && customers.length ? (
-                                                    customers.map((customer) => customer._id == trips[0].customer && customer.gstNo)
-                                                ) : (
-                                                    <Skeleton />
-                                                )}
-                                            </Typography>
-                                        </Box>
-                                        <Box>
-                                            <Typography variant="h5">Date : {moment(new Date()).format('DD-MM-YYYY')}</Typography>
-                                        </Box>
+                                        <Grid container>
+                                            <Grid item xs={7}>
+                                                <Typography sx={{ mb: 1 }} variant="h6" fontSize={'15px'}>
+                                                    Bill No. - {bill.billNo}
+                                                </Typography>
+                                                <Typography variant="h6" fontSize={'15px'}>
+                                                    Bill To - M/S{'  '}
+                                                    {trips.length && customers.length ? (
+                                                        customers.map((customer) => customer._id == trips[0].customer && customer.name)
+                                                    ) : (
+                                                        <Skeleton />
+                                                    )}
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    {trips.length && customers.length ? (
+                                                        customers.map(
+                                                            (customer) => customer._id == trips[0].customer && customer.address.addressLine1
+                                                        )
+                                                    ) : (
+                                                        <Skeleton />
+                                                    )}
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    GST No. -{' '}
+                                                    {trips.length && customers.length ? (
+                                                        customers.map((customer) => customer._id == trips[0].customer && customer.gstNo)
+                                                    ) : (
+                                                        <Skeleton />
+                                                    )}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={5}>
+                                                <Typography textAlign={'right'} variant="h5">
+                                                    Date : {moment(new Date(bill.createdAt)).format('DD-MM-YYYY')}
+                                                </Typography>
+                                            </Grid>
+                                        </Grid>
                                     </Box>
                                 </Grid>
                                 <Divider sx={{ my: 1, height: '10px' }}></Divider>
@@ -233,11 +259,12 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                 <TableRow>
                                                     <TableCell className={classes.tripItem}>SR</TableCell>
                                                     <TableCell className={classes.tripItem}>Date</TableCell>
+                                                    <TableCell className={classes.tripItem}>Bill No.</TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
                                                         Vehicle No.
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        Vehicle Model
+                                                        V. Model
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
                                                         LR No.
@@ -268,43 +295,65 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                                                 alignItems="right"
                                                 justifyContent="right"
                                             >
-                                                {trips.map((trip, index) => (
-                                                    <TableRow className={classes.tableRow} key={trip._id}>
-                                                        <TableCell className={classes.tripItem}>{index + 1}</TableCell>
-                                                        <TableCell className={classes.tripItem} component="th" scope="row">
-                                                            {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            {trip.vehicle
-                                                                ? vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)
-                                                                : trip.vehicleNo}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.model)}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            {trip.lrNo}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            {trip.challanNo}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            {trip.pickup}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            {trip.dropup}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            Rs. {trip.totalPayment}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="right">
-                                                            RS. {trip.lrCharges}
-                                                        </TableCell>
-                                                        <TableCell className={classes.tripItem} align="center">
-                                                            {trip.extraCharges ? trip.extraCharges : '-'}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                {trips
+                                                    .sort(function compare(a, b) {
+                                                        var dateA = new Date(a.tripDate);
+                                                        var dateB = new Date(b.tripDate);
+                                                        return dateA - dateB;
+                                                    })
+                                                    .map((trip, index) => (
+                                                        <TableRow className={classes.tableRow} key={trip._id}>
+                                                            <TableCell className={classes.tripItem}>{index + 1}</TableCell>
+                                                            <TableCell className={classes.tripItem} component="th" scope="row">
+                                                                <Typography variant="body2">
+                                                                    {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} component="th" scope="row">
+                                                                <Typography variant="body2">{trip.billNo}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">
+                                                                    {' '}
+                                                                    {trip.vehicle
+                                                                        ? vehicles.map(
+                                                                              (vehicle) => vehicle._id == trip.vehicle && vehicle.number
+                                                                          )
+                                                                        : trip.vehicleNo}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">
+                                                                    {vehicles.map(
+                                                                        (vehicle) => vehicle._id == trip.vehicle && vehicle.model
+                                                                    )}
+                                                                </Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">{trip.lrNo}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">{trip.challanNo}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">{trip.pickup}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">{trip.dropup}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">Rs. {trip.totalPayment}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="right">
+                                                                <Typography variant="body2">RS. {trip.lrCharges}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} align="center">
+                                                                <Typography variant="body2">
+                                                                    {trip.extraCharges ? trip.extraCharges : '-'}
+                                                                </Typography>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
@@ -395,15 +444,17 @@ function Bill({ trips, setAlertMessage, setErrorSnack, setShowBill }) {
                             />
                         </Box>
                     </div>
-                ) : (
+                ) : tripProgress == 100 ? (
                     <Box sx={{ m: 'auto' }}>
                         <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
                         <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
                     </Box>
+                ) : (
+                    <Box>Loading...</Box>
                 )}
             </div>
         </div>
     );
 }
 
-export default Bill;
+export default CustomerBill;
