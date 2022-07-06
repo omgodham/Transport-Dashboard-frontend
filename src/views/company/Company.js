@@ -1,25 +1,9 @@
-import {
-    Alert,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Divider,
-    Grid,
-    InputAdornment,
-    Skeleton,
-    Snackbar,
-    TextField,
-    Typography
-} from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import React, { useEffect, useState } from 'react';
+import { Alert, Box, Button, Dialog, Divider, Grid, Skeleton, Snackbar, Typography } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import Axios from '../../axios';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from '@material-ui/styles';
+import { useEffect, useState } from 'react';
+import Axios from '../../axios';
 import noData from '../../images/noData.png';
 import CompanyForm from './CompanyForm';
 
@@ -71,9 +55,6 @@ const useStyles = makeStyles((theme) => ({
     customerItems: {
         display: 'flex',
         alignItems: 'center'
-
-        // padding: '10px'
-        // justifyContent: 'center'
     },
     icons: {
         width: '24px',
