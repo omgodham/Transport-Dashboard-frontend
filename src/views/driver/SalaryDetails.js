@@ -7,8 +7,8 @@ import moment from 'moment';
 const useStyles = makeStyles((theme) => ({
     tripItem: {
         padding: '7px',
-        border: '1px solid black'
-        // fontSize: '15px'
+        border: '1px solid black',
+        fontSize: '15px'
     }
 }));
 function SalaryDetails({ activeDriver, addSalaryDetailsCheck, showSalaryDetailsCheck, setTempSalaryDetails, detailFound, setDetailFound }) {
