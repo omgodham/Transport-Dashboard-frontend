@@ -1,4 +1,22 @@
-import { Alert, Avatar, Box, Button, Dialog, Divider, Grid, Skeleton, Snackbar, TextField, Typography } from '@material-ui/core';
+import {
+    Alert,
+    Avatar,
+    Box,
+    Button,
+    Dialog,
+    Divider,
+    Grid,
+    Skeleton,
+    Snackbar,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
+} from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { makeStyles } from '@material-ui/styles';
 import { useFormik } from 'formik';
@@ -9,6 +27,7 @@ import VehicleForm from './VehicleForm';
 import CloseIcon from '@material-ui/icons/Close';
 import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined';
 import noData from '../../images/noData.png';
+import moment from 'moment';
 const useStyles = makeStyles((theme) => ({
     root: {
         position: 'relative',
@@ -99,6 +118,11 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
         position: 'relative'
+    },
+    tripItem: {
+        padding: '7px',
+        border: '1px solid black',
+        fontSize: '15px'
     }
 }));
 
@@ -409,7 +433,6 @@ function Vehicle() {
                                             </Grid>
                                         </>
                                     )}
-
                                     <Grid item xs={12} className={classes.formItems}>
                                         <label for="previousMaintenance">Show previous maintanances</label>
                                         <input
@@ -419,55 +442,49 @@ function Vehicle() {
                                             onChange={(e) => setIsPreviousMaintenance(e.target.checked)}
                                         />
                                     </Grid>
+
                                     {isPreviousMaintenance && (
                                         <>
                                             {currentVehicle.maintenance.length ? (
-                                                currentVehicle.maintenance.map((item) => (
-                                                    <>
-                                                        <Grid item xs={12} className={classes.formItems}>
-                                                            <TextField
-                                                                fullWidth
-                                                                id="maintenanceAmount"
-                                                                name="maintenanceAmount"
-                                                                label="Maintenance Amount"
-                                                                value={item.amount}
-                                                                disabled
-                                                                style={{ marginTop: '20px' }}
-                                                            />
-                                                        </Grid>
-                                                        <Grid item xs={12} className={classes.formItems}>
-                                                            <TextField
-                                                                fullWidth
-                                                                multiline
-                                                                rows={2}
-                                                                maxRows={4}
-                                                                id="mintanceDescription"
-                                                                name="mintanceDescription"
-                                                                label="Maintenance Vehicle"
-                                                                value={item.description}
-                                                                disabled
-                                                            />
-                                                        </Grid>
-                                                        {item.maintenanceDate && (
-                                                            <Grid item xs={12}>
-                                                                <TextField
-                                                                    id="maintenanceDate"
-                                                                    label="Date of maintenance (MM-DD-YYYY)"
-                                                                    name="maintenanceDate"
-                                                                    type="date"
-                                                                    fullWidth
-                                                                    // defaultValue="00-00-0000"
-                                                                    value={item.maintenanceDate}
-                                                                    variant="outlined"
-                                                                    InputLabelProps={{
-                                                                        shrink: true
-                                                                    }}
-                                                                    disabled
-                                                                />
-                                                            </Grid>
-                                                        )}
-                                                    </>
-                                                ))
+                                                <Grid item xs={12}>
+                                                    <TableContainer component={Box} className={classes.tableContainer}>
+                                                        <Table className={classes.table} aria-label="simple table">
+                                                            <TableHead className={classes.tableHead}>
+                                                                <TableRow>
+                                                                    <TableCell align="left" className={classes.tripItem}>
+                                                                        Date (DD-MM-YYYY)
+                                                                    </TableCell>
+                                                                    <TableCell align="right" className={classes.tripItem}>
+                                                                        Description
+                                                                    </TableCell>
+                                                                    <TableCell align="right" className={classes.tripItem}>
+                                                                        Amount
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            </TableHead>
+                                                            <TableBody
+                                                                className={classes.tableBody}
+                                                                display="flex"
+                                                                alignItems="right"
+                                                                justifyContent="right"
+                                                            >
+                                                                {currentVehicle.maintenance.map((item, index) => (
+                                                                    <TableRow className={classes.tableRow} key={index}>
+                                                                        <TableCell className={classes.tripItem} component="th" scope="row">
+                                                                            {moment(new Date(item.maintenanceDate)).format('DD-MM-YYYY')}
+                                                                        </TableCell>
+                                                                        <TableCell className={classes.tripItem} align="right">
+                                                                            {item.description}
+                                                                        </TableCell>
+                                                                        <TableCell className={classes.tripItem} align="right">
+                                                                            {item.amount}
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </TableContainer>
+                                                </Grid>
                                             ) : (
                                                 <Grid item xs={12} className={classes.formItems}>
                                                     <Typography variant="text">No previous data available</Typography>
@@ -475,7 +492,6 @@ function Vehicle() {
                                             )}
                                         </>
                                     )}
-
                                     <Box className={classes.subBtnCont}>
                                         <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
                                             Update
