@@ -62,7 +62,7 @@ const Dashboard = () => {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item xs={12}>
+            {/* <Grid item xs={12}>
                 <Grid container spacing={gridSpacing}>
                     <Grid item xs={12} md={8}>
                         <TotalGrowthBarChart isLoading={isLoading} />
@@ -71,7 +71,7 @@ const Dashboard = () => {
                         <PopularCard isLoading={isLoading} />
                     </Grid>
                 </Grid>
-            </Grid>
+            </Grid> */}
             <Snackbar open={successSnack} autoHideDuration={3000} onClose={() => setSuccessSnack(false)}>
                 <Alert onClose={() => setSuccessSnack(false)} severity="success" variant="filled">
                     {alertMessage}
