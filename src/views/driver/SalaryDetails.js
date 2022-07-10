@@ -34,6 +34,7 @@ function SalaryDetails({ activeDriver, addSalaryDetailsCheck, showSalaryDetailsC
         let temp = activeDriver.salaryDetails.filter((item) => item.monthYear === monthYear);
         if (monthYear && addSalaryDetailsCheck) {
             let res = await getSalaryDetailsOfTheDriver({ month: monthYear }, activeDriver._id);
+            console.log('BBB', res);
             try {
                 if (res.found) {
                     setSalaryDetails({
