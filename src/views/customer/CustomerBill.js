@@ -350,7 +350,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                             <TableCell className={classes.tripItem} align="center">
                                                                 <Typography variant="body2">
                                                                     {trip.extraCharge
-                                                                        ? trip.extraChargeDescription - `Rs. - ${trip.extraCharge}`
+                                                                        ? `${trip.extraChargeDescription} - Rs.${trip.extraCharge}`
                                                                         : '-'}
                                                                 </Typography>
                                                             </TableCell>
@@ -416,21 +416,19 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                     </Box>
                                     <Divider />
                                 </Box>
-                                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 17 }}>
-                                    <Grid container spacing={5} display={'flex'}>
-                                        <Grid item alignItems="center">
-                                            <Typography textAlign={'center'}>
-                                                {trips.length && companies.length ? (
-                                                    companies.map((company) => company._id == trips[0].company && company.name)
-                                                ) : (
-                                                    <Skeleton />
-                                                )}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item alignItems="center">
-                                            <Typography textAlign={'center'}>RECEIVED</Typography>
-                                        </Grid>
-                                    </Grid>
+                                <Box display={'flex'} alignItems="right" justifyContent={'space-between'} sx={{ ml: 'auto', mt: 17 }}>
+                                    <Box item alignItems="left">
+                                        <Typography textAlign={'center'}>RECEIVED</Typography>
+                                    </Box>
+                                    <Box item alignItems="left">
+                                        <Typography textAlign={'center'}>
+                                            {trips.length && companies.length ? (
+                                                companies.map((company) => company._id == trips[0].company && company.name)
+                                            ) : (
+                                                <Skeleton />
+                                            )}
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             </Box>
                         </div>
