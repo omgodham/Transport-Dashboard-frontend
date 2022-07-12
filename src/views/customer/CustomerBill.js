@@ -93,7 +93,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
         if (trips?.length) {
             let tempEarning = 0;
             trips.map((trip) => {
-                tempEarning += (trip.totalPayment ? trip.totalPayment : 0) + (trip.extraCharges ? trip.extraCharges : 0) + trip.lrCharges;
+                tempEarning += (trip.totalPayment ? trip.totalPayment : 0) + (trip.extraCharge ? trip.extraCharge : 0) + trip.lrCharges;
             });
             setTotalEarning(tempEarning);
 
@@ -332,7 +332,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                             <TableCell className={classes.tripItem} align="right">
                                                                 <Typography variant="body2">{trip.lrNo}</Typography>
                                                             </TableCell>
-                                                            <TableCell className={classes.tripItem} align="right">
+                                                            <TableCell className={classes.tripItem} style={{ maxWidth: '' }} align="right">
                                                                 <Typography variant="body2">{trip.challanNo}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
@@ -349,7 +349,9 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="center">
                                                                 <Typography variant="body2">
-                                                                    {trip.extraCharges ? trip.extraCharges : '-'}
+                                                                    {trip.extraCharge
+                                                                        ? trip.extraChargeDescription - `Rs. - ${trip.extraCharge}`
+                                                                        : '-'}
                                                                 </Typography>
                                                             </TableCell>
                                                         </TableRow>
