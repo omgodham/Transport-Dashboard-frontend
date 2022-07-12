@@ -214,10 +214,10 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                     <Box display={'flex'} justifyContent="space-between">
                                         <Grid container>
                                             <Grid item xs={7}>
-                                                <Typography sx={{ mb: 1 }} variant="h6" fontSize={'15px'}>
+                                                <Typography sx={{ mb: 1 }} variant="h6">
                                                     Bill No. - {bill.billNo}
                                                 </Typography>
-                                                <Typography variant="h6" fontSize={'15px'}>
+                                                <Typography variant="h6">
                                                     Bill To - M/S{'  '}
                                                     {trips.length && customers.length ? (
                                                         customers.map((customer) => customer._id == trips[0].customer && customer.name)
@@ -225,7 +225,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography variant="body2">
+                                                <Typography variant="body2" fontSize={10}>
                                                     {trips.length && customers.length ? (
                                                         customers.map(
                                                             (customer) => customer._id == trips[0].customer && customer.address.addressLine1
@@ -234,7 +234,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography variant="body2">
+                                                <Typography variant="body2" fontSize={10}>
                                                     GST No. -{' '}
                                                     {trips.length && customers.length ? (
                                                         customers.map((customer) => customer._id == trips[0].customer && customer.gstNo)
@@ -365,7 +365,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                         <Grid container>
                                             <Grid item>
                                                 <Box sx={{ p: 1 }}>
-                                                    <Typography variant="h5">Total Trips -</Typography>
+                                                    <Typography variant="h6">Total Trips -</Typography>
                                                 </Box>
                                             </Grid>
                                             <Grid item>
@@ -384,12 +384,12 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                 <Grid container>
                                                     <Grid item>
                                                         <Box sx={{ p: 1 }}>
-                                                            <Typography variant="h5">Grand Total - </Typography>
+                                                            <Typography variant="h6">Grand Total - </Typography>
                                                         </Box>
                                                     </Grid>
                                                     <Grid item>
                                                         <Box sx={{ p: 1 }}>
-                                                            <Typography variant="h5">Rs. {totalEarningWithComma}</Typography>
+                                                            <Typography variant="h6">Rs. {totalEarningWithComma}</Typography>
                                                         </Box>
                                                     </Grid>
                                                 </Grid>
@@ -401,12 +401,12 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                         <Grid container>
                                             <Grid item>
                                                 <Box sx={{ p: 1 }}>
-                                                    <Typography variant="h5">In Words - </Typography>
+                                                    <Typography variant="h6">In Words - </Typography>
                                                 </Box>
                                             </Grid>
                                             <Grid item>
                                                 <Box sx={{ p: 1 }}>
-                                                    <Typography variant="h6" style={{ fontSize: '14px' }}>
+                                                    <Typography variant="h6">
                                                         {' '}
                                                         {totalEarning && toWords.convert(totalEarning, { currency: true })}
                                                     </Typography>
