@@ -350,7 +350,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                             <TableCell className={classes.tripItem} align="center">
                                                                 <Typography variant="body2">
                                                                     {trip.extraCharge
-                                                                        ? trip.extraChargeDescription - `Rs. - ${trip.extraCharge}`
+                                                                        ? `${trip.extraChargeDescription} - Rs.${trip.extraCharge}`
                                                                         : '-'}
                                                                 </Typography>
                                                             </TableCell>
