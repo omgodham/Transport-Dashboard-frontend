@@ -16,6 +16,7 @@ import {
     Menu,
     MenuItem,
     OutlinedInput,
+    Select,
     Skeleton,
     Snackbar,
     TextField,
@@ -194,6 +195,9 @@ function AllTrips() {
     const [selfTrip, setSelfTrip] = useState();
     const [showDeleteWarn, setShowDeleteWarn] = useState();
     const [companies, setCompanies] = useState();
+    const [propagation, setPropagation] = useState();
+    const [flag, setFlag] = useState();
+    const [open, setOpen] = useState();
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -246,8 +250,9 @@ function AllTrips() {
     };
 
     useEffect(() => {
+        setOpen(false);
         getAllTrips();
-    }, [startDate, endDate]);
+    }, [endDate]);
 
     const handleClose = () => {
         setShowDialog(false);
@@ -404,24 +409,52 @@ function AllTrips() {
                     <Grid spacing={1} container>
                         <Grid item xs={6}>
                             <Box className={classes.dateBox}>
-                                <TextField label="Select Date Range" select fullWidth>
-                                    <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
-                                        Today
-                                    </MenuItem>
-                                    <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
-                                        Yesterday
-                                    </MenuItem>
-                                    <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
-                                        Last 7 days
-                                    </MenuItem>
-                                    <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
-                                        Last 30 days
-                                    </MenuItem>
-                                    <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
-                                        Last month
-                                    </MenuItem>
-                                    {showDateSelect && (
-                                        <Box sx={{ m: 2 }} alignItems="center" justifyContent={'center'} display="flex">
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel id="demo-controlled-open-select-label">Select Date Range</InputLabel>
+                                    <Select
+                                        labelId="demo-controlled-open-select-label"
+                                        id="demo-controlled-open-select"
+                                        label="Select Date Range"
+                                        open={open}
+                                        onOpen={() => setOpen(true)}
+                                        fullWidth
+                                    >
+                                        <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
+                                            Today
+                                        </MenuItem>
+                                        <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
+                                            Yesterday
+                                        </MenuItem>
+                                        <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
+                                            Last 7 days
+                                        </MenuItem>
+                                        <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
+                                            Last 30 days
+                                        </MenuItem>
+                                        <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
+                                            Last month
+                                        </MenuItem>
+                                        <Divider />
+                                        <Box
+                                            sx={{ mx: 2 }}
+                                            alignItems="center"
+                                            justifyContent={'left'}
+                                            display="flex"
+                                            onClickCapture={(e) => {
+                                                !flag && e.stopPropagation();
+                                            }}
+                                        >
+                                            <Typography>Custom</Typography>
+                                        </Box>
+                                        <Box
+                                            sx={{ m: 2 }}
+                                            alignItems="center"
+                                            justifyContent={'center'}
+                                            display="flex"
+                                            onClickCapture={(e) => {
+                                                !flag && e.stopPropagation();
+                                            }}
+                                        >
                                             <TextField
                                                 id="date"
                                                 label="Start Date"
@@ -450,17 +483,9 @@ function AllTrips() {
                                                 size="small"
                                                 style={{ marginRight: ' 10px' }}
                                             />
-                                            <Button
-                                                className={classes.addBtn}
-                                                size="small"
-                                                variant="contained"
-                                                onClick={() => getAllTrips()}
-                                            >
-                                                Apply
-                                            </Button>
                                         </Box>
-                                    )}
-                                </TextField>
+                                    </Select>
+                                </FormControl>
                             </Box>
                         </Grid>
                         <Grid item xs={6}>
