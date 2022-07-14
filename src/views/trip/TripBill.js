@@ -208,14 +208,14 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                         <Skeleton />
                                     )}
                                 </Typography>
-                                <Typography variant="body1">
+                                <Typography variant="body3">
                                     {customers.length ? (
                                         customers.map((customer) => customer._id == trip.customer && customer.address.addressLine1)
                                     ) : (
                                         <Skeleton />
                                     )}
                                 </Typography>
-                                <Typography variant="body1">
+                                <Typography variant="body3">
                                     GST No -
                                     {customers.length ? (
                                         customers.map((customer) => customer._id == trip.customer && customer.gstNo)
@@ -234,10 +234,10 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             <TableBody className={classes.tableBody} display="flex" alignItems="right" justifyContent="right">
                                 <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> Vehicle No.</Typography>
+                                        <Typography variant="body3"> Vehicle No.</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant="body1">
+                                        <Typography variant="body3">
                                             {' '}
                                             {trip.vehicle
                                                 ? vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.number)
@@ -246,73 +246,73 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                     </TableCell>
                                     <TableCell className={classes.tripItem}>
                                         {' '}
-                                        <Typography variant="body1"> Trip Date</Typography>
+                                        <Typography variant="body3"> Trip Date</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} component="th" scope="row" align="center">
-                                        <Typography variant="body1"> {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}</Typography>
+                                        <Typography variant="body3"> {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant='body1'> Freight</Typography>
+                                        <Typography variant='body3'> Freight</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant='body1'> Rs. {trip.totalPayment}</Typography>
+                                        <Typography variant='body3'> Rs. {trip.totalPayment}</Typography>
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant='body1'> Extra Charges</Typography>
+                                        <Typography variant='body3'> Extra Charges</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant='body1'> Rs. {trip.extraCharges ? trip.extraCharges : '-'}</Typography>
+                                        <Typography variant='body3'> Rs. {trip.extraCharges ? trip.extraCharges : '-'}</Typography>
                                     </TableCell>
                                 </TableRow> */}
 
                                 <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> Challan</Typography>
+                                        <Typography variant="body3"> Challan</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant="body1"> {trip.challanNo}</Typography>
+                                        <Typography variant="body3"> {trip.challanNo}</Typography>
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> LR Number</Typography>
+                                        <Typography variant="body3"> LR Number</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant="body1"> {trip.lrNo}</Typography>
+                                        <Typography variant="body3"> {trip.lrNo}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant='body1'> From</Typography>
+                                        <Typography variant='body3'> From</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant='body1'> {trip.pickup}</Typography>
+                                        <Typography variant='body3'> {trip.pickup}</Typography>
                                     </TableCell>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant='body1'> To</Typography>
+                                        <Typography variant='body3'> To</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant='body1'> {trip.dropup}</Typography>
+                                        <Typography variant='body3'> {trip.dropup}</Typography>
                                     </TableCell>
                                 </TableRow> */}
                                 {/* <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant='body1'> Amount</Typography>
+                                        <Typography variant='body3'> Amount</Typography>
                                     </TableCell>
 
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant='body1'> {trip.totalPayment}</Typography>
+                                        <Typography variant='body3'> {trip.totalPayment}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell align="left" className={classes.tripItem}>
-                                        <Typography variant='body1'> Extra Charges</Typography>
+                                        <Typography variant='body3'> Extra Charges</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="center">
-                                        <Typography variant='body1'> {trip.extraCharges ? trip.extraCharges : '-'}</Typography>
+                                        <Typography variant='body3'> {trip.extraCharges ? trip.extraCharges : '-'}</Typography>
                                     </TableCell>
                                 </TableRow> */}
 
@@ -332,34 +332,34 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                             <TableBody>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> Weight</Typography>
+                                        <Typography variant="body3"> Weight</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        <Typography variant="body1"> {trip.materialWeight} KG</Typography>
+                                        <Typography variant="body3"> {trip.materialWeight} KG</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> Vehicle Model</Typography>
+                                        <Typography variant="body3"> Vehicle Model</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        <Typography variant="body1"> {trip.truckModel}</Typography>
+                                        <Typography variant="body3"> {trip.truckModel}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> From</Typography>
+                                        <Typography variant="body3"> From</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        <Typography variant="body1"> {trip.pickup}</Typography>
+                                        <Typography variant="body3"> {trip.pickup}</Typography>
                                     </TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell width={'170px'} align="left" className={classes.tripItem}>
-                                        <Typography variant="body1"> To</Typography>
+                                        <Typography variant="body3"> To</Typography>
                                     </TableCell>
                                     <TableCell className={classes.tripItem} align="left">
-                                        <Typography variant="body1"> {trip.dropup}</Typography>
+                                        <Typography variant="body3"> {trip.dropup}</Typography>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>
@@ -385,7 +385,7 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                 <Box sx={{ p: 1 }}>
                                     <Grid container>
                                         <Grid item>
-                                            <Typography textAlign={'left'} variant="body1">
+                                            <Typography textAlign={'left'} variant="body3">
                                                 {' '}
                                                 {trip.pickupCompany}
                                             </Typography>
@@ -399,32 +399,32 @@ function TripBill({ trip, setAlertMessage, setErrorSnack }) {
                                 <Grid xs={7}>
                                     <Box className={classes.gridInnerBox} textAlign="left" sx={{ height: '200px' }}>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1"> Freight</Typography>
+                                            <Typography variant="body3"> Freight</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1"> Advance</Typography>
+                                            <Typography variant="body3"> Advance</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1">{trip.extraChargeDescription}</Typography>
+                                            <Typography variant="body3">{trip.extraChargeDescription}</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1">LR Charges</Typography>
+                                            <Typography variant="body3">LR Charges</Typography>
                                         </Box>
                                     </Box>
                                 </Grid>
                                 <Grid xs={5}>
                                     <Box className={classes.gridInnerBox} sx={{ height: '200px' }}>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1">Rs. {trip.totalPayment}</Typography>
+                                            <Typography variant="body3">Rs. {trip.totalPayment}</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1">Rs. {trip.paymentReceived}</Typography>
+                                            <Typography variant="body3">Rs. {trip.paymentReceived}</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1">Rs. {trip.extraCharge}</Typography>
+                                            <Typography variant="body3">Rs. {trip.extraCharge}</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body1">Rs. {trip.lrCharges}</Typography>
+                                            <Typography variant="body3">Rs. {trip.lrCharges}</Typography>
                                         </Box>
                                     </Box>
                                 </Grid>

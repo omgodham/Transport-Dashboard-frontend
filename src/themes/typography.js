@@ -62,6 +62,13 @@ export function themeTypography(theme) {
             lineHeight: '1.5em',
             color: theme.darkTextPrimary
         },
+        body3: {
+            fontSize: '0.65rem',
+            letterSpacing: '0em',
+            fontWeight: 400,
+            lineHeight: '1.5em',
+            color: theme.darkTextPrimary
+        },
         customInput: {
             marginTop: 8,
             marginBottom: 8,
