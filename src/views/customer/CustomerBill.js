@@ -416,7 +416,12 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                     </Box>
                                     <Divider />
                                 </Box>
-                                <Box display={'flex'} alignItems="right" justifyContent={'space-between'} sx={{ ml: 'auto', mt: 17 }}>
+                                <Box
+                                    display={'flex'}
+                                    alignItems="right"
+                                    justifyContent={'space-between'}
+                                    sx={{ ml: 'auto', mt: 12, mx: 7 }}
+                                >
                                     <Box item alignItems="left">
                                         <Typography textAlign={'center'}>RECEIVED</Typography>
                                     </Box>

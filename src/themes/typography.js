@@ -56,7 +56,7 @@ export function themeTypography(theme) {
             lineHeight: '1.334em'
         },
         body2: {
-            fontSize: '0.4rem',
+            fontSize: '0.5rem',
             letterSpacing: '0em',
             fontWeight: 400,
             lineHeight: '1.5em',

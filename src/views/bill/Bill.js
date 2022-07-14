@@ -175,6 +175,7 @@ function Bill() {
             }
         }).then((billData) => {
             setBills(billData.data);
+            console.log(billData);
         });
     };
 
