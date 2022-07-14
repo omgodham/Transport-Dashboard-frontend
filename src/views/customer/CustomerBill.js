@@ -324,9 +324,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
                                                                 <Typography variant="body2">
-                                                                    {vehicles.map(
-                                                                        (vehicle) => vehicle._id == trip.vehicle && vehicle.model
-                                                                    )}
+                                                                    {trip.truckModel ? trip.truckModel : ''}
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
