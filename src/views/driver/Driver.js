@@ -241,9 +241,9 @@ function Driver() {
                                                 >
                                                     <CreateIcon color="orange" />
                                                 </Box>
-                                                <Box className={classes.iconBox} border="1px solid red">
+                                                {/* <Box className={classes.iconBox} border="1px solid red">
                                                     <DeleteIcon className={classes.icons} onClick={() => handleDelete(driver._id)} />
-                                                </Box>
+                                                </Box> */}
                                                 <Button
                                                     aria-describedby={id}
                                                     variant="outlined"

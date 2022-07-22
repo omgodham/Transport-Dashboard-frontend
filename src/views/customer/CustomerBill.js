@@ -225,7 +225,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography variant="body2" fontSize={10}>
+                                                <Typography variant="body4" fontSize={10}>
                                                     {trips.length && customers.length ? (
                                                         customers.map(
                                                             (customer) => customer._id == trips[0].customer && customer.address.addressLine1
@@ -234,7 +234,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography variant="body2" fontSize={10}>
+                                                <Typography variant="body4" fontSize={10}>
                                                     GST No. -{' '}
                                                     {trips.length && customers.length ? (
                                                         customers.map((customer) => customer._id == trips[0].customer && customer.gstNo)
@@ -305,15 +305,15 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <TableRow className={classes.tableRow} key={trip._id}>
                                                             <TableCell className={classes.tripItem}>{index + 1}</TableCell>
                                                             <TableCell className={classes.tripItem} component="th" scope="row">
-                                                                <Typography variant="body2">
+                                                                <Typography variant="body4">
                                                                     {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} component="th" scope="row">
-                                                                <Typography variant="body2">{trip.billNo}</Typography>
+                                                                <Typography variant="body4">{trip.billNo}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">
+                                                                <Typography variant="body4">
                                                                     {' '}
                                                                     {trip.vehicle
                                                                         ? vehicles.map(
@@ -323,30 +323,30 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">
+                                                                <Typography variant="body4">
                                                                     {trip.truckModel ? trip.truckModel : ''}
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.lrNo}</Typography>
+                                                                <Typography variant="body4">{trip.lrNo}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} style={{ maxWidth: '' }} align="right">
-                                                                <Typography variant="body2">{trip.challanNo}</Typography>
+                                                                <Typography variant="body4">{trip.challanNo}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.pickup}</Typography>
+                                                                <Typography variant="body4">{trip.pickup}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.dropup}</Typography>
+                                                                <Typography variant="body4">{trip.dropup}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">Rs. {trip.totalPayment}</Typography>
+                                                                <Typography variant="body4">Rs. {trip.totalPayment}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">RS. {trip.lrCharges}</Typography>
+                                                                <Typography variant="body4">RS. {trip.lrCharges}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="center">
-                                                                <Typography variant="body2">
+                                                                <Typography variant="body4">
                                                                     {trip.extraCharge
                                                                         ? `${trip.extraChargeDescription} - Rs.${trip.extraCharge}`
                                                                         : '-'}
