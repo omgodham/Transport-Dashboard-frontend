@@ -496,7 +496,7 @@ function Vehicle() {
                                         <Button className={classes.subBtn} variant="contained" fullWidth type="submit">
                                             Update
                                         </Button>
-                                        <Button
+                                        {/* <Button
                                             className={classes.subBtn}
                                             variant="contained"
                                             fullWidth
@@ -504,7 +504,7 @@ function Vehicle() {
                                             style={{ margin: '0 20px', backgroundColor: 'red' }}
                                         >
                                             Delete
-                                        </Button>
+                                        </Button> */}
                                     </Box>
                                 </Grid>
                             </form>

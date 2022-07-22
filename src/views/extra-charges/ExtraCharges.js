@@ -164,7 +164,7 @@ function ExtraCharges() {
                                         </Grid>
                                         <Grid className={classes.customerItems} item xs={4}>
                                             <Box sx={{ pr: 2, ml: 'auto' }}>
-                                                <DeleteIcon className={classes.icons} onClick={() => handleDelete(extraCharge._id)} />
+                                                {/* <DeleteIcon className={classes.icons} onClick={() => handleDelete(extraCharge._id)} /> */}
                                             </Box>
                                         </Grid>
                                     </Grid>

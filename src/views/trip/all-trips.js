@@ -40,7 +40,7 @@ import { MoreVert } from '@material-ui/icons';
 import TripActions from './TripActions';
 import moment from 'moment';
 import { isMobile } from 'react-device-detect';
-import { getTripsDepenedingOnTheChallanAddition } from './helpers';
+import { filterTripsByCustomer, getTripsByCustomer, getTripsDepenedingOnTheChallanAddition } from './helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -299,7 +299,8 @@ function AllTrips() {
             });
     };
 
-    const handleSearch = (type) => {
+    const handleSearch = (e) => {
+        e.preventDefault();
         if (searchInput) {
             Axios.get(`/trip/search-trip/${searchInput}`)
                 .then((response) => {
@@ -338,6 +339,16 @@ function AllTrips() {
     const setChallanFilter = async (status) => {
         try {
             let tempTrips = await getTripsDepenedingOnTheChallanAddition(startDate, endDate, status);
+            setTrips(tempTrips);
+        } catch (error) {
+            setAlertMessage('Something went wrong');
+            setErrorSnack(true);
+        }
+    };
+
+    const setCustomerFilter = async (customerId) => {
+        try {
+            let tempTrips = await filterTripsByCustomer(startDate, endDate, customerId);
             setTrips(tempTrips);
         } catch (error) {
             setAlertMessage('Something went wrong');
@@ -409,7 +420,7 @@ function AllTrips() {
                     <Grid spacing={1} container>
                         <Grid item xs={6}>
                             <Box className={classes.dateBox}>
-                                <FormControl className={classes.formControl}>
+                                <FormControl className={classes.formControl} fullWidth>
                                     <InputLabel id="demo-controlled-open-select-label">Select Date Range</InputLabel>
                                     <Select
                                         labelId="demo-controlled-open-select-label"
@@ -496,32 +507,47 @@ function AllTrips() {
                                 </TextField>
                             </Box>
                         </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{}} className={classes.challanBox}>
+                                <TextField label="Customers" select fullWidth onChange={(e) => setCustomerFilter(e.target.value)}>
+                                    {customers?.map((customer) => (
+                                        <MenuItem value={customer._id}>{customer.name}</MenuItem>
+                                    ))}
+                                </TextField>
+                            </Box>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6} container justifyContent={'center'}>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
-                        <OutlinedInput
-                            id="outlined-adornment-password"
-                            label="Search by Bill/Voucher/Lr No."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        //   onClick={handleClickShowPassword}
-                                        //   onMouseDown={handleMouseDownPassword}
-                                        onClick={() => handleSearch()}
-                                        edge="end"
-                                    >
-                                        {<SearchIcon />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            labelWidth={70}
-                        />
-                    </FormControl>
+                    <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
+                        <Box display={'flex'}>
+                            <FormControl variant="outlined" fullWidth>
+                                <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    label="Search by Bill/Voucher/Lr No."
+                                    value={searchInput}
+                                    type="search"
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                //   onClick={handleClickShowPassword}
+                                                //   onMouseDown={handleMouseDownPassword}
+                                                // onClick={() => handleSearch()}
+                                                type="submit"
+                                                edge="end"
+                                            >
+                                                {<SearchIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={70}
+                                />
+                            </FormControl>
+                        </Box>
+                    </form>
                 </Grid>
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>

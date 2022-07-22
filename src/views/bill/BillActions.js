@@ -9,8 +9,10 @@ import Axios from '../../axios';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import CustomerBill from '../customer/CustomerBill';
+import SyncSharpIcon from '@material-ui/icons/SyncSharp';
+import { Box } from '@material-ui/core';
 
-function BillActions({ bill, setActiveTrip, setShowDeleteWarn, setErrorSnack, setAlertMsg, getAllBills }) {
+function BillActions({ bill, setActiveTrip, setShowDeleteWarn, setErrorSnack, setSuccessSnack, setAlertMsg, getAllBills }) {
     const [anchorEl, setAnchorEl] = useState();
     const [showBill, setShowBill] = useState();
     const [trips, setTrips] = useState();
@@ -25,9 +27,55 @@ function BillActions({ bill, setActiveTrip, setShowDeleteWarn, setErrorSnack, se
             .catch((error) => console.log(error));
     };
 
+    const syncOrders = () => {
+        setAlertMsg('Orders synchronization is started.Please wait...');
+        setSuccessSnack(true);
+        Axios.post(`/trip/get-trip-by-customer/${bill.customer}`, {
+            startDate: bill.startDate,
+            endDate: bill.endDate,
+            company: bill.company
+        })
+            .then((response) => {
+                if (response.data.length) {
+                    let tempTrips = [];
+                    response.data.map((trip) => tempTrips.push(trip._id));
+                    let data = {
+                        trips: tempTrips
+                    };
+
+                    Axios.patch(`bill/update-bill/${bill._id}`, { data })
+                        .then((response) => {
+                            getAllBills();
+                            setAlertMsg('Orders synchronization completed! ');
+                            setSuccessSnack(true);
+                        })
+                        .catch((error) => console.log(error));
+                } else {
+                    setAlertMsg('No trips availble in selected date range');
+                    // setErrorSnack(true);
+                }
+            })
+            .catch((error) => {
+                setAlertMsg('Something went wrong');
+                // setAlertMsg(error.message);
+                // setErrorSnack(true);
+            });
+    };
+
     return (
         <div>
-            <MoreVertIcon onClick={(e) => setAnchorEl(e.currentTarget)} style={{ cursor: 'pointer' }} />
+            <Box
+                sx={{
+                    width: 'fit-content',
+                    display: 'flex',
+                    padding: '2px',
+                    borderRadius: '50%',
+                    backgroundColor: '#ede7f6'
+                }}
+                backgroundColor="secondary"
+            >
+                <MoreVertIcon onClick={(e) => setAnchorEl(e.currentTarget)} style={{ cursor: 'pointer' }} />
+            </Box>
             <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
                 <ListItem
                     button
@@ -57,6 +105,12 @@ function BillActions({ bill, setActiveTrip, setShowDeleteWarn, setErrorSnack, se
                         <ListItemText primary="Mark As Paid" />
                     </ListItem>
                 )}
+                <ListItem button onClick={syncOrders}>
+                    <ListItemIcon>
+                        <SyncSharpIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Sync Orders" />
+                </ListItem>
             </Menu>
 
             <Dialog maxWidth="lg" open={showBill}>

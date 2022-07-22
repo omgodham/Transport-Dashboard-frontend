@@ -208,8 +208,6 @@ function Customer() {
                     let tempTrips = [];
                     response.data.map((trip) => tempTrips.push(trip._id));
                     let tempCompany = companies.find((company) => company._id == response.data[0].company);
-                    console.log(response.data);
-                    console.log(companies);
                     let data = {
                         startDate: startDate,
                         endDate: endDate,
@@ -303,7 +301,7 @@ function Customer() {
                                 </Grid>
                                 <Grid className={classes.customerItems} item sm={3}>
                                     <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
-                                        <Box
+                                        {/* <Box
                                             onClick={() => {
                                                 // handleDelete(customer._id);
                                                 setActiveCust(customer);
@@ -312,7 +310,7 @@ function Customer() {
                                             className={classes.editIconBox}
                                         >
                                             <DeleteIcon className={classes.icons} />
-                                        </Box>
+                                        </Box> */}
                                         <Button
                                             onClick={() => {
                                                 setActiveCust(customer);
