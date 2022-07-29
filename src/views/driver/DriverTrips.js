@@ -67,6 +67,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: '8px',
         // color: theme.palette.grey[100],
         borderColor: 'black'
+    },
+    footerItems: {
+        display: 'flex',
+        padding: '0.6rem 0'
     }
 }));
 
@@ -86,7 +90,13 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
         if (trips?.length) {
             let tempEarning = 0;
             trips.map((trip) => {
-                tempEarning += trip.totalPayment ? trip.totalPayment : 0 + trip.extraCharges ? trip.extraCharges : 0;
+                tempEarning += trip.driverExtraCharge
+                    ? trip.driverExtraCharge
+                    : 0 + trip.driverBhatta
+                    ? trip.driverBhatta
+                    : 0 + trip.advanceToDriver
+                    ? trip.advanceToDriver
+                    : 0;
             });
 
             setTotalEarning(tempEarning);
@@ -172,17 +182,10 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                             <Divider sx={{ my: 2, height: '2px', backgroundColor: 'black' }}></Divider>
                             <Box display={'flex'} justifyContent="space-between">
                                 <Box>
-                                    <Typography variant="h5" fontSize={'18px'}>
-                                        TO M/S -{' '}
+                                    <Typography variant="h5">
+                                        TO -{' '}
                                         {trips.length && customers.length ? (
                                             drivers.map((driver) => driver._id == trips[0].driver && driver.name)
-                                        ) : (
-                                            <Skeleton />
-                                        )}
-                                    </Typography>
-                                    <Typography>
-                                        {trips.length && customers.length ? (
-                                            customers.map((customer) => customer._id == trips[0].customer && customer.address.addressLine1)
                                         ) : (
                                             <Skeleton />
                                         )}
@@ -208,7 +211,7 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                                                 Vehicle Model
                                             </TableCell>
                                             <TableCell align="right" className={classes.tripItem}>
-                                                Challan
+                                                Bill/Voucher
                                             </TableCell>
                                             <TableCell align="right" className={classes.tripItem}>
                                                 From
@@ -218,6 +221,9 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                                             </TableCell>
                                             <TableCell align="right" className={classes.tripItem}>
                                                 Advance
+                                            </TableCell>
+                                            <TableCell align="right" className={classes.tripItem}>
+                                                Bhatta
                                             </TableCell>
                                             <TableCell align="right" className={classes.tripItem}>
                                                 Extra Charges
@@ -238,7 +244,7 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                                                     {vehicles.map((vehicle) => vehicle._id == trip.vehicle && vehicle.model)}
                                                 </TableCell>
                                                 <TableCell className={classes.tripItem} align="right">
-                                                    {trip.challanNo}
+                                                    {trip.billNo ? trip.billNo : trip.paymentVoucherNumber}
                                                 </TableCell>
                                                 <TableCell className={classes.tripItem} align="right">
                                                     {trip.pickup}
@@ -249,40 +255,46 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                                                 <TableCell className={classes.tripItem} align="right">
                                                     {trip.advanceToDriver}
                                                 </TableCell>
+                                                <TableCell className={classes.tripItem} align="right">
+                                                    {trip.driverBhatta}
+                                                </TableCell>
                                                 <TableCell className={classes.tripItem} align="center">
                                                     {trip.driverExtraCharge ? trip.driverExtraCharge : '-'}
                                                 </TableCell>
                                             </TableRow>
                                         ))}
-                                        <TableRow>
-                                            <TableCell rowSpan={5} />
-                                            <TableCell rowSpan={3} />
-                                            <TableCell rowSpan={3} />
-                                            <TableCell rowSpan={3} />
-                                            <TableCell className={classes.tripItem} colSpan={4}>
-                                                Total Trips
-                                            </TableCell>
-                                            <TableCell className={classes.tripItem} align="right">
-                                                {trips.length}
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow style={{ border: 'none' }}>
-                                            <TableCell className={classes.tripItem} colSpan={4}>
-                                                Total Payment
-                                            </TableCell>
-                                            <TableCell className={classes.tripItem} align="right">
-                                                {totalEarning}
-                                            </TableCell>
-                                        </TableRow>
-                                        <TableRow style={{ border: 'none' }}>
-                                            <TableCell className={classes.tripItem} colSpan={4}></TableCell>
-                                            <TableCell className={classes.tripItem} align="right">
-                                                {totalEarning && toWords.convert(totalEarning, { currency: true })}
-                                            </TableCell>
-                                        </TableRow>
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+                        </Box>
+                        <Divider sx={{ my: 2 }} />
+                        <Box display={'flex'} alignItems="left" justifyContent={'left'}>
+                            <Box>
+                                <Box className={classes.footerItems}>
+                                    <Box sx={{ mr: 1.5 }}>
+                                        <Typography variant="h5">Total Trips</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>{trips?.length}</Typography>
+                                    </Box>
+                                </Box>
+                                <Box className={classes.footerItems}>
+                                    <Box sx={{ mr: 1.5 }}>
+                                        <Typography variant="h5">Total</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>{totalEarningWithComma}</Typography>
+                                    </Box>
+                                </Box>
+                                <Box className={classes.footerItems}>
+                                    <Box sx={{ mr: 1.5 }}>
+                                        <Typography variant="h5">Total</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography> {totalEarning && toWords.convert(totalEarning, { currency: true })}</Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
                         </Box>
                     </Box>
                 </div>

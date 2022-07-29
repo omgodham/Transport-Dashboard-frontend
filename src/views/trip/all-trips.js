@@ -16,6 +16,7 @@ import {
     Menu,
     MenuItem,
     OutlinedInput,
+    Select,
     Skeleton,
     Snackbar,
     TextField,
@@ -39,7 +40,7 @@ import { MoreVert } from '@material-ui/icons';
 import TripActions from './TripActions';
 import moment from 'moment';
 import { isMobile } from 'react-device-detect';
-import { getTripsDepenedingOnTheChallanAddition } from './helpers';
+import { filterTripsByCustomer, getTripsByCustomer, getTripsDepenedingOnTheChallanAddition } from './helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -194,6 +195,9 @@ function AllTrips() {
     const [selfTrip, setSelfTrip] = useState();
     const [showDeleteWarn, setShowDeleteWarn] = useState();
     const [companies, setCompanies] = useState();
+    const [propagation, setPropagation] = useState();
+    const [flag, setFlag] = useState();
+    const [open, setOpen] = useState();
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -246,8 +250,9 @@ function AllTrips() {
     };
 
     useEffect(() => {
+        setOpen(false);
         getAllTrips();
-    }, [startDate, endDate]);
+    }, [endDate]);
 
     const handleClose = () => {
         setShowDialog(false);
@@ -294,7 +299,8 @@ function AllTrips() {
             });
     };
 
-    const handleSearch = (type) => {
+    const handleSearch = (e) => {
+        e.preventDefault();
         if (searchInput) {
             Axios.get(`/trip/search-trip/${searchInput}`)
                 .then((response) => {
@@ -333,6 +339,16 @@ function AllTrips() {
     const setChallanFilter = async (status) => {
         try {
             let tempTrips = await getTripsDepenedingOnTheChallanAddition(startDate, endDate, status);
+            setTrips(tempTrips);
+        } catch (error) {
+            setAlertMessage('Something went wrong');
+            setErrorSnack(true);
+        }
+    };
+
+    const setCustomerFilter = async (customerId) => {
+        try {
+            let tempTrips = await filterTripsByCustomer(startDate, endDate, customerId);
             setTrips(tempTrips);
         } catch (error) {
             setAlertMessage('Something went wrong');
@@ -404,24 +420,52 @@ function AllTrips() {
                     <Grid spacing={1} container>
                         <Grid item xs={6}>
                             <Box className={classes.dateBox}>
-                                <TextField label="Select Date Range" select fullWidth>
-                                    <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
-                                        Today
-                                    </MenuItem>
-                                    <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
-                                        Yesterday
-                                    </MenuItem>
-                                    <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
-                                        Last 7 days
-                                    </MenuItem>
-                                    <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
-                                        Last 30 days
-                                    </MenuItem>
-                                    <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
-                                        Last month
-                                    </MenuItem>
-                                    {showDateSelect && (
-                                        <Box sx={{ m: 2 }} alignItems="center" justifyContent={'center'} display="flex">
+                                <FormControl className={classes.formControl} fullWidth>
+                                    <InputLabel id="demo-controlled-open-select-label">Select Date Range</InputLabel>
+                                    <Select
+                                        labelId="demo-controlled-open-select-label"
+                                        id="demo-controlled-open-select"
+                                        label="Select Date Range"
+                                        open={open}
+                                        onOpen={() => setOpen(true)}
+                                        fullWidth
+                                    >
+                                        <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
+                                            Today
+                                        </MenuItem>
+                                        <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
+                                            Yesterday
+                                        </MenuItem>
+                                        <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
+                                            Last 7 days
+                                        </MenuItem>
+                                        <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
+                                            Last 30 days
+                                        </MenuItem>
+                                        <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
+                                            Last month
+                                        </MenuItem>
+                                        <Divider />
+                                        <Box
+                                            sx={{ mx: 2 }}
+                                            alignItems="center"
+                                            justifyContent={'left'}
+                                            display="flex"
+                                            onClickCapture={(e) => {
+                                                !flag && e.stopPropagation();
+                                            }}
+                                        >
+                                            <Typography>Custom</Typography>
+                                        </Box>
+                                        <Box
+                                            sx={{ m: 2 }}
+                                            alignItems="center"
+                                            justifyContent={'center'}
+                                            display="flex"
+                                            onClickCapture={(e) => {
+                                                !flag && e.stopPropagation();
+                                            }}
+                                        >
                                             <TextField
                                                 id="date"
                                                 label="Start Date"
@@ -450,17 +494,9 @@ function AllTrips() {
                                                 size="small"
                                                 style={{ marginRight: ' 10px' }}
                                             />
-                                            <Button
-                                                className={classes.addBtn}
-                                                size="small"
-                                                variant="contained"
-                                                onClick={() => getAllTrips()}
-                                            >
-                                                Apply
-                                            </Button>
                                         </Box>
-                                    )}
-                                </TextField>
+                                    </Select>
+                                </FormControl>
                             </Box>
                         </Grid>
                         <Grid item xs={6}>
@@ -471,32 +507,47 @@ function AllTrips() {
                                 </TextField>
                             </Box>
                         </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Box sx={{}} className={classes.challanBox}>
+                                <TextField label="Customers" select fullWidth onChange={(e) => setCustomerFilter(e.target.value)}>
+                                    {customers?.map((customer) => (
+                                        <MenuItem value={customer._id}>{customer.name}</MenuItem>
+                                    ))}
+                                </TextField>
+                            </Box>
+                        </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6} container justifyContent={'center'}>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
-                        <OutlinedInput
-                            id="outlined-adornment-password"
-                            label="Search by Bill/Voucher/Lr No."
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        //   onClick={handleClickShowPassword}
-                                        //   onMouseDown={handleMouseDownPassword}
-                                        onClick={() => handleSearch()}
-                                        edge="end"
-                                    >
-                                        {<SearchIcon />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            labelWidth={70}
-                        />
-                    </FormControl>
+                    <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
+                        <Box display={'flex'}>
+                            <FormControl variant="outlined" fullWidth>
+                                <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    label="Search by Bill/Voucher/Lr No."
+                                    value={searchInput}
+                                    type="search"
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                //   onClick={handleClickShowPassword}
+                                                //   onMouseDown={handleMouseDownPassword}
+                                                // onClick={() => handleSearch()}
+                                                type="submit"
+                                                edge="end"
+                                            >
+                                                {<SearchIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={70}
+                                />
+                            </FormControl>
+                        </Box>
+                    </form>
                 </Grid>
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>

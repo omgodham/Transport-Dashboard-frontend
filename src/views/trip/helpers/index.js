@@ -21,3 +21,25 @@ export const getTripsDepenedingOnTheChallanAddition = async (startDate, endDate,
             console.log(error);
         });
 };
+
+export const getTripsByCustomer = async (startDate, endDate, customerId) => {
+    return await axios
+        .post(`/trip/get-trip-by-customer/${customerId}`, { startDate, endDate })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
+
+export const filterTripsByCustomer = async (startDate, endDate, customerId) => {
+    return await axios
+        .post(`/trip/filter-trip-by-customer/${customerId}`, { startDate, endDate })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};

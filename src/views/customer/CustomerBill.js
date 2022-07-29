@@ -93,7 +93,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
         if (trips?.length) {
             let tempEarning = 0;
             trips.map((trip) => {
-                tempEarning += (trip.totalPayment ? trip.totalPayment : 0) + (trip.extraCharges ? trip.extraCharges : 0) + trip.lrCharges;
+                tempEarning += (trip.totalPayment ? trip.totalPayment : 0) + (trip.extraCharge ? trip.extraCharge : 0) + trip.lrCharges;
             });
             setTotalEarning(tempEarning);
 
@@ -214,10 +214,10 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                     <Box display={'flex'} justifyContent="space-between">
                                         <Grid container>
                                             <Grid item xs={7}>
-                                                <Typography sx={{ mb: 1 }} variant="h6" fontSize={'15px'}>
+                                                <Typography sx={{ mb: 1 }} variant="h6">
                                                     Bill No. - {bill.billNo}
                                                 </Typography>
-                                                <Typography variant="h6" fontSize={'15px'}>
+                                                <Typography variant="h6">
                                                     Bill To - M/S{'  '}
                                                     {trips.length && customers.length ? (
                                                         customers.map((customer) => customer._id == trips[0].customer && customer.name)
@@ -225,7 +225,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography variant="body2">
+                                                <Typography variant="body4" fontSize={10}>
                                                     {trips.length && customers.length ? (
                                                         customers.map(
                                                             (customer) => customer._id == trips[0].customer && customer.address.addressLine1
@@ -234,7 +234,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography variant="body2">
+                                                <Typography variant="body4" fontSize={10}>
                                                     GST No. -{' '}
                                                     {trips.length && customers.length ? (
                                                         customers.map((customer) => customer._id == trips[0].customer && customer.gstNo)
@@ -305,15 +305,15 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                         <TableRow className={classes.tableRow} key={trip._id}>
                                                             <TableCell className={classes.tripItem}>{index + 1}</TableCell>
                                                             <TableCell className={classes.tripItem} component="th" scope="row">
-                                                                <Typography variant="body2">
+                                                                <Typography variant="body4">
                                                                     {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} component="th" scope="row">
-                                                                <Typography variant="body2">{trip.billNo}</Typography>
+                                                                <Typography variant="body4">{trip.billNo}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">
+                                                                <Typography variant="body4">
                                                                     {' '}
                                                                     {trip.vehicle
                                                                         ? vehicles.map(
@@ -323,33 +323,33 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">
-                                                                    {vehicles.map(
-                                                                        (vehicle) => vehicle._id == trip.vehicle && vehicle.model
-                                                                    )}
+                                                                <Typography variant="body4">
+                                                                    {trip.truckModel ? trip.truckModel : ''}
                                                                 </Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.lrNo}</Typography>
+                                                                <Typography variant="body4">{trip.lrNo}</Typography>
+                                                            </TableCell>
+                                                            <TableCell className={classes.tripItem} style={{ maxWidth: '' }} align="right">
+                                                                <Typography variant="body4">{trip.challanNo}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.challanNo}</Typography>
+                                                                <Typography variant="body4">{trip.pickup}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.pickup}</Typography>
+                                                                <Typography variant="body4">{trip.dropup}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">{trip.dropup}</Typography>
+                                                                <Typography variant="body4">Rs. {trip.totalPayment}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">Rs. {trip.totalPayment}</Typography>
-                                                            </TableCell>
-                                                            <TableCell className={classes.tripItem} align="right">
-                                                                <Typography variant="body2">RS. {trip.lrCharges}</Typography>
+                                                                <Typography variant="body4">RS. {trip.lrCharges}</Typography>
                                                             </TableCell>
                                                             <TableCell className={classes.tripItem} align="center">
-                                                                <Typography variant="body2">
-                                                                    {trip.extraCharges ? trip.extraCharges : '-'}
+                                                                <Typography variant="body4">
+                                                                    {trip.extraCharge
+                                                                        ? `${trip.extraChargeDescription} - Rs.${trip.extraCharge}`
+                                                                        : '-'}
                                                                 </Typography>
                                                             </TableCell>
                                                         </TableRow>
@@ -363,7 +363,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                         <Grid container>
                                             <Grid item>
                                                 <Box sx={{ p: 1 }}>
-                                                    <Typography variant="h5">Total Trips -</Typography>
+                                                    <Typography variant="h6">Total Trips -</Typography>
                                                 </Box>
                                             </Grid>
                                             <Grid item>
@@ -382,12 +382,12 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                 <Grid container>
                                                     <Grid item>
                                                         <Box sx={{ p: 1 }}>
-                                                            <Typography variant="h5">Grand Total - </Typography>
+                                                            <Typography variant="h6">Grand Total - </Typography>
                                                         </Box>
                                                     </Grid>
                                                     <Grid item>
                                                         <Box sx={{ p: 1 }}>
-                                                            <Typography variant="h5">Rs. {totalEarningWithComma}</Typography>
+                                                            <Typography variant="h6">Rs. {totalEarningWithComma}</Typography>
                                                         </Box>
                                                     </Grid>
                                                 </Grid>
@@ -399,12 +399,12 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                         <Grid container>
                                             <Grid item>
                                                 <Box sx={{ p: 1 }}>
-                                                    <Typography variant="h5">In Words - </Typography>
+                                                    <Typography variant="h6">In Words - </Typography>
                                                 </Box>
                                             </Grid>
                                             <Grid item>
                                                 <Box sx={{ p: 1 }}>
-                                                    <Typography variant="h6" style={{ fontSize: '14px' }}>
+                                                    <Typography variant="h6">
                                                         {' '}
                                                         {totalEarning && toWords.convert(totalEarning, { currency: true })}
                                                     </Typography>
@@ -414,21 +414,24 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                     </Box>
                                     <Divider />
                                 </Box>
-                                <Box display={'flex'} alignItems="right" width={'fit-content'} sx={{ ml: 'auto', mt: 17 }}>
-                                    <Grid container spacing={5} display={'flex'}>
-                                        <Grid item alignItems="center">
-                                            <Typography textAlign={'center'}>
-                                                {trips.length && companies.length ? (
-                                                    companies.map((company) => company._id == trips[0].company && company.name)
-                                                ) : (
-                                                    <Skeleton />
-                                                )}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item alignItems="center">
-                                            <Typography textAlign={'center'}>RECEIVED</Typography>
-                                        </Grid>
-                                    </Grid>
+                                <Box
+                                    display={'flex'}
+                                    alignItems="right"
+                                    justifyContent={'space-between'}
+                                    sx={{ ml: 'auto', mt: 12, mx: 7 }}
+                                >
+                                    <Box item alignItems="left">
+                                        <Typography textAlign={'center'}>RECEIVED</Typography>
+                                    </Box>
+                                    <Box item alignItems="left">
+                                        <Typography textAlign={'center'}>
+                                            {trips.length && companies.length ? (
+                                                companies.map((company) => company._id == trips[0].company && company.name)
+                                            ) : (
+                                                <Skeleton />
+                                            )}
+                                        </Typography>
+                                    </Box>
                                 </Box>
                             </Box>
                         </div>

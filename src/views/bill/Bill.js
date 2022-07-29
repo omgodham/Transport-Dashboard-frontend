@@ -82,10 +82,10 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: ' rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px;',
 
         [theme.breakpoints.up('sm')]: {
-            padding: '15px 20px'
+            padding: '20px '
         },
         [theme.breakpoints.up('xs')]: {
-            padding: '10px 5px'
+            padding: '20px'
         }
     },
     customerItems: {
@@ -166,6 +166,7 @@ function Bill() {
     const [companyProgress, setCompanyProgress] = useState(0);
     const [confirmDelete, setConfirmDelete] = useState();
     const [generatedBill, setGeneratedBill] = useState();
+    const [customers, setCustomers] = useState([]);
 
     const getAllBills = () => {
         Axios.get('/bill/get-bills', {
@@ -175,11 +176,23 @@ function Bill() {
             }
         }).then((billData) => {
             setBills(billData.data);
+            console.log(billData);
         });
     };
 
     useEffect(() => {
         getAllBills();
+    }, []);
+
+    useEffect(() => {
+        Axios.get('/customer/get-all-customers')
+            .then((res) => {
+                setCustomers(res.data);
+            })
+            .catch((error) => {
+                // setAlertMessage('Could not get customers');
+                // setErrorSnack(true);
+            });
     }, []);
 
     return (
@@ -206,61 +219,66 @@ function Bill() {
                             .slice(0)
                             .reverse()
                             .map((bill) => (
-                                <Grid container spacing={1} className={classes.customerCont}>
-                                    <Grid
-                                        item
-                                        sm={3}
-                                        onClick={() => {
-                                            setActiveBill(bill);
-                                            setOpen(true);
-                                        }}
-                                        style={{ cursor: 'pointer' }}
-                                    >
+                                <Grid container className={classes.customerCont}>
+                                    <Grid item xs={11}>
                                         <Grid container>
-                                            <Grid className={classes.customerItems} item>
-                                                <Typography variant="h5">Bill No. - {bill.billNo}</Typography>
+                                            <Grid
+                                                item
+                                                sm={3}
+                                                xs={12}
+                                                onClick={() => {
+                                                    setActiveBill(bill);
+                                                    setOpen(true);
+                                                }}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <Grid container>
+                                                    <Grid className={classes.customerItems} item>
+                                                        <Typography variant="h5">Bill No. - {bill.billNo}</Typography>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid item xs={12} sm={3}>
+                                                <Box>
+                                                    <Typography>
+                                                        {' '}
+                                                        {moment(new Date(bill.startDate)).format('DD-MM-YYYY')} -{' '}
+                                                        {moment(new Date(bill.endDate)).format('DD-MM-YYYY')}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={3}>
+                                                <Box>
+                                                    {bill.isPaid ? (
+                                                        <Typography color={'green'}> Bill paid </Typography>
+                                                    ) : (
+                                                        <Typography color={'maroon'}>Bill not paid</Typography>
+                                                    )}
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={12} sm={3}>
+                                                <Box>
+                                                    <Typography>{customers.find((o) => o._id == bill.customer)?.name}</Typography>
+                                                </Box>
                                             </Grid>
                                         </Grid>
                                     </Grid>
-                                    <Grid item xs={3}>
-                                        <Box>
-                                            <Typography>
-                                                {' '}
-                                                {moment(new Date(bill.startDate)).format('DD-MM-YYYY')} -{' '}
-                                                {moment(new Date(bill.endDate)).format('DD-MM-YYYY')}
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <Box>
-                                            {bill.isPaid ? (
-                                                <Typography color={'green'}> Bill paid </Typography>
-                                            ) : (
-                                                <Typography color={'maroon'}>Bill not paid</Typography>
-                                            )}
-                                        </Box>
-                                    </Grid>
-                                    <Grid className={classes.customerItems} item sm={3}>
-                                        <Box sx={{ pr: 2, ml: 'auto' }} display="flex" alignItems={'center'} justifyContent="space-between">
-                                            {/* <Button
-                                            onClick={() => {
-                                                setActiveBill(bill);
-                                                // setAskDate(true);
-                                                getBill();
-                                            }}
-                                            className={classes.addBtn}
-                                            variant="outlined"
-                                            color="secondary"
+                                    <Grid item xs={1}>
+                                        <Box
+                                            sx={{ ml: 'auto', width: 'fit-content' }}
+                                            display="flex"
+                                            alignItems={'right'}
+                                            justifyContent="space-between"
                                         >
-                                            SHOW BILL
-                                        </Button> */}
-
-                                            <BillActions bill={bill} getAllBills={getAllBills} />
+                                            <BillActions
+                                                bill={bill}
+                                                getAllBills={getAllBills}
+                                                setErrorSnack={setErrorSnack}
+                                                setSuccessSnack={setSuccessSnack}
+                                                setAlertMsg={setAlertMsg}
+                                            />
                                         </Box>
                                     </Grid>
-                                    {/* <Grid className={classes.customerItems} item xs={4}>
-                                        <Button onClick={() => generateBill(customer._id)}>GENERATE BILL</Button>
-                                    </Grid> */}
                                 </Grid>
                             ))
                     ) : progress == 100 ? (

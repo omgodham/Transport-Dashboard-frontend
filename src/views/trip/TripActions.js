@@ -8,6 +8,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Axios from '../../axios';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import { Box } from '@material-ui/core';
 
 function TripActions({ trip, setActiveTrip, setShowDeleteWarn, setShowDetails, setShowDialog, getAllTrips, setShowBill }) {
     const [anchorEl, setAnchorEl] = useState();
@@ -24,7 +25,18 @@ function TripActions({ trip, setActiveTrip, setShowDeleteWarn, setShowDetails, s
 
     return (
         <div>
-            <MoreVertIcon onClick={(e) => setAnchorEl(e.currentTarget)} style={{ cursor: 'pointer' }} />
+            <Box
+                sx={{
+                    width: 'fit-content',
+                    display: 'flex',
+                    padding: '2px',
+                    borderRadius: '50%',
+                    backgroundColor: '#ede7f6'
+                }}
+                backgroundColor="secondary"
+            >
+                <MoreVertIcon onClick={(e) => setAnchorEl(e.currentTarget)} style={{ cursor: 'pointer', fontSize: '1.5rem' }} />
+            </Box>
             <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
                 <ListItem
                     button
