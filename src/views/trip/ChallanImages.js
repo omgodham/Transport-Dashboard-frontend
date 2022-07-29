@@ -65,7 +65,11 @@ export default function ChallanImages({ updateTrip, setImagesOpen, trip, setShow
                     ? challanImages.map((item, index) => {
                           return (
                               <Box style={{ height: '100%', width: '100%', position: 'relative', display: 'flex' }}>
-                                  <img src={item} alt="item" style={{ height: '100%', width: '100%' }} />
+                                  <img
+                                      src={item}
+                                      alt="item"
+                                      style={{ maxHeight: '290mm', maxWidth: '202mm', height: '100%', width: '100%' }}
+                                  />
                                   <span style={{ position: 'absolute', top: '10px', right: '10px' }}>
                                       <DeleteIcon onClick={() => handleDelete(index)} style={{ color: 'white' }} />
                                   </span>
