@@ -218,6 +218,8 @@ function TripForm({
             extraCharge: trip ? trip.extraCharge : 0,
             paymentReceived: trip ? trip.paymentReceived : 0,
             paymentToTransporter: trip ? trip.paymentToTransporter : 0,
+            transporterName: trip ? trip.transporterName : '',
+            advanceToTransporter: trip ? trip.advanceToTransporter : 0,
             paymentVoucherNumber: trip ? trip.paymentVoucherNumber : 0,
             materialWeight: trip ? trip.materialWeight : 0,
             truckModel: trip ? trip.truckModel : '',
@@ -689,6 +691,35 @@ function TripForm({
                         />
                     </Grid>
                 )}
+                {!selfTrip && (
+                    <Grid item xs={12} md={6}>
+                        <TextField
+                            fullWidth
+                            id="transporterName"
+                            name="transporterName"
+                            label="Transporter Name"
+                            value={formik.values.transporterName}
+                            onChange={formik.handleChange}
+                            error={formik.touched.transporterName && Boolean(formik.errors.transporterName)}
+                            helperText={formik.touched.transporterName && formik.errors.transporterName}
+                        />
+                    </Grid>
+                )}
+                {!selfTrip && (
+                    <Grid item xs={12} md={6}>
+                        <TextField
+                            fullWidth
+                            id="advanceToTransporter"
+                            name="advanceToTransporter"
+                            label="Advance to Transporter"
+                            value={formik.values.advanceToTransporter}
+                            onChange={formik.handleChange}
+                            error={formik.touched.advanceToTransporter && Boolean(formik.errors.advanceToTransporter)}
+                            helperText={formik.touched.advanceToTransporter && formik.errors.advanceToTransporter}
+                        />
+                    </Grid>
+                )}
+
                 {!selfTrip && (
                     <Grid item xs={12} md={6}>
                         <TextField

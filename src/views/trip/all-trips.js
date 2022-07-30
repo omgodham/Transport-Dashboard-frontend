@@ -429,6 +429,7 @@ function AllTrips() {
                                         open={open}
                                         onOpen={() => setOpen(true)}
                                         fullWidth
+                                        size="small"
                                     >
                                         <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
                                             Today
@@ -501,7 +502,13 @@ function AllTrips() {
                         </Grid>
                         <Grid item xs={6}>
                             <Box sx={{}} className={classes.challanBox}>
-                                <TextField label="Challan Status" select fullWidth onChange={(e) => setChallanFilter(e.target.value)}>
+                                <TextField
+                                    label="Challan Status"
+                                    size="small"
+                                    select
+                                    fullWidth
+                                    onChange={(e) => setChallanFilter(e.target.value)}
+                                >
                                     <MenuItem value="added">Added</MenuItem>
                                     <MenuItem value="notAdded">Not Added</MenuItem>
                                 </TextField>
@@ -509,7 +516,13 @@ function AllTrips() {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <Box sx={{}} className={classes.challanBox}>
-                                <TextField label="Customers" select fullWidth onChange={(e) => setCustomerFilter(e.target.value)}>
+                                <TextField
+                                    label="Customers"
+                                    select
+                                    size="small"
+                                    fullWidth
+                                    onChange={(e) => setCustomerFilter(e.target.value)}
+                                >
                                     {customers?.map((customer) => (
                                         <MenuItem value={customer._id}>{customer.name}</MenuItem>
                                     ))}
@@ -521,7 +534,7 @@ function AllTrips() {
                 <Grid item xs={12} sm={6} container justifyContent={'center'}>
                     <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
                         <Box display={'flex'}>
-                            <FormControl variant="outlined" fullWidth>
+                            <FormControl variant="outlined" fullWidth size="small">
                                 <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
                                 <OutlinedInput
                                     id="outlined-adornment-password"
@@ -618,6 +631,7 @@ function AllTrips() {
                                                         trip={trip}
                                                         getAllTrips={getAllTrips}
                                                         setShowBill={setShowBill}
+                                                        updateTrip={updateTrip}
                                                     />
                                                 </Box>
                                             </Grid>
