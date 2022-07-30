@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Voucher({ trip, setAlertMessage, setErrorSnack }) {
+function Voucher({ trip, setAlertMessage, setErrorSnack, forCustomer }) {
     const classes = useStyles();
     const componentRef = useRef();
     const [vehicles, setVehicles] = useState([]);
@@ -100,6 +100,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
     const toWords = new ToWords();
     const [totalPayment, setTotalPayment] = useState();
     const [companies, setCompanies] = useState([]);
+    const [grandTotal, setGrandTotal] = useState(0);
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -136,7 +137,8 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
     }, []);
 
     useEffect(() => {
-        setTotalPayment(trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived);
+        if (forCustomer) setTotalPayment(trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived);
+        else setTotalPayment(trip.paymentToTransporter + trip.lrCharges + trip.extraCharge - trip.advanceToTransporter);
     }, [trip]);
 
     return (
@@ -201,12 +203,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
                                     Bill To
                                 </Typography>
                                 <Typography variant="h6" fontSize={'13px'}>
-                                    M/S -{' '}
-                                    {customers.length ? (
-                                        customers.map((customer) => customer._id == trip.customer && customer.name)
-                                    ) : (
-                                        <Skeleton />
-                                    )}
+                                    M/S - {forCustomer ? trip.customerName : trip.transporterName}
                                 </Typography>
                                 <Typography variant="body3">
                                     {customers.length ? (
@@ -364,10 +361,14 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
                                 <Grid xs={5}>
                                     <Box className={classes.gridInnerBox} sx={{ height: '200px' }}>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body3">Rs. {trip.totalPayment}</Typography>
+                                            <Typography variant="body3">
+                                                Rs. {forCustomer ? trip.totalPayment : trip.paymentToTransporter}
+                                            </Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body3">Rs. {trip.paymentReceived}</Typography>
+                                            <Typography variant="body3">
+                                                Rs. {forCustomer ? trip.paymentReceived : trip.advanceToTransporter}
+                                            </Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
                                             <Typography variant="body3">Rs. {trip.extraCharge}</Typography>
@@ -394,9 +395,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack }) {
                                     </Grid>
                                     <Grid item>
                                         <Box sx={{ p: 1 }}>
-                                            <Typography variant="h6">
-                                                Rs. {trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived}
-                                            </Typography>
+                                            <Typography variant="h6">Rs. {totalPayment}</Typography>
                                         </Box>
                                     </Grid>
                                 </Grid>

@@ -303,7 +303,9 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                                     })
                                                     .map((trip, index) => (
                                                         <TableRow className={classes.tableRow} key={trip._id}>
-                                                            <TableCell className={classes.tripItem}>{index + 1}</TableCell>
+                                                            <TableCell className={classes.tripItem}>
+                                                                <Typography variant="body4">{index + 1}</Typography>
+                                                            </TableCell>
                                                             <TableCell className={classes.tripItem} component="th" scope="row">
                                                                 <Typography variant="body4">
                                                                     {moment(new Date(trip.tripDate)).format('DD-MM-YYYY')}
