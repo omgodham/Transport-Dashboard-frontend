@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Typography } from '@material-ui/core';
+import { Box, Button, CircularProgress, Divider, Typography } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/styles';
 import React, { useRef, useState } from 'react';
@@ -42,7 +42,7 @@ export default function ChallanImages({ updateTrip, setImagesOpen, trip, setShow
             });
     };
 
-    const imagesRef = useRef();
+    // const imagesRef = useRef();
 
     useEffect(() => {
         const fetchTrip = async () => {
@@ -58,30 +58,48 @@ export default function ChallanImages({ updateTrip, setImagesOpen, trip, setShow
         return fetchTrip();
     }, [trip]);
 
+    const handlePrint = (index) => {
+        return document.getElementById(index);
+    };
     return (
         <Box>
-            <Box p={2} ref={imagesRef}>
+            <Box p={2}>
                 {challanImages?.length && !imagesLoaded
                     ? challanImages.map((item, index) => {
                           return (
-                              <Box style={{ height: '100%', width: '100%', position: 'relative', display: 'flex' }}>
-                                  <img src={item} alt="item" style={{ height: '100%', width: '100%' }} />
+                              <Box
+                                  style={{ height: '100%', width: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}
+                              >
+                                  <img
+                                      src={item}
+                                      alt="item"
+                                      style={{ maxHeight: '299mm', maxWidth: '209mm', height: '100%', width: '100%' }}
+                                      //   ref={imagesRef}
+                                      id={index}
+                                  />
                                   <span style={{ position: 'absolute', top: '10px', right: '10px' }}>
                                       <DeleteIcon onClick={() => handleDelete(index)} style={{ color: 'white' }} />
                                   </span>
+                                  <Box style={{ textAlign: 'center', paddingBottom: '20px', marginTop: '20px' }}>
+                                      <ReactToPrint
+                                          trigger={() => <Button variant="contained">Print</Button>}
+                                          content={() => handlePrint(index)}
+                                      />
+                                  </Box>
+                                  <Divider />
                               </Box>
                           );
                       })
                     : challanImages?.length === 0 && !imagesLoaded && <Typography variant="h2">There are no challans added</Typography>}
                 {imagesLoaded && <CircularProgress color="inherit" />}
             </Box>
-            {challanImages?.length && !imagesLoaded ? (
+            {/* {challanImages?.length && !imagesLoaded ? (
                 <Box style={{ textAlign: 'center', paddingBottom: '20px' }}>
                     <ReactToPrint trigger={() => <Button variant="contained">Print</Button>} content={() => imagesRef.current} />
                 </Box>
             ) : (
                 ''
-            )}
+            )} */}
         </Box>
     );
 }
