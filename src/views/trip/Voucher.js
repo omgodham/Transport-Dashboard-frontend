@@ -193,7 +193,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack, forCustomer }) {
                         </Box>
 
                         <Box>
-                            <Typography variant="h5">Date : {moment(new Date()).format('DD-MM-YYYY')}</Typography>
+                            <Typography variant="h5">Date : {moment(trip.createdAt).format('DD-MM-YYYY')}</Typography>
                         </Box>
                     </Box>
                     <Box sx={{ mt: 2 }}>

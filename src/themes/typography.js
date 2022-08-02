@@ -56,7 +56,7 @@ export function themeTypography(theme) {
             lineHeight: '1.334em'
         },
         body2: {
-            fontSize: '0.6rem',
+            fontSize: '0.7rem',
             letterSpacing: '0em',
             fontWeight: 400,
             lineHeight: '1.5em',
@@ -65,7 +65,7 @@ export function themeTypography(theme) {
         body3: {
             fontSize: '0.65rem',
             letterSpacing: '0em',
-            fontWeight: 400,
+            fontWeight: 500,
             lineHeight: '1.5em',
             color: theme.darkTextPrimary
         },

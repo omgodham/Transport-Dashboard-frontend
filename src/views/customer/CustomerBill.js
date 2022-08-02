@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid black'
     },
     tripItem: {
-        padding: '7px',
+        padding: '2px',
         border: '1px solid black'
     },
     tableContainer: {
@@ -257,35 +257,41 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                         <Table className={classes.table} aria-label="simple table">
                                             <TableHead className={classes.tableHead}>
                                                 <TableRow>
-                                                    <TableCell className={classes.tripItem}>SR</TableCell>
-                                                    <TableCell className={classes.tripItem}>Date</TableCell>
-                                                    <TableCell className={classes.tripItem}>Bill No.</TableCell>
-                                                    <TableCell align="right" className={classes.tripItem}>
-                                                        Vehicle No.
+                                                    <TableCell className={classes.tripItem}>
+                                                        <Typography variant="body3"> SR</Typography>
+                                                    </TableCell>
+                                                    <TableCell className={classes.tripItem}>
+                                                        <Typography variant="body3">Date </Typography>
+                                                    </TableCell>
+                                                    <TableCell className={classes.tripItem}>
+                                                        <Typography variant="body3">Bill No.</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        V. Model
+                                                        <Typography variant="body3">Vehicle No.</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        LR No.
+                                                        <Typography variant="body3">V. Model</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        Challan
+                                                        <Typography variant="body3">LR No.</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        From
+                                                        <Typography variant="body3">Challan</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        To
+                                                        <Typography variant="body3">From</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        Amount
+                                                        <Typography variant="body3">To</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        LR Charges
+                                                        <Typography variant="body3">Amount</Typography>
                                                     </TableCell>
                                                     <TableCell align="right" className={classes.tripItem}>
-                                                        Extra Charges
+                                                        <Typography variant="body3">LR Charges</Typography>
+                                                    </TableCell>
+                                                    <TableCell align="right" className={classes.tripItem}>
+                                                        <Typography variant="body3">Extra Charges</Typography>
                                                     </TableCell>
                                                 </TableRow>
                                             </TableHead>
