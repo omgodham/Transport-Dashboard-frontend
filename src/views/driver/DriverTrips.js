@@ -85,29 +85,35 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
     const toWords = new ToWords();
     const company = trips[0]?.company;
     const [companies, setCompanies] = useState([]);
+    const [totalBhatta, setTotalBhatta] = useState();
+    const [totalAdvance, setTotalAdvance] = useState();
+    const [totalExtraCharge, setTotalExtraCharge] = useState();
 
     useEffect(() => {
         if (trips?.length) {
-            let tempEarning = 0;
+            let total = 0;
+            let tempBhatta = 0;
+            let tempAdvance = 0;
+            let tempExtraCharge = 0;
+
             trips.map((trip) => {
-                tempEarning += trip.driverExtraCharge
-                    ? trip.driverExtraCharge
-                    : 0 + trip.driverBhatta
-                    ? trip.driverBhatta
-                    : 0 + trip.advanceToDriver
-                    ? trip.advanceToDriver
-                    : 0;
+                tempExtraCharge += trip.driverExtraCharge ? trip.driverExtraCharge : 0;
+                tempBhatta += trip.driverBhatta ? trip.driverBhatta : 0;
+                tempAdvance += trip.advanceToDriver ? trip.advanceToDriver : 0;
             });
+            total = tempExtraCharge + tempBhatta + tempAdvance;
+            setTotalEarning(total);
+            setTotalAdvance(tempAdvance);
+            setTotalBhatta(tempBhatta);
+            setTotalExtraCharge(tempExtraCharge);
 
-            setTotalEarning(tempEarning);
-
-            tempEarning = tempEarning.toString();
-            var lastThree = tempEarning.substring(tempEarning.length - 3);
-            var otherNumbers = tempEarning.substring(0, tempEarning.length - 3);
+            total = total.toString();
+            var lastThree = total.substring(total.length - 3);
+            var otherNumbers = total.substring(0, total.length - 3);
             if (otherNumbers != '') lastThree = ',' + lastThree;
-            tempEarning = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+            total = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
 
-            setTotalEarningWithComma(tempEarning);
+            setTotalEarningWithComma(total);
         }
     }, [trips]);
 
@@ -280,15 +286,31 @@ function DriverTrips({ trips, setAlertMessage, setErrorSnack, setShowTrips }) {
                                 </Box>
                                 <Box className={classes.footerItems}>
                                     <Box sx={{ mr: 1.5 }}>
-                                        <Typography variant="h5">Total</Typography>
+                                        <Typography variant="h5">Total Bhatta</Typography>
                                     </Box>
                                     <Box>
-                                        <Typography>{totalEarningWithComma}</Typography>
+                                        <Typography>₹{totalBhatta}</Typography>
                                     </Box>
                                 </Box>
                                 <Box className={classes.footerItems}>
                                     <Box sx={{ mr: 1.5 }}>
-                                        <Typography variant="h5">Total</Typography>
+                                        <Typography variant="h5">Total Advance</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>₹{totalAdvance}</Typography>
+                                    </Box>
+                                </Box>
+                                <Box className={classes.footerItems}>
+                                    <Box sx={{ mr: 1.5 }}>
+                                        <Typography variant="h5">Grand Total</Typography>
+                                    </Box>
+                                    <Box>
+                                        <Typography>₹{totalEarningWithComma}</Typography>
+                                    </Box>
+                                </Box>
+                                <Box className={classes.footerItems}>
+                                    <Box sx={{ mr: 1.5 }}>
+                                        <Typography variant="h5">Grand Total</Typography>
                                     </Box>
                                     <Box>
                                         <Typography> {totalEarning && toWords.convert(totalEarning, { currency: true })}</Typography>
