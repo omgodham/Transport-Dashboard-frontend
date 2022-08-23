@@ -392,9 +392,37 @@ function AllTrips() {
     return (
         <div className={classes.root}>
             <Box sx={{ mb: 2, mt: 1 }} alignItems="center">
-                <Typography className={classes.mainHeading} variant="h3">
-                    ALL TRIPS
-                </Typography>
+                <Grid item xs={12} sm={6} container justifyContent={'center'}>
+                    <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
+                        <Box display={'flex'}>
+                            <FormControl variant="outlined" fullWidth size="small">
+                                <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment-password"
+                                    label="Search by Bill/Voucher/Lr No."
+                                    value={searchInput}
+                                    type="search"
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                //   onClick={handleClickShowPassword}
+                                                //   onMouseDown={handleMouseDownPassword}
+                                                // onClick={() => handleSearch()}
+                                                type="submit"
+                                                edge="end"
+                                            >
+                                                {<SearchIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={70}
+                                />
+                            </FormControl>
+                        </Box>
+                    </form>
+                </Grid>
                 <Box className={classes.btnCont}>
                     {!isMobile ? (
                         <Button
@@ -530,37 +558,6 @@ function AllTrips() {
                             </Box>
                         </Grid>
                     </Grid>
-                </Grid>
-                <Grid item xs={12} sm={6} container justifyContent={'center'}>
-                    <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
-                        <Box display={'flex'}>
-                            <FormControl variant="outlined" fullWidth size="small">
-                                <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    label="Search by Bill/Voucher/Lr No."
-                                    value={searchInput}
-                                    type="search"
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                //   onClick={handleClickShowPassword}
-                                                //   onMouseDown={handleMouseDownPassword}
-                                                // onClick={() => handleSearch()}
-                                                type="submit"
-                                                edge="end"
-                                            >
-                                                {<SearchIcon />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    }
-                                    labelWidth={70}
-                                />
-                            </FormControl>
-                        </Box>
-                    </form>
                 </Grid>
             </Grid>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
