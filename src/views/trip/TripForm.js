@@ -223,7 +223,7 @@ function TripForm({
             paymentVoucherNumber: trip ? trip.paymentVoucherNumber : 0,
             materialWeight: trip ? trip.materialWeight : 0,
             truckModel: trip ? trip.truckModel : '',
-            tripDate: trip ? moment(new Date(trip.tripDate)).format('DD-MM-YYYY') : moment(new Date()).format('DD-MM-YYYY'),
+            tripDate: trip ? trip.tripDate : new Date(),
             totalPayment: trip ? trip.totalPayment : 0,
             agent: trip ? trip.agent : '',
             commission: trip ? trip.commission : 0,
@@ -401,13 +401,14 @@ function TripForm({
                     <TextField
                         id="tripDate"
                         // label={`Date of trip ${moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}`}
-                        label={`Date of trip ${formik.values.tripDate}`}
+                        label="Date of trip"
                         name="tripDate"
                         type="date"
                         fullWidth
                         defaultValue={formik.values.tripDate}
                         // defaultValue={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
-                        value={formik.values.tripDate}
+                        // value={formik.values.tripDate}
+                        value={moment(new Date(formik.values.tripDate)).format('YYYY-MM-DD')}
                         // value={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
                         onChange={formik.handleChange}
                         variant="outlined"
