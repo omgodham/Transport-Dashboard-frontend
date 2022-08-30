@@ -444,9 +444,9 @@ function AllTrips() {
 
             <Divider sx={{ mb: 2 }}></Divider>
             <Grid spacing={1} container alignItems={'center'} className={classes.GridCont}>
-                <Grid item xs={12} md={3} display="flex">
+                <Grid item xs={12} md={12} display="flex">
                     <Grid spacing={1} container>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} md={2}>
                             <Box className={classes.dateBox}>
                                 <FormControl className={classes.formControl} fullWidth>
                                     <InputLabel id="demo-controlled-open-select-label">Select Date Range</InputLabel>
@@ -528,7 +528,7 @@ function AllTrips() {
                                 </FormControl>
                             </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} md={2}>
                             <Box sx={{}} className={classes.challanBox}>
                                 <TextField
                                     label="Challan Status"
@@ -542,7 +542,7 @@ function AllTrips() {
                                 </TextField>
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={6} md={2}>
                             <Box sx={{}} className={classes.challanBox}>
                                 <TextField
                                     label="Customers"
