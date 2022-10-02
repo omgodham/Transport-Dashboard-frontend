@@ -2,6 +2,7 @@ import {
     Alert,
     Backdrop,
     Button,
+    Chip,
     CircularProgress,
     Dialog,
     DialogActions,
@@ -108,9 +109,10 @@ const useStyles = makeStyles((theme) => ({
         color: 'white'
     },
     btnCont: {
-        position: 'absolute',
-        top: '13px',
-        right: '20px'
+        // position: 'absolute',
+        // top: '13px',
+        // right: '20px'
+        marginLeft: 'auto'
     },
     tripBlock: {
         display: 'flex',
@@ -164,7 +166,7 @@ const useStyles = makeStyles((theme) => ({
 function AllTrips() {
     const classes = useStyles();
     const [trips, setTrips] = useState([]);
-    const [tripsCopy, setTripsCopy] = useState([]);
+    const [filteredTrips, setFilteredTrips] = useState([]);
     const [tripsLoading, setTripsLoading] = useState(true);
     const [alertMessage, setAlertMessage] = useState();
     const [successSnack, setSuccessSnack] = useState();
@@ -198,6 +200,7 @@ function AllTrips() {
     const [propagation, setPropagation] = useState();
     const [flag, setFlag] = useState();
     const [open, setOpen] = useState();
+    const [filters, setFilters] = useState({ vehicle: '', customer: '', challan: '' });
 
     useEffect(() => {
         Axios.get('/customer/get-all-customers')
@@ -237,7 +240,7 @@ function AllTrips() {
         Axios.post('/trip/get-all-trips', { startDate, endDate, activeDriver })
             .then((data) => {
                 setTrips(data.data);
-                setTripsCopy(data.data);
+                setFilteredTrips(data.data);
                 setTripsLoading(false);
                 setUpdatingTrip();
                 return data.data;
@@ -387,188 +390,256 @@ function AllTrips() {
             });
     };
 
+    useEffect(() => {
+        let temp = trips;
+        if (filters.customer) temp = temp.filter((trip) => trip.customer == filters.customer);
+        if (filters.vehicle) temp = temp.filter((trip) => trip.vehicleNo == filters.vehicle);
+        if (filters.challan == 'added') temp = temp.filter((trip) => trip.challanImages?.length);
+        if (filters.challan == 'notAdded') temp = temp.filter((trip) => !trip.challanImages?.length);
+
+        if (temp) setFilteredTrips(temp);
+    }, [filters, trips]);
+
     // isMobile && alert('mohi  ');
 
     return (
         <div className={classes.root}>
-            <Box sx={{ mb: 2, mt: 1 }} alignItems="center">
-                <Grid item xs={12} sm={6} container justifyContent={'center'}>
-                    <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
-                        <Box display={'flex'}>
-                            <FormControl variant="outlined" fullWidth size="small">
-                                <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
-                                <OutlinedInput
-                                    id="outlined-adornment-password"
-                                    label="Search by Bill/Voucher/Lr No."
-                                    value={searchInput}
-                                    type="search"
-                                    onChange={(e) => setSearchInput(e.target.value)}
-                                    endAdornment={
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                aria-label="toggle password visibility"
-                                                //   onClick={handleClickShowPassword}
-                                                //   onMouseDown={handleMouseDownPassword}
-                                                // onClick={() => handleSearch()}
-                                                type="submit"
-                                                edge="end"
-                                            >
-                                                {<SearchIcon />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    }
-                                    labelWidth={70}
-                                />
-                            </FormControl>
-                        </Box>
-                    </form>
-                </Grid>
-                <Box className={classes.btnCont}>
-                    {!isMobile ? (
-                        <Button
-                            className={classes.addBtn}
-                            onClick={handleClick}
-                            variant="contained"
-                            startIcon={<AddCircleOutlineIcon />}
-                            size="medium"
-                        >
-                            TRIP
-                        </Button>
-                    ) : (
-                        <IconButton className={classes.addBtn} onClick={handleClick} variant="outlined" size="small">
-                            <AddCircleOutlineIcon />
-                        </IconButton>
-                    )}
-                </Box>
+            <Box sx={{ mb: 2, mt: 1, mx: 'auto', maxWidth: '600px' }} alignItems="center">
+                <form action="" style={{ width: '100%' }} onSubmit={handleSearch}>
+                    <Box display={'flex'}>
+                        <FormControl variant="outlined" fullWidth size="small">
+                            <InputLabel htmlFor="outlined-adornment-password">Search by Bill/Voucher/Lr No.</InputLabel>
+                            <OutlinedInput
+                                id="outlined-adornment-password"
+                                label="Search by Bill/Voucher/Lr No."
+                                value={searchInput}
+                                type="search"
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            //   onClick={handleClickShowPassword}
+                                            //   onMouseDown={handleMouseDownPassword}
+                                            // onClick={() => handleSearch()}
+                                            type="submit"
+                                            edge="end"
+                                        >
+                                            {<SearchIcon />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                                labelWidth={70}
+                            />
+                        </FormControl>
+                    </Box>
+                </form>
             </Box>
 
             <Divider sx={{ mb: 2 }}></Divider>
-            <Grid spacing={1} container alignItems={'center'} className={classes.GridCont}>
-                <Grid item xs={12} md={12} display="flex">
-                    <Grid spacing={1} container>
-                        <Grid item xs={6} md={2}>
-                            <Box className={classes.dateBox}>
-                                <FormControl className={classes.formControl} fullWidth>
-                                    <InputLabel id="demo-controlled-open-select-label">Select Date Range</InputLabel>
-                                    <Select
-                                        labelId="demo-controlled-open-select-label"
-                                        id="demo-controlled-open-select"
-                                        label="Select Date Range"
-                                        open={open}
-                                        onOpen={() => setOpen(true)}
-                                        fullWidth
-                                        size="small"
+            <Box>
+                <Grid spacing={1} container>
+                    <Grid item xs={6} md={2}>
+                        <Box className={classes.dateBox}>
+                            <FormControl className={classes.formControl} fullWidth>
+                                <InputLabel id="demo-controlled-open-select-label">Select Date Range</InputLabel>
+                                <Select
+                                    labelId="demo-controlled-open-select-label"
+                                    id="demo-controlled-open-select"
+                                    label="Select Date Range"
+                                    open={open}
+                                    onOpen={() => setOpen(true)}
+                                    fullWidth
+                                    size="small"
+                                >
+                                    <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
+                                        Today
+                                    </MenuItem>
+                                    <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
+                                        Yesterday
+                                    </MenuItem>
+                                    <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
+                                        Last 7 days
+                                    </MenuItem>
+                                    <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
+                                        Last 30 days
+                                    </MenuItem>
+                                    <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
+                                        Last month
+                                    </MenuItem>
+                                    <Divider />
+                                    <Box
+                                        sx={{ mx: 2 }}
+                                        alignItems="center"
+                                        justifyContent={'left'}
+                                        display="flex"
+                                        onClickCapture={(e) => {
+                                            !flag && e.stopPropagation();
+                                        }}
                                     >
-                                        <MenuItem value={8} onClick={() => setDates(true, false, 0)}>
-                                            Today
-                                        </MenuItem>
-                                        <MenuItem value={9} onClick={() => setDates(true, false, 1)}>
-                                            Yesterday
-                                        </MenuItem>
-                                        <MenuItem value={10} onClick={() => setDates(true, false, 7)}>
-                                            Last 7 days
-                                        </MenuItem>
-                                        <MenuItem value={20} onClick={() => setDates(true, false, 30)}>
-                                            Last 30 days
-                                        </MenuItem>
-                                        <MenuItem value={30} onClick={() => setDates(false, true, 1)}>
-                                            Last month
-                                        </MenuItem>
-                                        <Divider />
-                                        <Box
-                                            sx={{ mx: 2 }}
-                                            alignItems="center"
-                                            justifyContent={'left'}
-                                            display="flex"
-                                            onClickCapture={(e) => {
-                                                !flag && e.stopPropagation();
+                                        <Typography>Custom</Typography>
+                                    </Box>
+                                    <Box
+                                        sx={{ m: 2 }}
+                                        alignItems="center"
+                                        justifyContent={'center'}
+                                        display="flex"
+                                        onClickCapture={(e) => {
+                                            !flag && e.stopPropagation();
+                                        }}
+                                    >
+                                        <TextField
+                                            id="date"
+                                            label="Start Date"
+                                            type="date"
+                                            defaultValue={startDate.toISOString().split('T')[0]}
+                                            value={startDate.toISOString().split('T')[0]}
+                                            onChange={(e) => setStartDate(new Date(e.target.value))}
+                                            className={classes.textField}
+                                            InputLabelProps={{
+                                                shrink: true
                                             }}
-                                        >
-                                            <Typography>Custom</Typography>
-                                        </Box>
-                                        <Box
-                                            sx={{ m: 2 }}
-                                            alignItems="center"
-                                            justifyContent={'center'}
-                                            display="flex"
-                                            onClickCapture={(e) => {
-                                                !flag && e.stopPropagation();
+                                            size="small"
+                                            style={{ marginRight: ' 10px' }}
+                                        />
+                                        <TextField
+                                            id="date"
+                                            label="End Date"
+                                            type="date"
+                                            value={endDate.toISOString().split('T')[0]}
+                                            defaultValue={endDate.toISOString().split('T')[0]}
+                                            onChange={(e) => setEndDate(new Date(e.target.value))}
+                                            className={classes.textField}
+                                            InputLabelProps={{
+                                                shrink: true
                                             }}
-                                        >
-                                            <TextField
-                                                id="date"
-                                                label="Start Date"
-                                                type="date"
-                                                defaultValue={startDate.toISOString().split('T')[0]}
-                                                value={startDate.toISOString().split('T')[0]}
-                                                onChange={(e) => setStartDate(new Date(e.target.value))}
-                                                className={classes.textField}
-                                                InputLabelProps={{
-                                                    shrink: true
-                                                }}
-                                                size="small"
-                                                style={{ marginRight: ' 10px' }}
-                                            />
-                                            <TextField
-                                                id="date"
-                                                label="End Date"
-                                                type="date"
-                                                value={endDate.toISOString().split('T')[0]}
-                                                defaultValue={endDate.toISOString().split('T')[0]}
-                                                onChange={(e) => setEndDate(new Date(e.target.value))}
-                                                className={classes.textField}
-                                                InputLabelProps={{
-                                                    shrink: true
-                                                }}
-                                                size="small"
-                                                style={{ marginRight: ' 10px' }}
-                                            />
-                                        </Box>
-                                    </Select>
-                                </FormControl>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={6} md={2}>
-                            <Box sx={{}} className={classes.challanBox}>
-                                <TextField
-                                    label="Challan Status"
-                                    size="small"
-                                    select
-                                    fullWidth
-                                    onChange={(e) => setChallanFilter(e.target.value)}
-                                >
-                                    <MenuItem value="added">Added</MenuItem>
-                                    <MenuItem value="notAdded">Not Added</MenuItem>
-                                </TextField>
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={2}>
-                            <Box sx={{}} className={classes.challanBox}>
-                                <TextField
-                                    label="Customers"
-                                    select
-                                    size="small"
-                                    fullWidth
-                                    onChange={(e) => setCustomerFilter(e.target.value)}
-                                >
-                                    {customers?.map((customer) => (
-                                        <MenuItem value={customer._id}>{customer.name}</MenuItem>
-                                    ))}
-                                </TextField>
-                            </Box>
-                        </Grid>
+                                            size="small"
+                                            style={{ marginRight: ' 10px' }}
+                                        />
+                                    </Box>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={6} md={2}>
+                        <Box sx={{}} className={classes.challanBox}>
+                            <TextField
+                                label="Challan Status"
+                                size="small"
+                                select
+                                fullWidth
+                                // onChange={(e) => setChallanFilter(e.target.value)}
+                                onChange={(e) => setFilters({ ...filters, challan: e.target.value })}
+                            >
+                                <MenuItem value="added">Added</MenuItem>
+                                <MenuItem value="notAdded">Not Added</MenuItem>
+                            </TextField>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={6} sm={6} md={2}>
+                        <Box sx={{}} className={classes.challanBox}>
+                            <TextField
+                                label="Customers"
+                                select
+                                size="small"
+                                fullWidth
+                                // onChange={(e) => setCustomerFilter(e.target.value)}
+                                onChange={(e) => setFilters({ ...filters, customer: e.target.value })}
+                            >
+                                {customers?.map((customer) => (
+                                    <MenuItem value={customer._id}>{customer.name}</MenuItem>
+                                ))}
+                            </TextField>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={6} sm={6} md={2}>
+                        <Box sx={{}} className={classes.challanBox}>
+                            <TextField
+                                label="Vehicles"
+                                select
+                                size="small"
+                                fullWidth
+                                value={filters.vehicle}
+                                onChange={(e) => setFilters({ ...filters, vehicle: e.target.value })}
+                            >
+                                {vehicles?.map((vehicle) => (
+                                    <MenuItem value={vehicle.number}>{vehicle.number}</MenuItem>
+                                ))}
+                            </TextField>
+                        </Box>
                     </Grid>
                 </Grid>
-            </Grid>
+                <Box sx={{ mt: 2 }}>
+                    <Box display={'flex'} alignItems="center" justifyContent={'space-between'}>
+                        <Typography variant="h5">Filters</Typography>
+                        <Typography variant="h5">Total trips - {filteredTrips.length}</Typography>
+                    </Box>
+                    <Box display={'flex'} sx={{ mt: 1 }}>
+                        {filters.customer && (
+                            <Chip
+                                //   icon={icon}
+                                label={'customers'}
+                                onDelete={() => setFilters({ ...filters, customer: '' })}
+                                className={classes.chip}
+                                size="small"
+                                variant="outlined"
+                                color="secondary"
+                                sx={{ mr: 1 }}
+                            />
+                        )}
+                        {filters.challan && (
+                            <Chip
+                                //   icon={icon}
+                                label={'challans'}
+                                onDelete={() => setFilters({ ...filters, challan: '' })}
+                                className={classes.chip}
+                                size="small"
+                                variant="outlined"
+                                color="secondary"
+                                sx={{ mr: 1 }}
+                            />
+                        )}
+                        {filters.vehicle && (
+                            <Chip
+                                //   icon={icon}
+                                label={'vehicle'}
+                                onDelete={() => setFilters({ ...filters, vehicle: '' })}
+                                className={classes.chip}
+                                size="small"
+                                variant="outlined"
+                                color="secondary"
+                                sx={{ mr: 1 }}
+                            />
+                        )}
+                    </Box>
+                </Box>
+            </Box>
             <Divider style={{ margin: '20px auto', height: '1px', backgroundColor: 'black' }}></Divider>
             <Grid container justifyContent="center">
+                <Box className={classes.btnCont}>
+                    {/* {!isMobile ? ( */}
+                    <Button
+                        className={classes.addBtn}
+                        onClick={handleClick}
+                        variant="contained"
+                        startIcon={<AddCircleOutlineIcon />}
+                        size="medium"
+                    >
+                        TRIP
+                    </Button>
+                    {/* ) : (
+                        <IconButton className={classes.addBtn} onClick={handleClick} variant="outlined" size="small">
+                            <AddCircleOutlineIcon />
+                        </IconButton>
+                    )} */}
+                </Box>
                 {addingTrip && (
                     <Box display={'flex'} sx={{ width: '100%' }}>
                         <Skeleton width="100%" height={90} />
                     </Box>
                 )}
-                {trips.length ? (
-                    trips
+                {filteredTrips.length ? (
+                    filteredTrips
                         .sort(function compare(a, b) {
                             var dateA = new Date(a.tripDate);
                             var dateB = new Date(b.tripDate);
@@ -648,9 +719,9 @@ function AllTrips() {
                         <Skeleton width={'100%'} height={110} className={classes.tripSkeleton} />
                     </>
                 ) : (
-                    <Box sx={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                    <Box sx={{ position: 'absolute', top: '70%', left: '50%', transform: 'translate(-50%, -50%)' }}>
                         <Box sx={{ m: 'auto' }}>
-                            <img src={noData} width={'200px'} style={{ opacity: '0.5' }} />
+                            <img src={noData} width={'120px'} style={{ opacity: '0.5' }} />
                             <Typography style={{ marginTop: '10px', textAlign: 'center' }}> No Data to Display</Typography>
                         </Box>
                     </Box>
