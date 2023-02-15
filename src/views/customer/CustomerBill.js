@@ -169,43 +169,45 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                             <Box sx={{ backgroundColor: '#fff', p: 2 }}>
                                 <Grid sx={{ mb: 2 }}>
                                     <Grid container>
-                                        <Grid item xs={3} display="flex" alignItems={'center'}>
+                                        <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
                                             <Box>
                                                 <img src={logo} alt="logo" width={'100px'} />
                                             </Box>
                                         </Grid>
-                                        <Grid item xs={9} display="flex" alignItems="right" alignContent={'right'} justifyContent="right">
-                                            <Box width={'fit-content'} minWidth={'200px'}>
-                                                <Typography variant="h2" textAlign={'left'}>
+                                        <Grid item xs={12} display="flex" alignItems="center" justifyContent="center">
+                                            <Box minWidth={'200px'}>
+                                                <Typography variant="h2" textAlign="center">
                                                     {trips.length && companies.length ? (
                                                         companies.map((company) => company._id == trips[0].company && company.name)
                                                     ) : (
                                                         <Skeleton />
                                                     )}
                                                 </Typography>
-                                                <Typography fontSize={'10px'} textAlign={'left'}>
-                                                    {trips.length && companies.length ? (
-                                                        companies.map((company) => company._id == trips[0].company && company.address)
-                                                    ) : (
-                                                        <Skeleton />
-                                                    )}
-                                                </Typography>
-                                                <Typography fontSize={'10px'} textAlign={'left'}>
-                                                    GST No. -{' '}
-                                                    {trips.length && companies.length ? (
-                                                        companies.map((company) => company._id == trips[0].company && company.gstNo)
-                                                    ) : (
-                                                        <Skeleton />
-                                                    )}
-                                                </Typography>
-                                                <Typography fontSize={'10px'} textAlign={'left'}>
-                                                    Phone No. -{' '}
-                                                    {trips.length && companies.length ? (
-                                                        companies.map((company) => company._id == trips[0].company && company.phoneNo)
-                                                    ) : (
-                                                        <Skeleton />
-                                                    )}
-                                                </Typography>
+                                                <Box display="flex">
+                                                    <Typography fontSize={'10px'}>
+                                                        {trips.length && companies.length ? (
+                                                            companies.map((company) => company._id == trips[0].company && company.address)
+                                                        ) : (
+                                                            <Skeleton />
+                                                        )}
+                                                    </Typography>
+                                                    <Typography fontSize={'10px'}>
+                                                        GST No. -{' '}
+                                                        {trips.length && companies.length ? (
+                                                            companies.map((company) => company._id == trips[0].company && company.gstNo)
+                                                        ) : (
+                                                            <Skeleton />
+                                                        )}
+                                                    </Typography>
+                                                    <Typography fontSize={'10px'}>
+                                                        Phone No. -{' '}
+                                                        {trips.length && companies.length ? (
+                                                            companies.map((company) => company._id == trips[0].company && company.phoneNo)
+                                                        ) : (
+                                                            <Skeleton />
+                                                        )}
+                                                    </Typography>
+                                                </Box>
                                             </Box>
                                         </Grid>
                                     </Grid>
