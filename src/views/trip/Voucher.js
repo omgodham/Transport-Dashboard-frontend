@@ -98,7 +98,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack, forCustomer }) {
     const [drivers, setDrivers] = useState([]);
     const [customers, setCustomers] = useState([]);
     const toWords = new ToWords();
-    const [totalPayment, setTotalPayment] = useState();
+    const [totalPayment, setTotalPayment] = useState(0);
     const [companies, setCompanies] = useState([]);
     const [grandTotal, setGrandTotal] = useState(0);
 
@@ -137,8 +137,8 @@ function Voucher({ trip, setAlertMessage, setErrorSnack, forCustomer }) {
     }, []);
 
     useEffect(() => {
-        if (forCustomer) setTotalPayment(trip.totalPayment + trip.lrCharges + trip.extraCharge - trip.paymentReceived);
-        else setTotalPayment(trip.paymentToTransporter + trip.lrCharges + trip.extraCharge - trip.advanceToTransporter);
+        if (forCustomer) setTotalPayment(trip.totalPayment + trip.extraCharge - trip.paymentReceived);
+        else setTotalPayment(trip.paymentToTransporter + trip.extraCharge - trip.advanceToTransporter);
     }, [trip]);
 
     return (
@@ -354,7 +354,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack, forCustomer }) {
                                             <Typography variant="body3"> {trip.extraChargeDescription} </Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body3"> LR Charges </Typography>
+                                            <Typography variant="body3"> Balance </Typography>
                                         </Box>
                                     </Box>
                                 </Grid>
@@ -374,7 +374,7 @@ function Voucher({ trip, setAlertMessage, setErrorSnack, forCustomer }) {
                                             <Typography variant="body3">Rs. {trip.extraCharge}</Typography>
                                         </Box>
                                         <Box sx={{ m: 1, minHeight: '10px' }}>
-                                            <Typography variant="body3">Rs. {trip.lrCharges}</Typography>
+                                            <Typography variant="body3">Rs. {totalPayment}</Typography>
                                         </Box>
                                     </Box>
                                 </Grid>

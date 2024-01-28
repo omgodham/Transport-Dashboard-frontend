@@ -106,7 +106,7 @@ function TripActions({ trip, setActiveTrip, setShowDeleteWarn, setShowDetails, s
                         <ListItemIcon>
                             <AssignmentIcon color="secondary" />
                         </ListItemIcon>
-                        <ListItemText color="secondary" primary="Transporter Voucher" />
+                        <ListItemText color="secondary" primary="Transporter/Driver Voucher" />
                     </ListItem>
                 )}
                 {!trip.selfTrip && (
@@ -124,7 +124,7 @@ function TripActions({ trip, setActiveTrip, setShowDeleteWarn, setShowDetails, s
                         <ListItemText color="secondary" primary="Customer Voucher" />
                     </ListItem>
                 )}
-                <ListItem
+                {trip.selfTrip && <ListItem
                     button
                     onClick={() => {
                         setShowBill(true);
@@ -135,7 +135,7 @@ function TripActions({ trip, setActiveTrip, setShowDeleteWarn, setShowDetails, s
                         <DescriptionIcon color="secondary" />
                     </ListItemIcon>
                     <ListItemText color="secondary" primary="Generate Bill" />
-                </ListItem>
+                </ListItem>}
                 <ListItem
                     button
                     onClick={() => {

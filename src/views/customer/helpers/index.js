@@ -10,3 +10,14 @@ export const getPaymentDetailsOfSelectedMonth = async (data) => {
             console.log(err);
         });
 };
+
+export const createCustomer = async (data) => {
+    return await axios
+        .post('/customer/create-customer', data)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+};

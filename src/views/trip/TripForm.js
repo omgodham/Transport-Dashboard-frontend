@@ -29,6 +29,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import storage from '../../firebase';
 import async from 'async';
 import { getTrip } from './helpers';
+import { createNewDriver } from '../driver/helpers';
+import { createCustomer } from '../customer/helpers';
 const useStyles = makeStyles((theme) => ({
     root: {
         backgroundColor: '#fff',
@@ -93,22 +95,15 @@ function TripForm({
     const [isCustomVehicle, setIsCustomVehicle] = useState();
     const [tempSelectedImages, setTempSelectedImages] = useState([]);
     const [previousChallanImages, setPreviousChallanImages] = useState([]);
-
+    const [newDriver,setNewDriver] = useState(false)
+    const [newDriverDetails,setNewDriverDetails] = useState({
+        driverName:"",
+        phoneNo:""
+    })
+    const [isNewCustomer,setIsNewCustomer] = useState(false)
     useEffect(() => {
         if (selfTrip) {
-            Axios.get('/customer/get-all-customers', {
-                onDownloadProgress: (progressEvent) => {
-                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    setCustomerProgress(percentCompleted);
-                }
-            })
-                .then((res) => {
-                    setCustomers(res.data);
-                })
-                .catch((error) => {
-                    setAlertMessage('Could not get customers');
-                    setErrorSnack(true);
-                });
+        
 
             Axios.get('/vehicle/get-all-vehicles', {
                 onDownloadProgress: (progressEvent) => {
@@ -124,21 +119,34 @@ function TripForm({
                     setErrorSnack(true);
                 });
 
-            Axios.get('/driver/get-all-drivers', {
-                onDownloadProgress: (progressEvent) => {
-                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    setDrivererProgress(percentCompleted);
-                }
-            })
-                .then((res) => {
-                    setDrivers(res.data);
-                })
-                .catch((error) => {
-                    setAlertMessage('Could not get drivers');
-                    setErrorSnack(true);
-                });
+        
         }
-
+        Axios.get('/customer/get-all-customers', {
+            onDownloadProgress: (progressEvent) => {
+                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setCustomerProgress(percentCompleted);
+            }
+        })
+            .then((res) => {
+                setCustomers(res.data);
+            })
+            .catch((error) => {
+                setAlertMessage('Could not get customers');
+                setErrorSnack(true);
+            });
+        Axios.get('/driver/get-all-drivers', {
+            onDownloadProgress: (progressEvent) => {
+                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                setDrivererProgress(percentCompleted);
+            }
+        })
+            .then((res) => {
+                setDrivers(res.data);
+            })
+            .catch((error) => {
+                setAlertMessage('Could not get drivers');
+                setErrorSnack(true);
+            });
         Axios.get('/extracharge/get-all-extra-charges', {
             onDownloadProgress: (progressEvent) => {
                 var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -185,12 +193,12 @@ function TripForm({
     }, [trip, extraCharges]);
 
     const validationSchema = yup.object({
-        customer: yup.string('Select customer'),
-        company: yup.string('Select Company'),
+        customerName: yup.string('Select customer').required('Customer name is required'),
+        company: yup.string('Select Company').required('Company is required'),
         vehicle: yup.string('Select Vehicle'),
-        driver: yup.string('Select Driver'),
-        dropup: yup.string('Select DropUp Locaiton'),
-        pickup: yup.string('Select Pickup Location'),
+        dropup: yup.string('Select DropUp Locaiton').required('Dropup is required'),
+        pickup: yup.string('Select Pickup Location').required('Pickup is required'),
+        driverName: yup.string('Select drive name').required('Driver name is required'),
         // tripDate: yup.string('Select Date').required('Date is required'),
         // materialWeight: yup.string('Enter load in KG'),
         fuelCharge: yup.string('Enter disel charge'),
@@ -240,6 +248,7 @@ function TripForm({
 
         validationSchema: validationSchema,
         onSubmit: async (values) => {
+            console.log("values",values);
             setSavingTrip(true);
             let tempValues = values;
             let tempChallanImages = previousChallanImages ? previousChallanImages : [];
@@ -295,6 +304,18 @@ function TripForm({
                 if (tempExtraCharge && !customExtraChargeCheck) {
                     tempValues.extraChargeDescription = tempExtraCharge.type;
                 }
+                //Here checking for new driver if yes we are creating and passing that id here
+                if (newDriver) {
+                    let data = { name: newDriverDetails.driverName, phoneNo: newDriverDetails.phoneNo };
+                    let driverRes = await createNewDriver({ data });
+                    tempValues.driver = driverRes?._id;
+                }
+                if (isNewCustomer) {
+                    let data = { name: tempValues.customerName };
+                    let customerRes = await createCustomer({ data });
+                    tempValues.customer = customerRes?._id;
+                    console.log("BBB",customerRes,tempValues)
+                }
                 if (trip) updateTrip(tempValues, trip._id, false);
                 else {
                     setAddingTrip(true);
@@ -322,8 +343,19 @@ function TripForm({
     return (
         <form onSubmit={formik.handleSubmit}>
             <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
-                    {selfTrip ? (
+                <Grid item xs={12} md={12}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={isNewCustomer}
+                                onChange={(e) => setIsNewCustomer(e.target.checked)}
+                                name="checkedB"
+                                color="primary"
+                            />
+                        }
+                        label="New Customer"
+                    />
+                    {!isNewCustomer ? (
                         <TextField
                             fullWidth
                             id="customer"
@@ -332,9 +364,12 @@ function TripForm({
                             labelId="demo-simple-select-filled-label"
                             select
                             value={formik.values.customer}
-                            onChange={formik.handleChange}
-                            error={formik.touched.customer && Boolean(formik.errors.customer)}
-                            helperText={formik.touched.customer && formik.errors.customer}
+                            onChange={(e) => {
+                                formik.setFieldValue('customer', e.target.value);
+                                formik.setFieldValue('customerName', customers.find((dItem) => dItem._id == e.target.value)?.name);
+                            }}
+                            error={formik.touched.customerName && Boolean(formik.errors.customerName)}
+                            helperText={formik.touched.customerName && formik.errors.customerName}
                         >
                             {customers.length ? (
                                 customers.map((customer) => {
@@ -671,7 +706,7 @@ function TripForm({
                         fullWidth
                         id="totalPayment"
                         name="totalPayment"
-                        label="Total Payment"
+                        label="Total payment decided with customer"
                         value={formik.values.totalPayment}
                         onChange={formik.handleChange}
                         error={formik.touched.totalPayment && Boolean(formik.errors.totalPayment)}
@@ -684,7 +719,7 @@ function TripForm({
                             fullWidth
                             id="paymentReceived"
                             name="paymentReceived"
-                            label="Payment Received"
+                            label="Total payment received from customer"
                             value={formik.values.paymentReceived}
                             onChange={formik.handleChange}
                             error={formik.touched.paymentReceived && Boolean(formik.errors.paymentReceived)}
@@ -712,7 +747,7 @@ function TripForm({
                             fullWidth
                             id="advanceToTransporter"
                             name="advanceToTransporter"
-                            label="Advance to Transporter"
+                            label="Advance given to transporter"
                             value={formik.values.advanceToTransporter}
                             onChange={formik.handleChange}
                             error={formik.touched.advanceToTransporter && Boolean(formik.errors.advanceToTransporter)}
@@ -727,7 +762,7 @@ function TripForm({
                             fullWidth
                             id="paymentToTransporter"
                             name="paymentToTransporter"
-                            label="Payment to Transporter"
+                            label="Full decided payment with transporter"
                             value={formik.values.paymentToTransporter}
                             onChange={formik.handleChange}
                             error={formik.touched.paymentToTransporter && Boolean(formik.errors.paymentToTransporter)}
@@ -735,51 +770,102 @@ function TripForm({
                         />
                     </Grid>
                 )}
-
-                <Grid item xs={12} md={6}>
-                    {selfTrip ? (
-                        <TextField
-                            fullWidth
-                            id="driver"
-                            name="driver"
-                            label="Select Driver"
-                            select
-                            labelId="demo-simple-select-filled-label"
-                            value={formik.values.driver}
-                            onChange={formik.handleChange}
-                            error={formik.touched.driver && Boolean(formik.errors.driver)}
-                            helperText={formik.touched.driver && formik.errors.driver}
-                        >
-                            {drivers.length ? (
-                                drivers.map((driver) => {
-                                    return <MenuItem value={driver._id}>{driver.name}</MenuItem>;
-                                })
-                            ) : driverProgress == 100 ? (
-                                <MenuItem value="none">Drivers not available</MenuItem>
-                            ) : (
-                                <>
-                                    <MenuItem value="none">
-                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
-                                    </MenuItem>
-                                    <MenuItem value="none">
-                                        <Skeleton width={'100%'} height={'30px'} animation="wave" />
-                                    </MenuItem>
-                                </>
-                            )}
-                        </TextField>
-                    ) : (
-                        <TextField
-                            fullWidth
-                            id="driverName"
-                            name="driverName"
-                            label="Driver Name"
-                            value={formik.values.driverName}
-                            onChange={formik.handleChange}
-                            error={formik.touched.driverName && Boolean(formik.errors.driverName)}
-                            helperText={formik.touched.driverName && formik.errors.driverName}
-                        />
-                    )}
+                {/* hrer */}
+                <Grid item xs={12}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                id="newDriver"
+                                checked={newDriver}
+                                onChange={(e) => {
+                                    setNewDriver(e.target.checked);
+                                }}
+                                name="checkedB"
+                                color="primary"
+                            />
+                        }
+                        label="New Driver"
+                    />
+                    {/* //TODO:Work around here for new driver and all */}
+                    {/* {!newDriver && ( */}
+                    <>
+                        {!newDriver ? (
+                            <TextField
+                                fullWidth
+                                id="driver"
+                                name="driver"
+                                label="Select Driver"
+                                select
+                                labelId="demo-simple-select-filled-label"
+                                value={formik.values.driver}
+                                onChange={(e) => {
+                                    formik.setFieldValue('driver', e.target.value);
+                                    formik.setFieldValue('driverName', drivers.find((dItem) => dItem._id == e.target.value)?.name);
+                                }}
+                                error={formik.touched.driverName && Boolean(formik.errors.driverName)}
+                                helperText={formik.touched.driverName && formik.errors.driverName}
+                            >
+                                {drivers.length ? (
+                                    drivers.map((driver) => {
+                                        return <MenuItem value={driver._id}>{driver.name}</MenuItem>;
+                                    })
+                                ) : driverProgress == 100 ? (
+                                    <MenuItem value="none">Drivers not available</MenuItem>
+                                ) : (
+                                    <>
+                                        <MenuItem value="none">
+                                            <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                        </MenuItem>
+                                        <MenuItem value="none">
+                                            <Skeleton width={'100%'} height={'30px'} animation="wave" />
+                                        </MenuItem>
+                                    </>
+                                )}
+                            </TextField>
+                        ) : (
+                            <Box
+                                display="flex"
+                                justifyContent="space-between"
+                                gap={{ md: 4 }}
+                                flexDirection={{ md: 'row', xs: 'column' }}
+                                alignItems={{ md: 'center' }}
+                            >
+                                <Box flex={1}>
+                                    <TextField
+                                        fullWidth
+                                        id="driverName"
+                                        name="driverName"
+                                        label="Driver Name"
+                                        value={formik.values.driverName}
+                                        onChange={(e) => {
+                                            formik.setFieldValue('driverName', e.target.value);
+                                            setNewDriverDetails((prevValues) => ({ ...prevValues, driverName: e.target.value }));
+                                        }}
+                                        error={formik.touched.driverName && Boolean(formik.errors.driverName)}
+                                        helperText={formik.touched.driverName && formik.errors.driverName}
+                                    />
+                                </Box>
+                                <Box flex={1}>
+                                    <TextField
+                                        fullWidth
+                                        id="newDriverPhone"
+                                        name="newDriverPhone"
+                                        label="Driver phone number"
+                                        value={newDriverDetails.phoneNo}
+                                        onChange={(e) => setNewDriverDetails((prevValues) => ({ ...prevValues, phoneNo: e.target.value }))}
+                                        // error={!newDriverDetails.phoneNo && newDriver}
+                                        helperText={'Phone number is required for new driver'}
+                                        style={{ marginTop: '20px' }}
+                                    />
+                                </Box>
+                            </Box>
+                        )}
+                    </>
+                    {/* )} */}
                 </Grid>
+
+                {/* hrer */}
+
                 <Grid item xs={12} md={6}>
                     <TextField
                         fullWidth
