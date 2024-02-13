@@ -198,7 +198,7 @@ function TripForm({
         vehicle: yup.string('Select Vehicle'),
         dropup: yup.string('Select DropUp Locaiton').required('Dropup is required'),
         pickup: yup.string('Select Pickup Location').required('Pickup is required'),
-        driverName: yup.string('Select drive name').required('Driver name is required'),
+        // driverName: yup.string('Select drive name').required('Driver name is required'),
         // tripDate: yup.string('Select Date').required('Date is required'),
         // materialWeight: yup.string('Enter load in KG'),
         fuelCharge: yup.string('Enter disel charge'),
