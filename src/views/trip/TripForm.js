@@ -193,7 +193,7 @@ function TripForm({
     }, [trip, extraCharges]);
 
     const validationSchema = yup.object({
-        customerName: yup.string('Select customer').required('Customer name is required'),
+        // customerName: yup.string('Select customer').required('Customer name is required'),
         company: yup.string('Select Company').required('Company is required'),
         vehicle: yup.string('Select Vehicle'),
         dropup: yup.string('Select DropUp Locaiton').required('Dropup is required'),
