@@ -247,7 +247,7 @@ function CustomerBill({ setAlertMessage, setErrorSnack, setShowBill, bill }) {
                                             </Grid>
                                             <Grid item xs={5}>
                                                 <Typography textAlign={'right'} variant="h5">
-                                                    Date : {moment(new Date(bill.createdAt)).format('DD-MM-YYYY')}
+                                                    Date : {bill.billDate ? moment(new Date(bill.billDate)).format('DD-MM-YYYY') : moment(new Date(bill.createdAt)).format('DD-MM-YYYY')}
                                                 </Typography>
                                             </Grid>
                                         </Grid>

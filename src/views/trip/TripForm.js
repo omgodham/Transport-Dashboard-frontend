@@ -243,7 +243,8 @@ function TripForm({
             selfTrip: trip ? trip.selfTrip : selfTrip,
             driverName: trip ? trip.driverName : '',
             lrCharges: trip ? trip.lrCharges : 100,
-            pickupCompany: trip ? trip.pickupCompany : ''
+            pickupCompany: trip ? trip.pickupCompany : '',
+            billDate: trip ? trip.billDate : new Date(),
         },
 
         validationSchema: validationSchema,
@@ -445,6 +446,27 @@ function TripForm({
                         // value={formik.values.tripDate}
                         value={moment(new Date(formik.values.tripDate)).format('YYYY-MM-DD')}
                         // value={moment(new Date(formik.values.tripDate)).format('DD-MM-YYYY')}
+                        onChange={formik.handleChange}
+                        variant="outlined"
+                        InputLabelProps={{
+                            shrink: true
+                        }}
+                        required={!trip}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="billDate"
+                        // label={`Date of trip ${moment(new Date(formik.values.billDate)).format('DD-MM-YYYY')}`}
+                        label="Date of bill"
+                        name="billDate"
+                        type="date"
+                        fullWidth
+                        defaultValue={formik.values.billDate}
+                        // defaultValue={moment(new Date(formik.values.billDate)).format('DD-MM-YYYY')}
+                        // value={formik.values.billDate}
+                        value={moment(new Date(formik.values.billDate)).format('YYYY-MM-DD')}
+                        // value={moment(new Date(formik.values.billDate)).format('DD-MM-YYYY')}
                         onChange={formik.handleChange}
                         variant="outlined"
                         InputLabelProps={{

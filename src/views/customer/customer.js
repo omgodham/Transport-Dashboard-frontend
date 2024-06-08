@@ -145,7 +145,7 @@ function Customer() {
     const d = new Date();
     const [tempEndDate, setTempEndDate] = useState(new Date());
     d.setMonth(d.getMonth() - 1);
-    const [askDate, setAskDate] = useState();
+    const [askDate, setAskDate] = useState(false);
     const [billBtnLoading, setBillBtnLoading] = useState();
     const [progress, setProgress] = useState(0);
     const [companies, setCompanies] = useState([]);
@@ -198,10 +198,10 @@ function Customer() {
 
     const handleClose = () => {
         setOpen(false);
-        setActiveCust('');
+        setActiveCust(null);
     };
 
-    const generateBill = (startDate, endDate, company) => {
+    const generateBill = (startDate, endDate, company,billDate) => {
         Axios.post(`/trip/get-trip-by-customer/${activeCust._id}`, { startDate, endDate, company })
             .then((response) => {
                 if (response.data.length) {
@@ -213,25 +213,23 @@ function Customer() {
                         endDate: endDate,
                         trips: tempTrips,
                         customer: activeCust._id,
-                        company: tempCompany._id
+                        company: tempCompany._id,
+                        billDate:billDate
                     };
 
                     Axios.post('/bill/generate-bill', { data }).then((resData) => {
-                        setBillBtnLoading(false);
-                        setAskDate(false);
+                        handleBillDateFormClose()
                         setAlertMsg('Bill generated check it in bill tab');
                         setSuccessSnack(true);
                     });
                 } else {
-                    setBillBtnLoading(false);
-                    setAskDate(false);
+                    handleBillDateFormClose()
                     setAlertMsg('No trips availble in selected date range');
                     setErrorSnack(true);
                 }
             })
             .catch((error) => {
-                setBillBtnLoading(false);
-                setAskDate(false);
+                handleBillDateFormClose()
                 setAlertMsg('Something went wrong');
                 // setAlertMsg(error.message);
                 setErrorSnack(true);
@@ -241,6 +239,7 @@ function Customer() {
     const validationSchema = yup.object({
         startDate: yup.string('Please select Start Date').required('Start Date is required'),
         endDate: yup.string('Please select End Date').required('End Date is required'),
+        billDate: yup.string('Please select bill Date').required('Bill date is required'),
         company: yup.string('Please select company').required('Company is required')
     });
 
@@ -248,6 +247,7 @@ function Customer() {
         initialValues: {
             startDate: d.toISOString().split('T')[0],
             endDate: new Date().toISOString().split('T')[0],
+            billDate: new Date().toISOString().split('T')[0],
             company: ''
         },
         validationSchema: validationSchema,
@@ -256,12 +256,18 @@ function Customer() {
 
             let startDate = new Date(values.startDate);
             let endDate = new Date(values.endDate);
+            let billDate = new Date(values.billDate);
             let company = values.company;
 
-            generateBill(startDate, endDate, company);
+            generateBill(startDate, endDate, company,billDate);
         }
     });
 
+    const handleBillDateFormClose = () =>{
+        setAskDate(false);
+        setBillBtnLoading(false);
+        setActiveCust(null)
+    }
     return (
         <div className={classes.root}>
             <Box>
@@ -324,9 +330,6 @@ function Customer() {
                                         </Button>
                                     </Box>
                                 </Grid>
-                                {/* <Grid className={classes.customerItems} item xs={4}>
-                                        <Button onClick={() => generateBill(customer._id)}>GENERATE BILL</Button>
-                                    </Grid> */}
                             </Grid>
                         ))
                     ) : progress == 100 ? (
@@ -374,7 +377,7 @@ function Customer() {
                 open={confirmDelete}
                 onClose={() => {
                     setConfirmDelete(false);
-                    setActiveCust();
+                    setActiveCust(null);
                 }}
             >
                 <DialogTitle>
@@ -389,7 +392,7 @@ function Customer() {
                     <Button
                         onClick={() => {
                             setConfirmDelete(false);
-                            setActiveCust();
+                            setActiveCust(null);
                         }}
                         variant="outlined"
                         color="secondary"
@@ -408,10 +411,7 @@ function Customer() {
                     <CloseIcon
                         className={[classes.closeIcon, 'closeIcon']}
                         color="red"
-                        onClick={() => {
-                            setAskDate(false);
-                            setBillBtnLoading(false);
-                        }}
+                        onClick={handleBillDateFormClose}
                     />
                     <form onSubmit={formik.handleSubmit}>
                         <Typography variant="h5" fontSize={'20px'} textAlign={'center'} marginTop="20px">
@@ -477,18 +477,19 @@ function Customer() {
                                         helperText={formik.touched.endDate && formik.errors.endDate}
                                     />
                                 </Grid>
-                                {/* <Grid item xs={6}>
+                                <Grid item xs={6}>
                                     <TextField
                                         fullWidth
-                                        id="billNo"
-                                        name="billNo"
-                                        label="Bill Number"
-                                        value={formik.values.billNo}
+                                        type="date"
+                                        id="billDate"
+                                        name="billDate"
+                                        label="Bill Date"
+                                        value={formik.values.billDate}
                                         onChange={formik.handleChange}
-                                        error={formik.touched.billNo && Boolean(formik.errors.billNo)}
-                                        helperText={formik.touched.billNo && formik.errors.billNo}
+                                        error={formik.touched.billDate && Boolean(formik.errors.billDate)}
+                                        helperText={formik.touched.billDate && formik.errors.billDate}
                                     />
-                                </Grid> */}
+                                </Grid>
                             </Grid>
 
                             <Box className={classes.wrapperLoading}>
