@@ -71,6 +71,14 @@ export const utilities = {
             breadcrumbs: false
         },
         {
+            id: 'customerYearlyBill',
+            title: 'Yearly Bill',
+            type: 'item',
+            url: '/customer-yearly-bills',
+            icon: icons['DescriptionIcon'],
+            breadcrumbs: false
+        },
+        {
             id: 'company',
             title: 'Company',
             type: 'item',

@@ -315,7 +315,6 @@ function TripForm({
                     let data = { name: tempValues.customerName };
                     let customerRes = await createCustomer({ data });
                     tempValues.customer = customerRes?._id;
-                    console.log("BBB",customerRes,tempValues)
                 }
                 if (trip) updateTrip(tempValues, trip._id, false);
                 else {

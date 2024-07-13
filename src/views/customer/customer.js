@@ -27,6 +27,8 @@ import CustomerForm from './CustomerForm';
 import CustomerBill from './CustomerBill';
 import CloseIcon from '@material-ui/icons/Close';
 import noData from '../../images/noData.png';
+import { format } from 'date-fns';
+import { generateYearlyCustomerBill } from './helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -152,7 +154,9 @@ function Customer() {
     const [companyProgress, setCompanyProgress] = useState(0);
     const [confirmDelete, setConfirmDelete] = useState();
     const [generatedBill, setGeneratedBill] = useState();
-
+    const [isRunningYear, setIsRunningYear] = useState(false)
+    const [isYearToDate,setIsYearToDate] = useState(false)
+    const [isYearly,setIsYearly] = useState(false)
     const getAllCustomers = () => {
         Axios.get('/customer/get-all-customers', {
             onDownloadProgress: (progressEvent) => {
@@ -242,7 +246,12 @@ function Customer() {
         billDate: yup.string('Please select bill Date').required('Bill date is required'),
         company: yup.string('Please select company').required('Company is required')
     });
-
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
     const formik = useFormik({
         initialValues: {
             startDate: d.toISOString().split('T')[0],
@@ -253,13 +262,17 @@ function Customer() {
         validationSchema: validationSchema,
         onSubmit: (values) => {
             setBillBtnLoading(true);
-
+            // return 
             let startDate = new Date(values.startDate);
             let endDate = new Date(values.endDate);
             let billDate = new Date(values.billDate);
             let company = values.company;
-
-            generateBill(startDate, endDate, company,billDate);
+            if(!isYearly){
+                generateBill(startDate, endDate, company,billDate);
+                // alert("BBDS333")
+            }else{
+                generateYearlyBill(startDate, endDate, company,billDate)
+            }
         }
     });
 
@@ -267,7 +280,77 @@ function Customer() {
         setAskDate(false);
         setBillBtnLoading(false);
         setActiveCust(null)
+        setIsYearly(false)
+        setIsRunningYear(false)
+        setIsYearToDate(false)
     }
+    const handleCurrentYearChange = (e) => {
+        setIsRunningYear(e.target.checked);
+        setIsYearToDate(false);
+        if (e.target.checked) {
+            const today = new Date();
+
+            const currentYear = today.getFullYear();
+
+            const startOfYear = new Date(currentYear, 0, 1); // January 1st of the current year
+            const endOfYear = new Date(currentYear, 11, 31); // December 31st of the current year
+
+            const startOfYearStr = formatDate(startOfYear);
+            const endOfYearStr = formatDate(endOfYear);
+            formik.setFieldValue('startDate', startOfYearStr);
+            formik.setFieldValue('endDate', endOfYearStr);
+        } else {
+            formik.setFieldValue('startDate', d.toISOString().split('T')[0]);
+            formik.setFieldValue('endDate', new Date().toISOString().split('T')[0]);
+        }
+    };
+    const getLastYearDate = () =>{
+        const today = new Date();
+
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        return oneYearAgo
+    }
+    const handleYearToDateChange = (e) => {
+        setIsYearToDate(e.target.checked);
+        setIsRunningYear(false);
+        if (e.target.checked) {
+            const today = new Date();
+
+            const oneYearAgo = getLastYearDate();
+
+            // Format the dates
+            const startDateStr = formatDate(oneYearAgo);
+            const endDateStr = formatDate(today);
+            formik.setFieldValue('startDate', startDateStr);
+            formik.setFieldValue('endDate', endDateStr);
+        } else {
+            formik.setFieldValue('startDate', d.toISOString().split('T')[0]);
+            formik.setFieldValue('endDate', new Date().toISOString().split('T')[0]);
+        }
+    };
+  
+    const generateYearlyBill = (startDate, endDate, thisCompany,billDate) => {
+        let tempCompany = companies.find((company) => company._id == thisCompany);
+        let data = {
+            startDate: startDate,
+            endDate: endDate,
+            customer: activeCust._id,
+            company: tempCompany._id,
+            billDate:billDate
+        };
+        generateYearlyCustomerBill(data)
+            .then((response) => {
+                    handleBillDateFormClose()
+                    setAlertMsg('Bill generated check it in yearly bills tab');
+                    setSuccessSnack(true);
+            })
+            .catch((error) => {
+                handleBillDateFormClose()
+                setAlertMsg(error.message);
+                setErrorSnack(true);
+            });
+    };
     return (
         <div className={classes.root}>
             <Box>
@@ -451,6 +534,37 @@ function Customer() {
                                         )}
                                     </TextField>
                                 </Grid>
+                                {/* TODO:Add here the option to select year */}
+                                <Grid item xs={12} className={classes.formItems}>
+                                        <label for="isYearly">Generate Yearly Customer Bill</label>
+                                        <input
+                                            type="checkbox"
+                                            id="isYearly"
+                                            checked={isYearly}
+                                            onChange={(e) => setIsYearly(e.target.checked)}
+                                        />
+                                    </Grid>
+
+                                {isYearly && <>
+                                <Grid item xs={6} className={classes.formItems}>
+                                        <label for="currentYear">Current Year(Jan {new Date().getFullYear()} - Dec {new Date().getFullYear()})</label>
+                                        <input
+                                            type="checkbox"
+                                            id="currentYear"
+                                            checked={isRunningYear}
+                                            onChange={handleCurrentYearChange}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.formItems}>
+                                        <label for="yearToDate">Year To Date({format(getLastYearDate(), "dd MMM yyyy")} - {format(new Date(), "dd MMM yyyy")})</label>
+                                        <input
+                                            type="checkbox"
+                                            id="yearToDate"
+                                            checked={isYearToDate}
+                                            onChange={handleYearToDateChange}
+                                        />
+                                    </Grid>
+                                </>}
                                 <Grid item xs={6}>
                                     <TextField
                                         fullWidth

@@ -13,6 +13,7 @@ import Driver from '../views/driver/Driver';
 import ExtraCharges from '../views/extra-charges/ExtraCharges';
 import Company from '../views/company/Company';
 import Bill from '../views/bill/Bill';
+import CustomerYearlyBills from '../views/customerYearlyBills/CustomerYearlyBills';
 
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('../views/dashboard/Default')));
@@ -48,7 +49,8 @@ const MainRoutes = () => {
                 '/extra-charges',
                 '/sample-page',
                 '/company',
-                '/bill'
+                '/bill',
+                '/customer-yearly-bills'
             ]}
         >
             <MainLayout>
@@ -68,6 +70,7 @@ const MainRoutes = () => {
                         <Route path="/extra-charges" component={ExtraCharges} />
                         <Route path="/company" component={Company} />
                         <Route path="/bill" component={Bill} />
+                        <Route path="/customer-yearly-bills" component={CustomerYearlyBills} />
                     </AuthGuard>
                 </Switch>
             </MainLayout>
