@@ -161,13 +161,12 @@ function CustomerYearlyBills() {
     // const [startDate, setStartDate] = useState(d);
     const [askDate, setAskDate] = useState();
     const [billBtnLoading, setBillBtnLoading] = useState();
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState();
     const [companies, setCompanies] = useState([]);
     const [companyProgress, setCompanyProgress] = useState(0);
     const [confirmDelete, setConfirmDelete] = useState();
     const [generatedBill, setGeneratedBill] = useState();
     const [customers, setCustomers] = useState([]);
-
     const getAllBills = async () => {
         try {
             let billData = await getYearlyCustomerBills(setProgress);

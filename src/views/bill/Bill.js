@@ -171,7 +171,12 @@ function Bill() {
     const getAllBills = () => {
         Axios.get('/bill/get-bills', {
             onDownloadProgress: (progressEvent) => {
-                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                let percentCompleted = 0;
+                if (progressEvent.total > 0) {
+                    percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                } else {
+                    percentCompleted = 100; // Fallback if total size is unknown
+                }
                 setProgress(percentCompleted);
             }
         }).then((billData) => {

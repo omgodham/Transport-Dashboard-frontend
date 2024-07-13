@@ -107,7 +107,12 @@ function TripForm({
 
             Axios.get('/vehicle/get-all-vehicles', {
                 onDownloadProgress: (progressEvent) => {
-                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    let percentCompleted = 0;
+                    if (progressEvent.total > 0) {
+                        percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    } else {
+                        percentCompleted = 100; // Fallback if total size is unknown
+                    }
                     setVehicleProgress(percentCompleted);
                 }
             })
@@ -123,7 +128,12 @@ function TripForm({
         }
         Axios.get('/customer/get-all-customers', {
             onDownloadProgress: (progressEvent) => {
-                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                let percentCompleted = 0;
+                if (progressEvent.total > 0) {
+                    percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                } else {
+                    percentCompleted = 100; // Fallback if total size is unknown
+                }
                 setCustomerProgress(percentCompleted);
             }
         })
@@ -136,7 +146,12 @@ function TripForm({
             });
         Axios.get('/driver/get-all-drivers', {
             onDownloadProgress: (progressEvent) => {
-                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                let percentCompleted = 0;
+                if (progressEvent.total > 0) {
+                    percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                } else {
+                    percentCompleted = 100; // Fallback if total size is unknown
+                }
                 setDrivererProgress(percentCompleted);
             }
         })
@@ -149,7 +164,12 @@ function TripForm({
             });
         Axios.get('/extracharge/get-all-extra-charges', {
             onDownloadProgress: (progressEvent) => {
-                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                let percentCompleted = 0;
+                if (progressEvent.total > 0) {
+                    percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                } else {
+                    percentCompleted = 100; // Fallback if total size is unknown
+                }
                 setChargeProgress(percentCompleted);
             }
         })
@@ -163,7 +183,12 @@ function TripForm({
 
         Axios.get('/company/get-all-companies', {
             onDownloadProgress: (progressEvent) => {
-                var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                let percentCompleted = 0;
+                if (progressEvent.total > 0) {
+                    percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                } else {
+                    percentCompleted = 100; // Fallback if total size is unknown
+                }
                 setCompanyProgress(percentCompleted);
             }
         })
